@@ -98,7 +98,7 @@ magnolia/
 ├── index.html             # 前端 HTML 入口
 ├── .htaccess              # Apache URL 重写配置
 ├── AGENTS.md              # 项目文档
-├── magnolia.sql           # 数据库初始化脚本
+├── phpemsvue.sql           # 数据库初始化脚本
 ├── boot/                  # PHP 启动文件
 │   ├── boot.php           # 核心启动逻辑
 │   ├── cli.php            # CLI 启动脚本
@@ -366,7 +366,7 @@ magnolia/
     'port' => '3306',
     'user' => 'root',
     'password' => '密码',
-    'database' => 'magnolia',
+    'database' => 'phpemsvue',
     'charset' => 'utf8',
     'tablePrefix' => 'x2_'
 ]
@@ -479,7 +479,7 @@ magnolia/
 
 如有问题或建议，请通过以下方式联系：
 - 提交 Issue
-- 发送邮件
+- 官网 https://phpems.net
 - 查看文档
 
 ---
