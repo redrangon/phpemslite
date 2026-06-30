@@ -1,0 +1,26 @@
+.masterLayOut{
+    min-height: 100vh;
+    width: 100%;
+    position: absolute;
+    left: 0px;
+    top:0px;
+    background: #FFFFFF;
+}
+.masterLayOut .layui-footer,.masterLayOut .layui-header {
+    line-height: 60px;
+    background: #CCCCCC;
+}
+.masterLayOut .layui-side {
+    display: flex;
+    font-size: 16px;
+}
+.masterLayOut .layui-nav-child{
+    padding:0px;
+}
+.masterLayOut .layui-layer-content{
+    max-height: 86vh;
+}
+/** 编辑器 **/
+.w-e-full-screen-container{
+    z-index:9
+}

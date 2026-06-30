@@ -1,0 +1,17 @@
+*{
+  font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+}
+@font-face{
+  font-family: 'Mistral';
+  src: url("../fonts/mistral.ttf");
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+}
+
+#app {
+  height: 100%;
+}

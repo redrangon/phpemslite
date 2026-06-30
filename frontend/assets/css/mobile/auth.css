@@ -1,0 +1,134 @@
+.login-content {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    padding-top:60px;
+}
+
+/* 品牌标识区域 */
+.brand-header {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #FFFFFF;
+}
+
+.brand-icon {
+    margin-bottom: 10px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.brand-title {
+    font-size: 36px;
+    color: #fff;
+    margin: 10px 0 5px;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    line-height: 2;
+}
+
+.brand-subtitle {
+    font-size: 21px;
+    color: #FFFFFF;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    line-height: 2;
+}
+
+/* 表单样式 */
+.login-form {
+    width: 100%;
+}
+
+.login-form .input-group {
+    position: relative;
+    margin-bottom: 20px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s;
+}
+
+.login-form .input-group:focus-within {
+    border-color: #4A90E2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+}
+
+.login-form .input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    z-index: 1;
+    font-size: 18px;
+}
+
+/* 调整 Vant Field 的样式 */
+.login-form .input-group{
+    padding: 5px 15px 5px 45px;
+}
+
+.login-form .input-group{
+    font-size: 14px;
+}
+
+/* 验证码输入框特殊样式 */
+.login-form .captcha-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.login-form .captcha-input-wrapper {
+    flex: 1;
+    position: relative;
+    background: #fff;
+    transition: all 0.3s;
+}
+
+.login-form .captcha-input-wrapper:focus-within {
+    border-color: #4A90E2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+}
+
+.login-form .captcha-image {
+    cursor: pointer;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* 登录按钮 */
+.login-form .login-button {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    height: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #667eea 0%, #667eea 100%);
+    border: none;
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+    color: #FFFFFF;
+    letter-spacing: 2px;
+}
+
+.login-form .login-button:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+}
+
+/* 链接区域 */
+.login-form .links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    font-size: 14px;
+}
+
+.login-form .links a {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.login-form .links a:hover {
+    color: #667eea;
+}
