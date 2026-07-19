@@ -8,7 +8,6 @@
             </lay-breadcrumb>
             <lay-page-header :content="basic?.basic??'所有考场'" @back="$router.go(-1)" class="planbread"></lay-page-header>
         </lay-quote>
-
 		<lay-row :space="20" v-if="basic.basicid">
 			<!-- 左侧：课程信息 -->
 			<lay-col :xs="24" :sm="24" :md="16" :lg="16">

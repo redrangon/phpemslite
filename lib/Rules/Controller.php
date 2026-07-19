@@ -2,17 +2,17 @@
 
 namespace PHPEMS\Lib\Rules;
 
+use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Core\Request\RequestProvider;
 
 abstract class Controller
 {
     static protected array $publicFlows = [];
-    protected RequestProvider $request;
 
-    public function __construct()
-    {
-        $this->request = DI('request');
-    }
+    public function __construct(
+        protected RequestInterface $request
+    )
+    {}
 
     static public function getRoutes(): array
     {

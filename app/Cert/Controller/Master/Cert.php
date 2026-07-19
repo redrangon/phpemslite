@@ -4,8 +4,6 @@ namespace PHPEMS\App\Cert\Controller\Master;
 
 use PHPEMS\App\Cert\Service\CertService;
 use PHPEMS\App\Cert\Service\Model\CertMember;
-use PHPEMS\App\Plan\Service\Model\PlanCert;
-use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
 use PHPEMS\Lib\Rules\Error;

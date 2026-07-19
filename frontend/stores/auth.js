@@ -5,7 +5,8 @@ import {decrypt, encrypt} from "@/framework/security";
 export const useAuthStore = defineStore('auth', {
     state: () => ({
         user: decrypt(localStorage.getItem('user'),true) || {},
-        basic:decrypt(localStorage.getItem('basic'),true) || {}
+        basic:decrypt(localStorage.getItem('basic'),true) || {},
+        token: localStorage.getItem('token') || ''
     }),
 
     actions: {
@@ -31,6 +32,12 @@ export const useAuthStore = defineStore('auth', {
             }
             finally {
                 localStorage.setItem('basic', encrypt(this.basic,true));
+            }
+        },
+        updateToken(newToken) {
+            if (newToken && newToken !== this.token) {
+                this.token = newToken;
+                localStorage.setItem('token', newToken);
             }
         },
     },

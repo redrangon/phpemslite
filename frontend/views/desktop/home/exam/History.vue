@@ -122,7 +122,7 @@ export default {
 				key: "operator",
 				width: "190px"
 			}],
-			tabCurrent:"1",
+			tabCurrent:"2",
 			histories:[],
 			page:{
 				current:1,

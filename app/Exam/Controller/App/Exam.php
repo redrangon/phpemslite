@@ -8,6 +8,7 @@ use PHPEMS\App\Exam\Service\Model\ExamPaperSession;
 use PHPEMS\App\Exam\Service\Model\ExamSession;
 use PHPEMS\App\Exam\Service\Model\History;
 use PHPEMS\App\Exam\Service\Model\Subject;
+use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
 use PHPEMS\Lib\Rules\Error;
@@ -19,23 +20,11 @@ class Exam extends Controller implements ControllerInterface
     protected Basic $basic;
     protected ExamSession $session;
 
-    public function __construct()
+    public function __construct(protected RequestInterface $request)
     {
-        parent::__construct();
+        parent::__construct($this->request);
         $this->session = $this->request->getStore('session');
         $this->basic = $this->request->getStore('basic');
-        $this->basic->basicexam = json_decode($this->basic->basicexam, true);
-        $this->basic->basicpoint = json_decode($this->basic->basicpoint, true);
-        $intime = 1;
-        if(($this->basic->basicexam['opentime']??false) && strtotime($this->basic->basicexam['opentime']) > TIME)
-        {
-            $intime = 0;
-        }
-        if(($this->basic->basicexam['closetime']??false) && strtotime($this->basic->basicexam['closetime']) < TIME)
-        {
-            $intime = 0;
-        }
-        $this->basic->intime = $intime;
     }
 
     static public function getRoutes():array

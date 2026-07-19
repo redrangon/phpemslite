@@ -56,7 +56,7 @@
 						<lay-radio v-model="model.msex" name="msex" value="男" label="男"></lay-radio>
 						<lay-radio v-model="model.msex" name="msex" value="女" label="女"></lay-radio>
 					</lay-form-item>
-					<lay-form-item label="身份证号" prop="mpassport" required>
+					<lay-form-item label="通行证ID" prop="mpassport" required>
 						<lay-input v-model="model.mpassport" disabled></lay-input>
 					</lay-form-item>
 					<lay-form-item label="身份证正反面" prop="mpassportimga" mode="inline">
@@ -163,7 +163,7 @@
 						<td>{{ member.pmname }}</td>
 						<th>性别</th>
 						<td>{{ member.pmsex }}</td>
-						<th>身份证号</th>
+						<th>通行证ID</th>
 						<td>{{ member.pmpassport }}</td>
 						<td rowspan="4"><img :src="member.pmphoto" width="120"></td>
 					</tr>

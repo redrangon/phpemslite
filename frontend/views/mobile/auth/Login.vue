@@ -116,7 +116,7 @@ const onSubmit = async function () {
 			captcha: model.value.randcode,
 			captchaId: model.value.randid
 		});
-		localStorage.setItem('token', authData.token);
+        authStore.updateToken(authData.token);
 		await authStore.getCurrentUser();
 		showSuccessToast('登录成功');
 		await router.push('/mobile/core');

@@ -24,7 +24,7 @@ class CourseSubject extends Model
         'csthumb' => "",
         'cssequence' => 0,
         'csdescribe' => "",
-        'cstype' => 0,
+        'csnumber' => 0,
         'csprogress' => 0,
     ];
 
@@ -44,7 +44,7 @@ class CourseSubject extends Model
         'csthumb' => 'string',
         'cssequence' => 'integer',
         'csdescribe' => 'string',
-        'cstype' => 'integer',
+        'csnumber' => 'integer',
         'csprogress' => 'integer',
     ];
 

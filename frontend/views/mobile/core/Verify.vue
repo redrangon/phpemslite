@@ -4,7 +4,7 @@
         <van-nav-bar title="实名认证" left-arrow @click-left="$router.go(-1)" placeholder fixed/>
         <div class="card-container">
 	        <van-cell-group>
-	            <van-cell title="请先完成实名信息后再开始学习。务必正确填写姓名和身份证号，此信息将用来填入报名信息和发放证书，提交后将无法更改。" v-if="userstatus <= 0" />
+	            <van-cell title="请先完成实名信息后再开始学习。务必正确填写姓名和通行证ID，此信息将用来填入报名信息和发放证书，提交后将无法更改。" v-if="userstatus <= 0" />
 	            <van-cell title="您的实名认证申请已提交，请等待审核。" v-if="userstatus === 1" />
 	            <van-cell title="您的实名认证申请被拒绝，请核验认证信息后重新提交。" v-if="userstatus === 2" />
 	            <van-cell title="您已完成实名认证，如需要修改实名信息，请联系管理员。" v-if="userstatus === 3" />
@@ -13,7 +13,7 @@
 	        <div v-if="userstatus === 1 || userstatus === 3">
 	            <van-cell-group>
 	                <van-cell title="姓名" :value="usertruename" />
-	                <van-cell title="身份证号" :value="userpassport" />
+	                <van-cell title="通行证ID" :value="userpassport" disabled="disabled"/>
 	                <van-cell title="照片">
 	                    <template #value>
 	                        <van-image :src="userphoto[0].url" width="120" />
@@ -31,8 +31,8 @@
 	            <van-cell-group>
 	                <!-- 姓名 -->
 	                <van-field v-model="usertruename" label="姓名" placeholder="请输入姓名" required />
-	                <!-- 身份证号 -->
-	                <van-field v-model="userpassport" label="身份证号" placeholder="请输入身份证号" required />
+	                <!-- 通行证ID -->
+	                <van-field v-model="userpassport" label="通行证ID" placeholder="请输入通行证ID" required disabled="disabled"/>
 	                <van-field name="userphoto" label="上传照片" required>
 	                    <template #input>
 	                        <!-- 照片上传 -->

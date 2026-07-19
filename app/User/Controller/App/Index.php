@@ -229,9 +229,9 @@ class Index extends Controller implements ControllerInterface
         $usertruename = $this->request->usertruename??null;
         if($userphoto && $userpassport && $usertruename)
         {
+            if($user->userpassport != $userpassport)return error('通行证ID校验失败');
             if($user->userstatus >= 1)return error(['error' => '您已提交过实名信息，请等待审核']);
             $user->userphoto = $userphoto;
-            $user->userpassport = $userpassport;
             $user->usertruename = $usertruename;
             $user->userstatus = 1;
             $result = $user->save();

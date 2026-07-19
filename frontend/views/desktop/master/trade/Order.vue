@@ -6,7 +6,7 @@
 				<span style='width:70px'> 订单号</span><lay-input v-model="search.ordersn" allow-clear style="width: 180px;"></lay-input>
 			</lay-space>
 			<lay-space>
-				<span style='width:70px'> 身份证号</span><lay-input v-model="search.orderpassport" allow-clear style="width: 180px;"></lay-input>
+				<span style='width:70px'> 通行证ID</span><lay-input v-model="search.orderpassport" allow-clear style="width: 180px;"></lay-input>
 			</lay-space>
 			<lay-space>
 				<lay-button type="primary" @click="getData">搜索</lay-button>
@@ -80,7 +80,7 @@ export default {
 				title:'订单信息',
 				key:'ordertitle'
 			},{
-				title:'身份证号/用户名',
+				title:'通行证ID/用户名',
 				key:'orderpassport',
 				width:'200px'
 			},{

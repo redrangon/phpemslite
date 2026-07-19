@@ -45,7 +45,7 @@
 			</template>
 		</lay-table>
 	</lay-card>
-	<lay-layer v-model="showAddPage" :area="['800px']" :btn="showAddPageBtn" title="添加课程">
+	<lay-layer v-model="showAddPage" :area="['960px','90%']" :btn="showAddPageBtn" title="添加课程">
 		<div style="padding: 20px 50px 20px 20px;">
 			<lay-form :model="model" :pane="false" size="md" :labelWidth="100" class="form" ref="addPageFrom">
 				<lay-form-item label="课程标题" prop="cstitle" required>
@@ -70,13 +70,16 @@
                     <lay-radio v-model="model.csfacetime" :value="50" label="50分钟" name="csfacetime"></lay-radio>
                     <lay-radio v-model="model.csfacetime" :value="60" label="60分钟" name="csfacetime"></lay-radio>
                 </lay-form-item>
-				<lay-form-item label="课程简介" prop="csdescribe">
-					<myEditor v-model:content="model.csdescribe"></myEditor>
+                <lay-form-item label="课程简介" prop="csdescribe">
+                    <lay-textarea placeholder="请输入课程简介" v-model="model.csdescribe"></lay-textarea>
+                </lay-form-item>
+				<lay-form-item label="课程详情" prop="cstext">
+					<myEditor v-model:content="model.cstext"></myEditor>
 				</lay-form-item>
 			</lay-form>
 		</div>
 	</lay-layer>
-	<lay-layer v-model="showModifyPage" :area="['800px']" :btn="showModifyPageBtn" title="编辑课程">
+	<lay-layer v-model="showModifyPage" :area="['960px','90%']" :btn="showModifyPageBtn" title="编辑课程">
 		<div style="padding: 20px 50px 20px 20px;">
 			<lay-form :model="modify" :pane="false" size="md" :labelWidth="100" class="form" ref="modifyPageFrom">
 				<lay-form-item label="课程标题" prop="cstitle" required>
@@ -101,9 +104,12 @@
                     <lay-radio v-model="modify.csfacetime" :value="50" label="50分钟" name="csfacetime"></lay-radio>
                     <lay-radio v-model="modify.csfacetime" :value="60" label="60分钟" name="csfacetime"></lay-radio>
                 </lay-form-item>
-				<lay-form-item label="课程简介" prop="csdescribe">
-					<myEditor v-model:content="modify.csdescribe"></myEditor>
-				</lay-form-item>
+                <lay-form-item label="课程简介" prop="csdescribe">
+                    <lay-textarea placeholder="请输入课程简介" v-model="modify.csdescribe"></lay-textarea>
+                </lay-form-item>
+                <lay-form-item label="课程详情" prop="cstext">
+                    <myEditor v-model:content="modify.cstext"></myEditor>
+                </lay-form-item>
 			</lay-form>
 		</div>
 	</lay-layer>
@@ -111,12 +117,9 @@
 <style scoped></style>
 <script>
 import courseApi from '@/framework/api/admin/course.js';
-import {layer} from '@layui/layui-vue';
 import myThumb from '@/components/desktop/Thumb.vue';
-import {ref} from 'vue';
-import myEditor from '@/components/desktop/Editor.vue';
+import myEditor from '@/components/master/Editor.vue';
 import {withConfirm, withLayer} from "@/framework/utils/decorators.js";
-import examApi from "@/framework/api/admin/exam.js";
 export default {
 	data() {
 		return {

@@ -34,9 +34,13 @@
 	<lay-card>
 		<lay-table :default-toolbar="false" @change="getData" :columns="columns" :data-source="dataSource" ref="table" id="userid" v-model:selected-keys="selectedKeys" even>
 			<template #toolbar>
-				<lay-button type="primary" size="sm" @click="showAddPage = true">添加用户</lay-button>
-				<lay-button type="primary" size="sm" @click="importUser">导入用户</lay-button>
-				<lay-button type="primary" size="sm" @click="downloadTemplate">下载导入模板</lay-button>
+                <lay-space>
+                    <lay-button type="primary" size="sm" @click="showAddPage = true">添加用户</lay-button>
+                    <lay-button type="primary" size="sm" @click="importUser">导入用户</lay-button>
+                    <a href="public/attach/user.xlsx">
+                        <lay-button type="primary" size="sm">下载导入模板</lay-button>
+                    </a>
+                </lay-space>
 			</template>
 			<template #footer>
 				<lay-col md="12">
@@ -47,9 +51,17 @@
 				</lay-col>
 			</template>
 			<template v-slot:operator="{ row }">
-				<lay-button size="xs" type="primary" @click="showModify(row)">编辑</lay-button>
-				<lay-button size="xs" type="primary" @click="showModifyPassword(row)">改密</lay-button>
-				<lay-button size="xs" type="danger" @click="delUser(row.userid)">删除</lay-button>
+                <lay-space>
+                    <router-link :to="`/desktop/master/user/log/${row.userid}`">
+                        <lay-button size="xs" type="primary">日志</lay-button>
+                    </router-link>
+                    <router-link :to="`/desktop/master/user/coin/${row.userpassport}`">
+                        <lay-button size="xs" type="primary">消费</lay-button>
+                    </router-link>
+                    <lay-button size="xs" type="primary" @click="showModify(row)">编辑</lay-button>
+                    <lay-button size="xs" type="primary" @click="showModifyPassword(row)">改密</lay-button>
+                    <lay-button size="xs" type="danger" @click="delUser(row.userid)">删除</lay-button>
+                </lay-space>
 			</template>
 		</lay-table>
 	</lay-card>
@@ -110,8 +122,8 @@
 	<lay-layer v-model="showModifyPasswordPage" :shade="false" :area="['500px']" :btn="modifyPasswordPageBtns" title="修改密码">
 		<div style="padding: 20px 50px 20px 20px;">
 			<lay-form :model="modelModifyPassword" ref="modifyPasswordPageForm" required>
-				<lay-form-item label="新密码" prop="newpassword">
-					<lay-input v-model="modelModifyPassword.newpassword"></lay-input>
+				<lay-form-item label="新密码" prop="password">
+					<lay-input v-model="modelModifyPassword.password"></lay-input>
 				</lay-form-item>
 			</lay-form>
 		</div>
@@ -124,6 +136,7 @@ import {layer} from '@layui/layui-vue';
 import {ref, onMounted} from 'vue';
 import myThumb from '@/components/desktop/Thumb.vue';
 import {withConfirm} from "@/framework/utils/decorators.js";
+import {withLayer} from "@/framework/utils/decorator-adapter.js";
 
 // 定义响应式数据
 const columns = ref([{
@@ -134,7 +147,7 @@ const columns = ref([{
 },{
 	title:'ID',
 	key:'userid',
-	width:'20px'
+	width:'60px'
 },{
 	title:'用户名',
 	key:'username',
@@ -149,18 +162,22 @@ const columns = ref([{
 },{
 	title:'姓名',
 	key:'usertruename',
-	width:'200px'
+	width:'150px'
+},{
+    title:'积分',
+    key:'usercoin',
+    width:'100px'
 },{
 	title:'用户组',
 	key:'groupname',
-	width:'200px'
+	width:'150px'
 },{
 	title:'注册时间',
 	key:'userregtime',
-	width:'150px'
+	width:'120px'
 },{
 	title:"操作",
-	width: "150px",
+	width: "230px",
 	customSlot:"operator",
 	key:"operator",
 	fixed: "right",
@@ -184,7 +201,7 @@ const groups = ref([
 ]);
 const model = ref({});
 const modelModify = ref({});
-const modelModifyPassword = ref({});
+const modelModifyPassword = ref({userId:'',password:''});
 const addPageForm = ref();
 const modifyPageForm = ref();
 const modifyPasswordPageForm = ref();
@@ -233,7 +250,7 @@ const modifyPasswordPageBtns = ref([
 	{
 		text: "确认",
 		callback: () => {
-			modifyPasswordPageFrom.value.validate().then((res) => {
+            modifyPasswordPageForm.value.validate().then((res) => {
 				showModifyPasswordPage.value = false;
 				modifyUserPassword();
 			}).catch( res => {
@@ -250,24 +267,22 @@ const modifyPasswordPageBtns = ref([
 ]);
 
 // 方法定义
-const getData = async () => {
-	const id = layer.load(0);
-	const data = await userApi.getUsers({
-		limit: page.value.limit,
-		page: page.value.current,
-		search: search.value
-	});
-	page.value.total = data.total;
-	dataSource.value = data.data;
-	layer.close(id);
+const getData = async() => {
+    await withLayer(async () => {
+        const data = await userApi.getUsers({
+            limit: page.value.limit,
+            page: page.value.current,
+            search: search.value
+        });
+        page.value.total = data.total;
+        dataSource.value = data.data;
+    },[null,null]);
 };
 
-const getGroups = async () => {
-	try {
-		groups.value = await userApi.getGroups();
-	}catch (e) {
-		layer.msg(e.message||'获取用户组失败');
-	}
+const getGroups = async() => {
+    await withLayer(async () => {
+        groups.value = await userApi.getGroups();
+    },[null,null]);
 };
 
 const changePage = ({ current, limit }) => {
@@ -301,23 +316,22 @@ const modifyUser = async () => {
 };
 
 const modifyUserPassword = async () => {
-	await userApi.modifyUserPassword({password: modelModifyPassword.value});
+	await userApi.modifyPassword(modelModifyPassword.value.userId,modelModifyPassword.value.password);
 	await getData();
 };
 
 const importUser = () => {
-	let input = document.createElement('input');
+	const input = document.createElement('input');
 	input.setAttribute('type', 'file');
 	input.setAttribute('accept', '.xlsx');
 	input.click();
 	input.onchange = async () => {
-		let formData = new FormData();
-		const id = layer.load(0);
-		formData.append('api','importuser');
-		formData.append('file', input.files[0], input.files[0].name );
-		await userApi.importUser(formData);
-		await getData();
-		layer.close(id);
+        await withLayer(async() => {
+            const formData = new FormData();
+            formData.append('file', input.files[0], input.files[0].name );
+            await userApi.importUsers(formData);
+            await getData();
+        },[null,null])
 	};
 };
 
@@ -328,7 +342,21 @@ const showModify = (row) => {
 
 const showModifyPassword = (row) => {
 	showModifyPasswordPage.value = true;
-	modelModifyPassword.value = {};
+	modelModifyPassword.value = {
+        userId: row.userid,
+        password: ''
+    };
+};
+
+const showCoin = (row) => {
+	layer.open({
+		type: 2,
+		title: '用户钱包',
+		shadeClose: true,
+		shade: 0.8,
+		area: ['500px', '300px'],
+		content: ['/admin/user/wallet?userid=' + row.userid, true]
+	});
 };
 
 const downloadTemplate = (tpl) => {

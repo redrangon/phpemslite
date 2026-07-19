@@ -2,10 +2,12 @@
 
 namespace PHPEMS\Lib\Core;
 use PHPEMS\Lib\Config\Site\Site;
+use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Core\Request\RequestProvider;
 use PHPEMS\Lib\DI\DI;
 use PHPEMS\Lib\Http\Cookie;
 use PHPEMS\Lib\Rules\Error;
+use Throwable;
 
 class Router
 {
@@ -28,7 +30,7 @@ class Router
     public static function dispatch()
     {
         $router = self::getInstance();
-        $request = DI('request');
+        $request = DI(RequestInterface::class);
         $route = $request->getRoute();
         if($route[0] === 'plugins')
         {
@@ -49,13 +51,13 @@ class Router
             if($routes[$action]??false)
             {
                 $next = function() use ($routes,$action,$class) {
-                    return (new $class())->{$routes[$action]}();
+                    return DI($class)->{$routes[$action]}();
                 };
             }
             else
             {
                 $next = function() use ($class){
-                    return (new $class())->index();
+                    return DI($class)->index();
                 };
             }
             foreach($flows as $flow)
@@ -63,16 +65,16 @@ class Router
                 if(str_contains($flow,'@'))
                 {
                     $flow = explode('@', $flow);
-                    $class = 'PHPEMS\\Lib\\Core\\Flow\\' . ucfirst($flow[0]) ;
+                    $flowClass = 'PHPEMS\\Lib\\Core\\Flow\\' . ucfirst($flow[0]) ;
                     $method = $flow[1];
                 }
                 else
                 {
-                    $class = 'PHPEMS\\Lib\\Core\\Flow\\' . ucfirst($flow) ;
+                    $flowClass = 'PHPEMS\\Lib\\Core\\Flow\\' . ucfirst($flow) ;
                     $method = 'handle';
                 }
-                $next = function() use ($class,$method,$next) {
-                    return DI($class)->$method($next);
+                $next = function() use ($flowClass,$method,$next) {
+                    return DI($flowClass)->$method($next);
                 };
             }
             try
@@ -80,7 +82,7 @@ class Router
                 $result = $next();
                 Disclose::export($result);
             }
-            catch (\Exception $e)
+            catch (Throwable $e)
             {
                 Disclose::export(error(['error' => $e->getMessage()]));
                 file_put_contents(

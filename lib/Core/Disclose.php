@@ -3,12 +3,14 @@
 namespace PHPEMS\Lib\Core;
 
 use PHPEMS\Lib\Auth\Auth;
+use PHPEMS\Lib\Config\Site\Site;
+use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Http\Cookie;
 use PHPEMS\Lib\Rules\Error;
 
 class Disclose
 {
-    static public function export(mixed $result)
+    static public function export(mixed $result): void
     {
         if($result instanceof Error)
         {
@@ -17,12 +19,12 @@ class Disclose
         }
         else
         {
-            if(DI('request')->getType() == 'json')self::discloseJson($result);
+            if(DI(Site::class)->responseType == 'json')self::discloseJson($result);
             else self::discloseTpl($result);
         }
     }
 
-    static private function discloseJson(array $result)
+    static private function discloseJson(array $result): void
     {
         $authToken = Auth::enforceRotation();
         if($authToken)
@@ -35,7 +37,7 @@ class Disclose
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
 
-    static private function discloseTpl(array $result)
+    static private function discloseTpl(array $result): void
     {
         DI('tpl.default')->render($result['tpl'], $result['data']);
     }

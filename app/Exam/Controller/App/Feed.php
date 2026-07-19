@@ -34,12 +34,6 @@ class Feed extends Controller implements ControllerInterface
 
     public function Data(): array | Error
     {
-        $user = $this->request->getUser();
-        $page = $this->request->page()??1;
-        $limit = $this->request->limit()??20;
-        $data = FeedBack::getListByPage($page, $limit,[
-            'fbuserid' => $user->userid,
-        ]);
         return [];
     }
 

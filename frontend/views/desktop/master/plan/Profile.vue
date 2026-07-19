@@ -42,7 +42,7 @@
 					<td>{{ member.pmname }}</td>
 					<th>性别</th>
 					<td>{{ member.pmsex }}</td>
-					<th>身份证号</th>
+					<th>通行证ID</th>
 					<td>{{ member.pmpassport }}</td>
 					<td rowspan="4"><img :src="member.pmphoto" width="90"></td>
 				</tr>
@@ -142,7 +142,7 @@ export default {
 			key:'pmname',
 			width:'100px'
 		},{
-			title:'身份证号',
+			title:'通行证ID',
 			key:'pmpassport',
 			width:"200px"
 		},{

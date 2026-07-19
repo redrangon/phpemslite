@@ -23,7 +23,8 @@
 				<lay-page v-model="page.current" v-model:limit="page.limit" :total="page.total"  @change="changePage" style="float:right;"></lay-page>
 			</template>
 			<template v-slot:operator="{ row }">
-				<lay-button size="xs" type="primary" @click="showModify(row)">编辑</lay-button>
+                <lay-button size="xs" type="primary" @click="showMember(row.ceid)">人员</lay-button>
+                <lay-button size="xs" type="primary" @click="showModify(row)">编辑</lay-button>
 				<lay-button size="xs" type="danger" @click="delCert(row.ceid)">删除</lay-button>
 			</template>
 		</lay-table>
@@ -118,7 +119,7 @@ export default {
 				title:'操作',
 				customSlot:"operator",
 				key:"operator",
-				width:"100"
+				width:"150px"
 			}],
 			dataSource:[],
 			search:{},
@@ -213,6 +214,9 @@ export default {
 			this.page.current = current;
 			this.page.limit = limit;
 			this.getData();
+		},
+        showMember:function(ceId){
+			this.$router.push(`/desktop/master/cert/member/`+ ceId);
 		},
 	}
 }

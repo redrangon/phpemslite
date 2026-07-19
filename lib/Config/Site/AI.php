@@ -7,7 +7,7 @@ class AI extends Config
 {
     public array $config = [
         'default' => [
-            'apiKey' => 'sk-111111111111111111',
+            'apiKey' => 'sk-d8d96f74cccf46dba5e46cc4bb09a1eb',
             'baseUrl' => 'https://dashscope.aliyuncs.com/compatible-mode/v1',
             'options' => [
                 'model' => 'qwen3.6-plus',

@@ -7,7 +7,7 @@
 						<span class="tabtitle">实名信息</span>
 					</template>
 					<div style="padding:20px">
-						<lay-quote v-if="user.userstatus <= 0">请先完成实名信息后再开始学习。务必正确填写姓名和身份证号，此信息将用来填入报名信息和发放证书，提交后将无法更改。</lay-quote>
+						<lay-quote v-if="user.userstatus <= 0">请先完成实名信息后再开始学习。务必正确填写姓名和通行证ID，此信息将用来填入报名信息和发放证书，提交后将无法更改。</lay-quote>
 						<lay-quote v-else-if="user.userstatus === 1">您的实名认证申请已提交，请等待审核。</lay-quote>
 						<lay-quote v-else-if="user.userstatus === 2">您的实名认证申请被拒绝，请核验认证信息后重新提交。</lay-quote>
 						<lay-quote v-else-if="user.userstatus === 3">您已完成实名认证，如需要修改实名信息，请联系管理员。</lay-quote>
@@ -19,8 +19,8 @@
 							<lay-form-item label="姓名" prop="usertruename" required>
 								<lay-input v-model="user.usertruename"></lay-input>
 							</lay-form-item>
-							<lay-form-item label="身份证号" prop="userpassport" required>
-								<lay-input v-model="user.userpassport"></lay-input>
+							<lay-form-item label="通行证ID" prop="userpassport" required>
+								<lay-input v-model="user.userpassport" disabled></lay-input>
 							</lay-form-item>
 							<lay-form-item label="&nbsp;">
 								<lay-button type="normal" @click="verifyUser()">提交</lay-button>
@@ -34,7 +34,7 @@
 							<lay-form-item label="姓名" prop="usertruename">
 								<lay-input v-model="user.usertruename" disabled></lay-input>
 							</lay-form-item>
-							<lay-form-item label="身份证号" prop="userpassport">
+							<lay-form-item label="通行证ID" prop="userpassport">
 								<lay-input v-model="user.userpassport" disabled></lay-input>
 							</lay-form-item>
 							<lay-form-item v-if= "user.userstatus === 1" label="&nbsp;">

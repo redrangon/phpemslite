@@ -19,7 +19,6 @@
  */
 
 namespace PHPEMS\Lib\Tpl ;
-use Countable;
 
 class Tpl {
 
@@ -155,7 +154,8 @@ class Tpl {
 	 * @param string $dir 目录路径
 	 * @return void
 	 */
-	protected function ensureDirectoryExists($dir) {
+	protected function ensureDirectoryExists(string $dir): void
+    {
 		if (!is_dir($dir)) {
 			mkdir($dir, 0755, true);
 		}
@@ -173,10 +173,11 @@ class Tpl {
 	 * 2. assign(['key' => 'value']) - 现代方式
 	 *
 	 * @param mixed $var 变量名或变量数组
-	 * @param mixed $value 变量值
+	 * @param mixed|null $value 变量值
 	 * @return self 支持链式调用
 	 */
-	public function assign($var, $value = null) {
+	public function assign(mixed $var, mixed $value = null): static
+    {
 		if (is_array($var) && $value === null) {
 			foreach ($var as $key => $val) {
 				$this->tpl_vars[$key] = $val;
@@ -191,20 +192,22 @@ class Tpl {
 	 * 分配模板变量（别名）
 	 *
 	 * @param mixed $var 变量名或变量数组
-	 * @param mixed $value 变量值
+	 * @param mixed|null $value 变量值
 	 * @return self
 	 */
-	public function with($var, $value = null) {
+	public function with(mixed $var, mixed $value = null): static
+    {
 		return $this->assign($var, $value);
 	}
 
 	/**
 	 * 移除模板变量
 	 *
-	 * @param string|array $keys 变量名或数组
+	 * @param array|string $keys 变量名或数组
 	 * @return self
 	 */
-	public function forget($keys) {
+	public function forget(array|string $keys): static
+    {
 		foreach ((array)$keys as $key) {
 			unset($this->tpl_vars[$key]);
 		}
@@ -216,7 +219,8 @@ class Tpl {
 	 *
 	 * @return array
 	 */
-	public function getVars() {
+	public function getVars(): array
+    {
 		return $this->tpl_vars;
 	}
 
@@ -224,11 +228,12 @@ class Tpl {
 	 * 获取单个模板变量
 	 *
 	 * @param string $key 变量名
-	 * @param mixed $default 默认值
+	 * @param mixed|null $default 默认值
 	 * @return mixed
 	 */
-	public function getVar($key, $default = null) {
-		return isset($this->tpl_vars[$key]) ? $this->tpl_vars[$key] : $default;
+	public function getVar(string $key, mixed $default = null): mixed
+    {
+		return $this->tpl_vars[$key] ?? $default;
 	}
 
 	// ============================================
@@ -242,7 +247,8 @@ class Tpl {
 	 * @param array $data 模板数据
 	 * @return void
 	 */
-	public function display($template, array $data = []) {
+	public function display(string $template, array $data = []): void
+    {
 		echo $this->fetch($template, $data);
 	}
 
@@ -253,7 +259,8 @@ class Tpl {
 	 * @param array $data 模板数据
 	 * @return string
 	 */
-	public function fetch($template, array $data = []) {
+	public function fetch(string $template, array $data = []): string
+    {
 		// 合并数据
 		if (!empty($data)) {
 			$this->assign($data);
@@ -279,7 +286,8 @@ class Tpl {
 	 * @param array $data 模板数据
 	 * @return string
 	 */
-	public function render($template, array $data = []) {
+	public function render(string $template, array $data = []): string
+    {
 		return $this->fetch($template, $data);
 	}
 
@@ -293,7 +301,8 @@ class Tpl {
 	 * @param string $template 模板名称
 	 * @return string
 	 */
-	protected function getTemplateFile($template) {
+	protected function getTemplateFile(string $template): string
+    {
 		return $this->template_dir . $template . '.tpl';
 	}
 
@@ -303,7 +312,8 @@ class Tpl {
 	 * @param string $template 模板名称
 	 * @return string
 	 */
-	protected function getCompileFile($template) {
+	protected function getCompileFile(string $template): string
+    {
 		$hash = md5($template);
 		$safeName = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $template);
 		return $this->compile_dir . $hash . '_' . $safeName . '.php';
@@ -316,7 +326,8 @@ class Tpl {
 	 * @param string $compileFile 编译文件路径
 	 * @return bool
 	 */
-	protected function needsCompile($templateFile, $compileFile) {
+	protected function needsCompile(string $templateFile, string $compileFile): bool
+    {
 		if (!file_exists($compileFile)) {
 			return true;
 		}
@@ -339,7 +350,8 @@ class Tpl {
 	 * @param string $compileFile 编译文件路径
 	 * @return void
 	 */
-	protected function compileTemplate($templateFile, $compileFile) {
+	protected function compileTemplate(string $templateFile, string $compileFile): void
+    {
 		$content = file_get_contents($templateFile);
 		$compiled = $this->compileContent($content);
 		file_put_contents($compileFile, $compiled);
@@ -351,7 +363,8 @@ class Tpl {
 	 * @param string $content 模板内容
 	 * @return string
 	 */
-	protected function compileContent($content) {
+	protected function compileContent(string $content): string
+    {
         // 处理 literal 标签，保护 JavaScript 等代码
         $content = $this->compileLiteral($content);
 
@@ -447,7 +460,8 @@ class Tpl {
 	 * @param string $content 模板内容
 	 * @return string
 	 */
-	protected function preservePhpCode($content) {
+	protected function preservePhpCode(string $content): string
+    {
 		return preg_replace_callback(
 				'#\{php\}(.*?)\{/php\}#s',
 				function($matches) {
@@ -465,7 +479,8 @@ class Tpl {
 	 * @param string $content 模板内容
 	 * @return string
 	 */
-	protected function restoreProtectCode($content) {
+	protected function restoreProtectCode(string $content): string
+    {
         foreach ($this->literal_blocks as $index => $code) {
             $content = str_replace(
                 "%%LITERAL_BLOCK_{$index}%%",
@@ -492,7 +507,8 @@ class Tpl {
 	 * @param string $content 模板内容
 	 * @return string
 	 */
-	protected function compileComments($content) {
+	protected function compileComments(string $content): string
+    {
 		return preg_replace('#\{\*.*?\*\}#s', '', $content);
 	}
 
@@ -502,7 +518,8 @@ class Tpl {
 	 * @param string $content 模板内容
 	 * @return string
 	 */
-	protected function compileVariables($content) {
+	protected function compileVariables(string $content): string
+    {
 		$ld = preg_quote($this->left_delimiter, '#');
 		$rd = preg_quote($this->right_delimiter, '#');
 
@@ -673,7 +690,8 @@ class Tpl {
 	 * @param string $args 标签参数
 	 * @return string
 	 */
-	protected function compileIncludeTag($args) {
+	protected function compileIncludeTag(string $args): string
+    {
 		preg_match('/file\s*=\s*["\']([^"\']+)["\']/', $args, $matches);
 		$file = $matches[1] ?? '';
 
@@ -768,7 +786,8 @@ class Tpl {
 	 * @param string $name 块名称
 	 * @return void
 	 */
-	public function startBlock(string $name) {
+	public function startBlock(string $name): void
+    {
 		ob_start();
 		$this->current_block = $name;
 	}
@@ -795,7 +814,7 @@ class Tpl {
 	 * @param string $childContent 子模板内容
 	 * @return string
 	 */
-	protected function mergeBlocks(string $parentContent, $childContent): string
+	protected function mergeBlocks(string $parentContent, string $childContent): string
 	{
 		foreach ($this->block_content as $name => $content) {
 			$pattern = "/<\?php echo \\\$this->getBlockContent\('{$name}'\); \?>/";
@@ -823,7 +842,8 @@ class Tpl {
 	 * @param array $args 参数数组
 	 * @return string
 	 */
-	public function callPlugin($name, array $args) {
+	public function callPlugin(string $name, array $args): string
+    {
 		if (isset($this->plugins[$name]) && is_callable($this->plugins[$name])) {
 			return call_user_func_array($this->plugins[$name], $args);
 		}
@@ -850,7 +870,8 @@ class Tpl {
 	 * @param string $modifier 修饰符
 	 * @return mixed
 	 */
-	public function applyModifier($value, string $modifier) {
+	public function applyModifier(mixed $value, string $modifier): mixed
+    {
 		$parts = explode(':', $modifier, 2);
 		$modName = trim($parts[0]);
 		$modParams = isset($parts[1]) ? trim($parts[1]) : '';
@@ -899,7 +920,8 @@ class Tpl {
 	 * @param string $var 变量名
 	 * @return string
 	 */
-	protected function convertDotToArrow($var) {
+	protected function convertDotToArrow(string $var): string
+    {
 		$parts = explode('.', $var);
 		$result = array_shift($parts);
 
@@ -922,7 +944,8 @@ class Tpl {
 	 * @param string $var 带美元符号的变量（如 $var 或 $var.prop）
 	 * @return string 转换后的变量（如 $var 或 $var['prop']）
 	 */
-	protected function convertVariableWithDollar($var) {
+	protected function convertVariableWithDollar(string $var): string
+    {
 		$varName = substr($var, 1); // 去掉 $ 符号
 		$converted = $this->convertDotToArrow($varName);
 		return '$' . $converted;
@@ -935,7 +958,8 @@ class Tpl {
 	 * @param string $varName 变量名（需要从匹配中移除）
 	 * @return array 修饰符数组
 	 */
-	protected function parseModifiers($fullMatch, $varName) {
+	protected function parseModifiers(string $fullMatch, string $varName): array
+    {
 		// 提取修饰符部分
 		$pattern = "#^\\{\\s*\\$([a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z0-9_]*|\\.\\d+)*)\\s*#";
 		$modifierPart = preg_replace($pattern, '', $fullMatch);
@@ -961,7 +985,8 @@ class Tpl {
 	 * @param array $modifiers 修饰符数组
 	 * @return string 修饰符链调用代码
 	 */
-	protected function buildModifierChain($varAccess, $modifiers) {
+	protected function buildModifierChain(string $varAccess, array $modifiers): string
+    {
 		$phpVar = $varAccess;
 		foreach ($modifiers as $modifier) {
 			$phpVar = "\$this->applyModifier({$phpVar}, '{$modifier}')";
@@ -975,7 +1000,8 @@ class Tpl {
 	 * @param string $expression 条件表达式
 	 * @return string
 	 */
-	protected function processExpressionVariables($expression) {
+	protected function processExpressionVariables(string $expression): string
+    {
 		// 匹配表达式中的变量 $var 或 $var.prop 或 $var.0.prop
 		return preg_replace_callback(
 			'/\$[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*|\.\\d+)*/',
@@ -997,7 +1023,8 @@ class Tpl {
 	 * @param string $right 右定界符
 	 * @return self
 	 */
-	public function setDelimiters($left, $right) {
+	public function setDelimiters(string $left, string $right): static
+    {
 		$this->left_delimiter = $left;
 		$this->right_delimiter = $right;
 		return $this;
@@ -1008,7 +1035,8 @@ class Tpl {
 	 *
 	 * @return string
 	 */
-	public function getLeftDelimiter() {
+	public function getLeftDelimiter(): string
+    {
 		return $this->left_delimiter;
 	}
 
@@ -1017,7 +1045,8 @@ class Tpl {
 	 *
 	 * @return string
 	 */
-	public function getRightDelimiter() {
+	public function getRightDelimiter(): string
+    {
 		return $this->right_delimiter;
 	}
 
@@ -1027,7 +1056,8 @@ class Tpl {
 	 * @param string $dir 目录路径
 	 * @return self
 	 */
-	public function setTemplateDir($dir) {
+	public function setTemplateDir($dir): static
+    {
 		$this->template_dir = rtrim($dir, '/') . '/';
 		$this->ensureDirectoryExists($this->template_dir);
 		return $this;
@@ -1039,7 +1069,8 @@ class Tpl {
 	 * @param string $dir 目录路径
 	 * @return self
 	 */
-	public function setCompileDir($dir) {
+	public function setCompileDir(string $dir): static
+    {
 		$this->compile_dir = rtrim($dir, '/') . '/';
 		$this->ensureDirectoryExists($this->compile_dir);
 		return $this;
@@ -1050,7 +1081,8 @@ class Tpl {
 	 *
 	 * @return self
 	 */
-	public function enableCompileCheck() {
+	public function enableCompileCheck(): static
+    {
 		$this->compile_check = true;
 		return $this;
 	}
@@ -1060,7 +1092,8 @@ class Tpl {
 	 *
 	 * @return self
 	 */
-	public function disableCompileCheck() {
+	public function disableCompileCheck(): static
+    {
 		$this->compile_check = false;
 		return $this;
 	}
@@ -1075,7 +1108,8 @@ class Tpl {
 	 * @param string|null $template 模板名称
 	 * @return int
 	 */
-	public function clearCompiledCache($template = null) {
+	public function clearCompiledCache($template = null): int
+    {
 		$count = 0;
 		$dir = $this->compile_dir;
 
@@ -1105,7 +1139,8 @@ class Tpl {
 	 *
 	 * @return int
 	 */
-	public function clearAllCache() {
+	public function clearAllCache(): int
+    {
 		return $this->clearCompiledCache();
 	}
 

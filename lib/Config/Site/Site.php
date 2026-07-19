@@ -12,11 +12,11 @@ class Site extends Config
             'responseType' => 'json',
             'randCodeTTFPath' => PEPATH . '/resources/styles/phpems/fonts/DejaVuSans.ttf',
             'fontRootPath' => PEPATH . '/resources/styles/phpems/fonts',
-            'certImageSavePath' => PEPATH . '/storage/cert/',
-            'faceImageSavePath' => PEPATH . '/storage/face/',
+            'certImageSavePath' => PEPATH . '/storage/cert',
+            'faceImageSavePath' => PEPATH . '/storage/face',
             'errorLogPath' => PEPATH . '/storage/logs/error.log',
             'AILogPath' => PEPATH . '/storage/logs/ai.log',
-            'tmpDir' => PEPATH . '/storage/tmp/',
+            'tmpDir' => PEPATH . '/storage/tmp',
             'wasmKeyFile' => PEPATH . '/secret/wasm/wasm_keys.php'
         ]
     ];

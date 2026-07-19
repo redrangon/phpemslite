@@ -68,7 +68,7 @@ const submit = async function () {
 				captchaId: model.value.randid
 			});
 			layer.msg('登录成功');
-			localStorage.setItem('token', authData.token);
+            authStore.updateToken(authData.token);
 			await authStore.getCurrentUser();
 			await router.push('/desktop/home');
 		} catch (e) {

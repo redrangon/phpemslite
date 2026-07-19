@@ -6,6 +6,7 @@ use PHPEMS\App\Course\Service\CourseService;
 use PHPEMS\App\Course\Service\Model\CourseLog;
 use PHPEMS\App\Course\Service\Model\CourseSession;
 use PHPEMS\App\Course\Service\Model\CourseSubject;
+use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
 use PHPEMS\Lib\Rules\Error;
@@ -17,9 +18,9 @@ class Course extends Controller implements ControllerInterface
     protected CourseSession $session;
     protected CourseSubject $subject;
 
-    public function __construct()
+    public function __construct(protected RequestInterface $request)
     {
-        parent::__construct();
+        parent::__construct($this->request);
         $this->session = $this->request->getStore('session');
         $this->subject = $this->request->getStore('subject');
 

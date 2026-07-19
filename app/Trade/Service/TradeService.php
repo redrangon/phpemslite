@@ -2,7 +2,6 @@
 
 namespace PHPEMS\App\Trade\Service;
 
-use PHPEMS\App\Plan\Service\Model\PlanMember;
 use PHPEMS\App\Trade\Service\Model\TradeOrder;
 use PHPEMS\App\User\Service\Model\UserMoney;
 
@@ -27,6 +26,7 @@ class TradeService
                         }
                     ]);
                     $order->orderStatus = 2;
+                    $order->orderPayType = $payType;
                     $order->save();
                     return true;
                 });

@@ -3,17 +3,19 @@ import axios from 'axios';
 import router from '@/router/index.js';
 import {decrypt, encrypt} from '@/framework/security/ajax.js';
 import Config from '@/config';
+import { useAuthStore } from '@/stores/auth';
 
 const Service = axios.create({
 	baseURL: Config.url,
 	timeout: 180000,
 	withCredentials: true
 });
-
+const authStore = useAuthStore();
 // 请求拦截器
 Service.interceptors.request.use(async (config) => {
+	const token = authStore.token;
 	// 设置 token
-	config.headers['X-Auth-Token'] = localStorage.getItem('token') || '';
+	config.headers['X-Auth-Token'] = token || '';
 
 	// 文件上传：不加密
 	if (config.data instanceof FormData) {
@@ -37,18 +39,20 @@ Service.interceptors.request.use(async (config) => {
 Service.interceptors.response.use(async (response) => {
 	// 文件下载：直接返回 Blob
 	if (response.data instanceof Blob) {
-		return response.data;
+		const contentType = response.headers['content-type'] || '';
+		if (contentType.includes('application/json')) {
+			response.data = JSON.parse(await response.data.text());
+		}
+		else return response.data;
 	}
 
-	let resData = response.data;
-
-	if(resData.keyId)
+	const resData = response.data;
+	if (resData?.token) {
+		authStore.updateToken(resData.token);
+	}
+	if(resData?.keyId)
 	{
 		resData.data = decrypt(resData.data,resData.keyId);
-	}
-
-	if (resData?.token) {
-		localStorage.setItem('token', resData.token);
 	}
 	return resData;
 }, (error) => {

@@ -2,14 +2,15 @@
 
 namespace PHPEMS\App\Exam\Controller\Master;
 
+use Exception;
 use PHPEMS\App\Exam\Service\ExamService;
-use PHPEMS\App\Exam\Service\Model\ExamPaper;
 use PHPEMS\App\Exam\Service\Model\Relation;
-use PHPEMS\Lib\Core\Request\Json;
+use PHPEMS\App\Exam\Service\QuestionImporter;
 use PHPEMS\Lib\DataBase\QueryBuilder;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
 use PHPEMS\Lib\Rules\Error;
+use PHPEMS\Lib\Utils\FileProvider;
 
 class Question extends Controller implements ControllerInterface
 {
@@ -25,7 +26,8 @@ class Question extends Controller implements ControllerInterface
             'delete' => 'Delete',
             'delchildren' => 'DeleteChildren',
             'add' => 'Add',
-            'setrelation' => 'SetRelation'
+            'setrelation' => 'SetRelation',
+            'import' => 'Import',
         ];
     }
 
@@ -76,6 +78,23 @@ class Question extends Controller implements ControllerInterface
             if($search['range'][1]??false)$query->where('questioncreatetime', '<=',strtotime($search['range'][1]));
         }
         return $query;
+    }
+
+    public function Import():array | Error
+    {
+        $service = new FileProvider();
+        $file = $this->request->getFile('file');
+        try{
+            $result = $service->upload($file);
+            if($result['success'])
+            {
+                $result = DI(QuestionImporter::class, ['filePath' => $result['path']])->importQuestion();
+                return ['msg' => '导入成功'];
+            }
+            else return error(['error' => $result['error']]);
+        }catch (Exception $e){
+            return error(['error' => $e->getMessage()]);
+        }
     }
 
     public function SetRelation():array | Error
@@ -259,9 +278,9 @@ class Question extends Controller implements ControllerInterface
     {
         $questionId = $this->request->questionid??null;
         if(!$questionId)return error(['error' => '记录不存在']);
-        $question = \PHPEMS\App\Exam\Service\Model\Question::find($questionId)->getRaw();
-        if(!$question['questionid'])return error(['error' => '记录不存在']);
-        if($question['questionisparent'])
+        $question = \PHPEMS\App\Exam\Service\Model\Question::find($questionId);
+        if(!$question->questionId)return error(['error' => '记录不存在']);
+        if($question->questionIsParent)
         {
             $children = \PHPEMS\App\Exam\Service\Model\Question::getQuery()->orderBy('questionsequence','desc')->groupBy('questionid','ASC')
                 ->select(['questionid','questiontype','question','questionselect','questionselectnumber','questionselecttype','questionanswer','questiondescribe','questionsequence','questionlevel','questionhtml'])
@@ -270,8 +289,8 @@ class Question extends Controller implements ControllerInterface
             array_walk($children,function(&$item){
                 $item['questionhtml'] = json_decode($item['questionhtml'],true)??[];
             });
-            $question['data'] = $children;
+            $question->data = $children;
         }
-        return $question;
+        return $question->getRaw();
     }
 }

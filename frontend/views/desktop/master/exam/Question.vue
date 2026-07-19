@@ -55,12 +55,32 @@
 		</lay-space>
 	</lay-card>
 	<lay-card>
-        <lay-quote>添加或删除试题后，请到科目管理中，更新对应科目的缓存。</lay-quote>
+        <lay-quote>添加或删除试题后，请到科目管理中，更新对应科目的缓存。使用Excel文件导入时，请使用 |--| 来隔开选项，excel文件内不支持图片。带有图片的试题请使用Word文档导入。也可以使用AI生成JSON格式保存为.json文件导入【<a href="javascript:" @click="showAIPromptDailog = true;">查看AI提示词</a>】。</lay-quote>
 		<lay-table id="questionid" ref="tableRef" v-model:selected-keys="selectedKeys" :columns="columns" :data-source="dataSource" :default-toolbar="false" even>
 			<template #toolbar>
-				<lay-button size="sm" type="primary" @click="model = {};showAddPage = true">添加试题</lay-button>
-                <lay-button size="sm" type="primary" @click="importQuestion">导入试题</lay-button>
-                <a href="attach/question.xlsx" style="margin-left:10px;"><lay-button size="sm" type="danger">下载试题模板</lay-button></a>
+                <lay-space>
+                    <lay-button size="sm" type="primary" @click="model = {};showAddPage = true">添加试题</lay-button>
+                    <lay-button-group>
+                        <lay-button type="primary" size="sm">导入试题</lay-button>
+                        <lay-dropdown placement="bottom-end">
+                            <lay-button size="sm" type="primary">
+                                <lay-icon type="layui-icon-down" size="8"></lay-icon>
+                            </lay-button>
+                            <template #content>
+                                <lay-dropdown-menu style="padding:10px 15px;">
+                                    <lay-dropdown-menu-item @click="importQuestion()">Excel(Xlsx)导入</lay-dropdown-menu-item>
+                                    <lay-dropdown-menu-item @click="importQuestion('json')">JSON(json)导入</lay-dropdown-menu-item>
+                                    <lay-dropdown-menu-item @click="importQuestion('docx')">Word(Docx)导入</lay-dropdown-menu-item>
+                                </lay-dropdown-menu>
+                            </template>
+                        </lay-dropdown>
+                    </lay-button-group>
+                    <a href="public/attach/question.xlsx">
+                        <lay-button size="sm" type="danger">
+                            试题模板
+                        </lay-button>
+                    </a>
+                </lay-space>
 			</template>
 			<template #footer>
 				<lay-row>
@@ -80,7 +100,6 @@
 			</template>
 			<template v-slot:operator="{ row }">
 				<lay-button size="xs" type="primary" @click="showQuestion(row)">预览</lay-button>
-				<lay-button size="xs" type="primary" @click="refreshQuestion(row.questionid)">更新</lay-button>
 				<lay-button size="xs" type="primary" @click="showModify(row)">编辑</lay-button>
 				<lay-button size="xs" type="danger" @click="delQuestion(row.questionid)">删除</lay-button>
 			</template>
@@ -234,6 +253,52 @@
 			</lay-form>
 		</div>
 	</lay-layer>
+    <lay-layer v-model="showAIPromptDailog"  :area="['800px']" title="AI提示词">
+        <div style="padding: 20px 50px 20px 20px;">
+            <pre>
+                # 任务
+                返回一个json格式的提示词，格式如下：
+                [
+                    {
+                        普通试题格式
+                    },
+                    {
+                        题帽题格式
+                    }
+                ]
+                # 普通试题格式
+                {
+                    questiontype:1,(1单选题2多选题3不定项选择题4判断题5填空题6简答题，还有其他题型请修改提示词匹配),
+                    question: "题干",
+                    questionselect: "备选项"(数组形式，主观题空数组即可),
+                    questionanswer: "参考答案，多选题以ABC这样的连写方式",
+                    questiondescribe: "习题解析",
+                    questionlevel: 1（1简单2中等3困难）,
+                    questionpoint: |知识点ID|(固定写|知识点ID|方便批量替换),
+                }
+                # 题帽题格式,相同字段名称的与普通试题格式一样
+                {
+                    questiontype:2,
+                    question: "题帽",
+                    questionlevel: 1,
+                    questionpoint: |知识点ID|,
+                    children:[
+                        {
+                            questiontype:1,
+                            question: "题干",
+                            questionselect: "备选项",
+                            questionanswer: "参考答案",
+                            questiondescribe: "习题解析",
+                            questionlevel: 1,
+                        }
+                    ]
+                }
+                # 内容要求
+                请以 初中生物内容为基础，生成20道试题，自由搭配普通试题和题帽题数量。
+                务必保证JSON格式正确，请勿添加多余字段。
+            </pre>
+        </div>
+    </lay-layer>
 </template>
 <style scoped></style>
 <script>
@@ -277,7 +342,7 @@ export default {
 				title: '操作',
 				customSlot: "operator",
 				key: "operator",
-				width: "200"
+				width: "150px"
 			}],
 			editorOn:false,
 			dataSource:[],
@@ -298,6 +363,7 @@ export default {
 			modelModify:{},
 			modelShow:{},
             levels:{'1':'易','2':'中','3':'难'},
+            showAIPromptDailog:false,
 			addPageBtns:[
 				{
 					text: "确认",
@@ -411,19 +477,21 @@ export default {
 				await examApi.modifyQuestion(this.modelModify)
 			});
 		},
-        importQuestion:function(){
+        importQuestion:function(fileType = 'xlsx'){
             let input = document.createElement('input');
 			input.setAttribute('type', 'file');
-			input.setAttribute('accept', '.xlsx');
+			input.setAttribute('accept', `.${fileType}`);
 			input.click();
 			input.onchange = async () => {
-				let formData = new FormData();
-				const id = layer.load(0);
-				formData.append('api','importquestions');
-				formData.append('file', input.files[0], input.files[0].name );
-				await examApi.importQuestion(formData);
-				layer.close(id);
-				this.getData();
+				const formData = new FormData();
+                try{
+                    formData.append('file', input.files[0], input.files[0].name );
+                    await examApi.importQuestion(formData);
+                }catch (e) {
+                    layer.confirm(e.message || '操作失败');
+                }finally {
+                    await this.getData();
+                }
 			};
         },
         exportQuestion:async function(){

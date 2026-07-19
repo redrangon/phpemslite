@@ -9,7 +9,8 @@ class Attach extends Config
     public array $config = [
         'default' => [
             'privateSavePath' => PEPATH . '/storage/attach/private',
-            'publicSavePath' => PEPATH . '/storage/attach/public'
+            'publicSavePath' => PEPATH . '/storage/attach/public',
+            'convertSavePath' => PEPATH . '/storage/attach/convert',
         ]
     ];
 }

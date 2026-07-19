@@ -18,13 +18,8 @@ const handleResponse = (response) => {
     if (code === 200) {
         return data;
     }
-    const displayMsg = import.meta.env.PROD
-        ? '请求失败，请稍后重试' : (response.error || '请求失败');
-    const error = new Error(displayMsg);
+    const error = new Error(response?.error || msg);
     error.code = code;
-    if (import.meta.env.DEV) {
-        error.msg = msg;
-    }
     if(error.code === 301 || error.code === 311)
     {
         if(error.code === 311)
@@ -40,7 +35,6 @@ const handleResponse = (response) => {
         {
             router.push('/desktop/home/auth/login');
         }
-        return ;
     }
     throw error;
 };
@@ -53,7 +47,7 @@ const handleResponse = (response) => {
 const wrapError = (error) => {
     // 如果已经是业务错误（有 code），直接抛出
     if (error.code) {
-
+        throw error;
     }
 
     const displayMsg = import.meta.env.PROD

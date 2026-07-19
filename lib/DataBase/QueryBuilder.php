@@ -3,7 +3,7 @@
 namespace PHPEMS\Lib\DataBase;
 
 use Closure;
-
+use PDOException;
 class QueryBuilder
 {
     protected $connection;
@@ -298,7 +298,7 @@ class QueryBuilder
     public function delete(): int
     {
         if (empty($this->wheres)) {
-            throw new \LogicException('Delete without where clause is not allowed.');
+            throw new \PDOException('Delete without where clause is not allowed.');
         }
         $sql = "DELETE FROM {$this->table}";
         [$whereSql, $whereBindings] = $this->compileWheres();

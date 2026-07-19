@@ -70,7 +70,7 @@
 								<lay-button size="xs" type="normal" @click="showQuestion(row)">查看</lay-button>
 							</template>
 						</lay-table>
-						<lay-page v-if="page.total > page.limit" v-model="page.current" theme="blue" :limit="page.limit" :total="page.total" style="float:right;" @change="changePage"></lay-page>
+						<lay-page v-model="page.current" theme="blue" :limit="page.limit" :total="page.total" style="float:right;" @change="changePage"></lay-page>
 					</lay-container>
 				</lay-tab-item>				
 			</lay-tab>

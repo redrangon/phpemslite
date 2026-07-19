@@ -7,7 +7,7 @@ use PHPEMS\Lib\Face\Drivers\TestFace;
 use Exception;
 class FaceProvider
 {
-    protected static $instance = null;
+    protected static ?self $instance = null;
     protected ?FaceInterface $faceDriver = null;
 
     private function __construct()
@@ -36,15 +36,14 @@ class FaceProvider
     {
         $imageData = (new FaceVerify($existingHashes))->validate($imageData);
         $name = bin2hex(random_bytes(16)).'.png';
-        $targetDir = (new Site())->faceImageSavePath."/".$subDir?:date('Ymd');
+        $targetDir = (new Site())->faceImageSavePath."/".($subDir?:date('Ymd'));
         if (!is_dir($targetDir)) {
-            // mkdir 错误检查
             if (!mkdir($targetDir, 0755, true) && !is_dir($targetDir)) {
                 throw new Exception("人脸信息保存失败");
             }
         }
         file_put_contents($targetDir."/".$name,$imageData);
-        $relativePath = ltrim(str_replace(PEPATH, '', $targetDir."/".$name), DIRECTORY_SEPARATOR);
+        $relativePath = ltrim(str_replace(PEPATH, '.', $targetDir."/".$name), DIRECTORY_SEPARATOR);
         return str_replace(DIRECTORY_SEPARATOR, '/', $relativePath);
     }
 }

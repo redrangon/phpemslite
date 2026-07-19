@@ -54,6 +54,7 @@ class Subject extends Controller implements ControllerInterface
             'csdescribe' => $this->request->csdescribe??"",
             'csprogress' => $this->request->csprogress??0,
             'csfacetime' => $this->request->csfacetime??0,
+            'cstext' => $this->request->cstext??"",
         ];
         // TODO: 实现添加逻辑
         // 示例：
@@ -80,6 +81,7 @@ class Subject extends Controller implements ControllerInterface
             'csdescribe' => $this->request->csdescribe??null,
             'csprogress' => $this->request->csprogress??null,
             'csfacetime' => $this->request->csfacetime??0,
+            'cstext' => $this->request->cstext??"",
         ];
         $data = array_filter($data,function ($item){
             return !is_null($item);

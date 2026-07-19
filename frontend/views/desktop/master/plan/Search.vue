@@ -3,7 +3,7 @@
 		<lay-space size="lg">
 			<lay-space></lay-space>
 			<lay-space>
-				<span style='width:70px'> 身份证号</span><lay-input v-model="search.passport" allow-clear style="width: 180px;"></lay-input>
+				<span style='width:70px'> 通行证ID</span><lay-input v-model="search.passport" allow-clear style="width: 180px;"></lay-input>
 			</lay-space>
 			<lay-space>
 				<lay-button type="primary" @click="gosearch">搜索</lay-button>
@@ -233,7 +233,7 @@ export default {
 		},
 		gosearch:function(){
 			if(!this.search.passport){
-				layer.msg('请输入身份证号');
+				layer.msg('请输入通行证ID');
 				return;
 			}
 			if(this.searchType == 'plan')

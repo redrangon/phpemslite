@@ -14,6 +14,7 @@ use PHPEMS\App\Exam\Service\Model\Subject;
 use PHPEMS\App\User\Service\Model\UserExpense;
 use PHPEMS\App\User\Service\Model\UserMoney;
 use PHPEMS\Lib\Core\Request\Json;
+use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
 use PHPEMS\Lib\Rules\Error;
@@ -26,24 +27,11 @@ class Basic extends Controller implements ControllerInterface
     protected ExamSession $session;
     protected \PHPEMS\App\Exam\Service\Model\Basic $basic;
 
-    public function __construct()
+    public function __construct(protected RequestInterface $request)
     {
-        parent::__construct();
-        $user = $this->request->getUser();
-        $this->session = ExamSession::findByPassport($user->userpassport);
+        parent::__construct($this->request);
+        $this->session = $this->request->getStore('session');
         $this->basic = $this->request->getStore('basic');
-        $this->basic->basicexam = json_decode($this->basic->basicexam, true);
-        $this->basic->basicpoint = json_decode($this->basic->basicpoint, true);
-        $intime = 1;
-        if(($this->basic->basicexam['opentime']??false) && strtotime($this->basic->basicexam['opentime']) > TIME)
-        {
-            $intime = 0;
-        }
-        if(($this->basic->basicexam['closetime']??false) && strtotime($this->basic->basicexam['closetime']) < TIME)
-        {
-            $intime = 0;
-        }
-        $this->basic->intime = $intime;
     }
 
     static public function getRoutes():array

@@ -136,6 +136,8 @@ class Member extends Controller implements ControllerInterface
         $data = [
             'mname' => $this->request->mname??'',
             'mphoto' => $this->request->mphoto??'',
+            'mphone' => $this->request->mphone??'',
+            'maddress' => $this->request->maddress??'',
             'mpassport' => $this->request->mpassport??'',
             'mpassportimg' => $this->request->mpassportimg??'',
             'msex' => $this->request->msex??'',
@@ -169,6 +171,8 @@ class Member extends Controller implements ControllerInterface
         $data = [
             'mname' => $this->request->mname??null,
             'mphoto' => $this->request->mphoto??null,
+            'mphone' => $this->request->mphone??null,
+            'maddress' => $this->request->maddress??null,
             'mpassport' => $this->request->mpassport??null,
             'mpassportimg' => $this->request->mpassportimg??null,
             'msex' => $this->request->msex??null,

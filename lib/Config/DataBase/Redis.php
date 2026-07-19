@@ -6,7 +6,7 @@ use PHPEMS\Lib\Config\Config;
 
 class Redis extends Config
 {
-    public $config = [
+    public array $config = [
         'default' => [
             'name' => 'redisDefault',
             'host' => '127.0.0.1',

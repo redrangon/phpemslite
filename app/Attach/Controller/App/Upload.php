@@ -32,9 +32,8 @@ class Upload extends Controller implements ControllerInterface
 
     public function Index():array | Error
     {
-        $request = DI('request');
         $service = new FileProvider();
-        $file = $request->getFile('file');
+        $file = $this->request->getFile('file');
         try{
             $result = $service->upload($file);
             if($result['success'])

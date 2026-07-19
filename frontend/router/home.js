@@ -218,14 +218,16 @@ export default [
                 path:'history',
                 component:() => import('../views/desktop/home/exam/History.vue'),
                 meta:{
-                    lm:"3"
+                    lm:"3",
+                    keepAlive: true,
                 }
             },
             {
                 path:'question',
                 component:() => import('../views/desktop/home/exam/Question.vue'),
                 meta:{
-                    lm:"5"
+                    lm:"5",
+                    keepAlive:true,
                 }
             }
         ]

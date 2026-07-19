@@ -19,7 +19,7 @@
 			</template>
 			<template v-slot:operator="{ row }">
 				<lay-button size="xs" type="primary" @click="showQuestion(row.fbquestionid)">试题</lay-button>
-				<lay-button size="xs" type="primary" @click="signFeedback(row.fbid)">办结</lay-button>
+				<lay-button size="xs" type="primary" @click="signFeedback(row.fbid)" v-if="row.fbstatus === 0">办结</lay-button>
 				<lay-button size="xs" type="danger" @click="delFeedback(row.fbid)">删除</lay-button>
 			</template>
 		</lay-table>
@@ -104,9 +104,13 @@ export default {
 			},null,null)
 		},
 		showQuestion:async function(id){
-			const data = await examApi.getQuestion(id);
-			if(data.questionparent > 0)this.$router.push('/desktop/master/exam/rowsquestions/' + data.questionparent);
-			else this.$router.push({path:'/desktop/master/exam/questions',query:{questionid:id}});
+            try{
+                const data = await examApi.getQuestion(id);
+                if(data.questionparent > 0)this.$router.push('/desktop/master/exam/rowsquestions/' + data.questionparent);
+                else this.$router.push({path:'/desktop/master/exam/questions',query:{questionid:id}});
+            }catch (e) {
+                layer.msg('未找到该试题');
+            }
 		},
 		changePage:function({ current, limit }){
 			this.page.current = current

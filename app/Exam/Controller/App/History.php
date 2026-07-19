@@ -7,6 +7,7 @@ use PHPEMS\App\Exam\Service\Model\Basic;
 use PHPEMS\App\Exam\Service\Model\ExamSession;
 use PHPEMS\App\Exam\Service\Model\HistoryDetail;
 use PHPEMS\App\Exam\Service\Model\Point;
+use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
 use PHPEMS\Lib\Rules\Error;
@@ -18,13 +19,11 @@ class History extends Controller implements ControllerInterface
     protected ExamSession $session;
     protected Basic $basic;
 
-    public function __construct()
+    public function __construct(protected RequestInterface $request)
     {
-        parent::__construct();
-        $this->basic = $this->request->getStore('basic');
+        parent::__construct($this->request);
         $this->session = $this->request->getStore('session');
-        $this->basic->basicexam = json_decode($this->basic->basicexam, true);
-        $this->basic->basicpoint = json_decode($this->basic->basicpoint, true);
+        $this->basic = $this->request->getStore('basic');
     }
 
     static public function getRoutes():array

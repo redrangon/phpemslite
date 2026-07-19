@@ -39,6 +39,7 @@ const customUpload = (file, insertFn) => {
 
 }
 const editorConfig = {
+    autoFocus:false,
 	MENU_CONF:{
 		uploadImage: {
 			customUpload
@@ -60,6 +61,5 @@ const handleChange = (editor) => {
 }
 const handleCreated = (editor) => {
 	editorRef.value = editor // 记录 editor 实例，重要！
-    console.log(editor.getAllMenuKeys());
 }
 </script>

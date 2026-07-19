@@ -9,6 +9,7 @@ use PHPEMS\App\Exam\Service\Model\Favor;
 use PHPEMS\App\Exam\Service\Model\Point;
 use PHPEMS\App\Exam\Service\Model\Question;
 use PHPEMS\App\Exam\Service\Model\Section;
+use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
 use PHPEMS\Lib\Rules\Error;
@@ -20,13 +21,11 @@ class Exercise extends Controller implements ControllerInterface
     protected ExamSession $session;
     protected Basic $basic;
 
-    public function __construct()
+    public function __construct(protected RequestInterface $request)
     {
-        parent::__construct();
-        $this->basic = $this->request->getStore('basic');
+        parent::__construct($this->request);
         $this->session = $this->request->getStore('session');
-        $this->basic->basicexam = json_decode($this->basic->basicexam, true);
-        $this->basic->basicpoint = json_decode($this->basic->basicpoint, true);
+        $this->basic = $this->request->getStore('basic');
         if($this->basic->basicexam['model'] == 2)
         {
             throw new \Exception('正式考试期间不能进入练习');

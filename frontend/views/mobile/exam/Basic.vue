@@ -74,7 +74,7 @@
         },
         async mounted() {
 	        this.basic = await examApi.getExamBasic();
-            if(this.basic.basicexam?.model === 2)this.$router.replace('/mobile/core/exam');
+            if(this.basic.basicexam?.model === 2)this.$router.replace('/mobile/core/exam/exam');
 		},
         methods: {
             //

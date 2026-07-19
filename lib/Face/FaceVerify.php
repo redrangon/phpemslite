@@ -2,7 +2,7 @@
 
 namespace PHPEMS\Lib\Face;
 
-use Mockery\Exception;
+use Exception;
 
 class FaceVerify
 {

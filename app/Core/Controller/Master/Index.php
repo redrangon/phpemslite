@@ -30,8 +30,6 @@ class Index extends Controller implements ControllerInterface
 
     public function Index(): array
     {
-        return [
-            'tpl' => 'Index'
-        ];
+        return [];
     }
 }

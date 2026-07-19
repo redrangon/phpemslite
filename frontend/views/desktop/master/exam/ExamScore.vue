@@ -5,7 +5,7 @@
 				<lay-space size="lg">
 					<lay-space></lay-space>
 					<lay-space>
-						<span style='width:70px'> 身份证号</span><lay-input v-model="search.ehpassport" allow-clear style="width: 180px;"></lay-input>
+						<span style='width:70px'> 通行证ID</span><lay-input v-model="search.ehpassport" allow-clear style="width: 180px;"></lay-input>
 					</lay-space>
 					<lay-space>
 						<span style='width:70px'> 考试分数</span>
@@ -164,7 +164,7 @@ export default {
 				key:'mname',
 				width:'120px'
 			},{
-				title:'身份证号',
+				title:'通行证ID',
 				key:'ehpassport'
 			},{
 				title:'分数',

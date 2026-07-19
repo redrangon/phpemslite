@@ -47,7 +47,7 @@ export default {
 	mixins:[baseMixin],
     data() {
         return {
-            histories:{},
+            histories:[],
             tabCurrent:0,
             loading: false,
             finished: false,

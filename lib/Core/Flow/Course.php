@@ -4,13 +4,17 @@ namespace PHPEMS\Lib\Core\Flow;
 
 use PHPEMS\App\Course\Service\Model\CourseSession;
 use PHPEMS\App\Course\Service\Model\CourseSubject;
+use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Rules\Error;
 
 class Course
 {
+    public function __construct(
+        private readonly RequestInterface $request
+    ){}
     private function init():CourseSession | Error
     {
-        $user = DI('request')->getUser();
+        $user = $this->request->getUser();
         $session = CourseSession::findByPassport($user->userpassport);
         if(!$session->csnid) {
             return error(['error' => '会话不存在']);
@@ -19,8 +23,8 @@ class Course
         if(!$subject->csid) {
             return error(['error' => '课程不存在']);
         }
-        DI('request')->setStore('session', $session);
-        DI('request')->setStore('subject', $subject);
+        $this->request->setStore('session', $session);
+        $this->request->setStore('subject', $subject);
         return $session;
     }
 

@@ -137,7 +137,7 @@
 			</lay-form>
 		</div>
 	</lay-layer>
-	<lay-layer v-model="showAddPage" :area="['800px']" :btn="showAddPageBtn" title="添加考场">
+	<lay-layer v-model="showAddPage" :area="['960px']" :btn="showAddPageBtn" title="添加考场">
 		<div style="padding: 20px 50px 20px 20px;">
 			<lay-form :model="model" :pane="false" size="md" :labelWidth="100" class="form" ref="addPageFrom">
 				<lay-form-item label="考场名称" prop="basic" required>
@@ -151,6 +151,15 @@
 						<lay-select-option v-for="(subject,sid) in subjects" :key="Number(sid)" :value="Number(sid)" :label="subject"></lay-select-option>
 					</lay-select>
 				</lay-form-item>
+                <lay-form-item label="人脸对比时间" prop="basicfacetime">
+                    <lay-radio v-model="model.basicfacetime" :value="0" label="不验证" name="basicfacetime"></lay-radio>
+                    <lay-radio v-model="model.basicfacetime" :value="10" label="10分钟" name="basicfacetime"></lay-radio>
+                    <lay-radio v-model="model.basicfacetime" :value="20" label="20分钟" name="basicfacetime"></lay-radio>
+                    <lay-radio v-model="model.basicfacetime" :value="30" label="30分钟" name="basicfacetime"></lay-radio>
+                    <lay-radio v-model="model.basicfacetime" :value="40" label="40分钟" name="basicfacetime"></lay-radio>
+                    <lay-radio v-model="model.basicfacetime" :value="50" label="50分钟" name="basicfacetime"></lay-radio>
+                    <lay-radio v-model="model.basicfacetime" :value="60" label="60分钟" name="basicfacetime"></lay-radio>
+                </lay-form-item>
 				<lay-form-item label="考场简介" prop="basicdescribe">
 					<lay-textarea placeholder="请输入考场简介" v-model="model.basicdescribe"></lay-textarea>
 				</lay-form-item>
@@ -160,7 +169,7 @@
 			</lay-form>
 		</div>
 	</lay-layer>
-	<lay-layer v-model="showModifyPage" :area="['800px']" :btn="showModifyPageBtn" title="编辑考场">
+	<lay-layer v-model="showModifyPage" :area="['960px']" :btn="showModifyPageBtn" title="编辑考场">
 		<div style="padding: 20px 50px 20px 20px;">
 			<lay-form :model="modify" :pane="false" size="md" :labelWidth="100" class="form" ref="modifyPageFrom">
 				<lay-form-item label="考场名称" prop="basic" required>
@@ -174,6 +183,15 @@
 						<lay-select-option v-for="(subject,sid) in subjects" :key="Number(sid)" :value="Number(sid)" :label="subject"></lay-select-option>
 					</lay-select>
 				</lay-form-item>
+                <lay-form-item label="人脸对比时间" prop="basicfacetime">
+                    <lay-radio v-model="modify.basicfacetime" :value="0" label="不验证" name="basicfacetime"></lay-radio>
+                    <lay-radio v-model="modify.basicfacetime" :value="10" label="10分钟" name="basicfacetime"></lay-radio>
+                    <lay-radio v-model="modify.basicfacetime" :value="20" label="20分钟" name="basicfacetime"></lay-radio>
+                    <lay-radio v-model="modify.basicfacetime" :value="30" label="30分钟" name="basicfacetime"></lay-radio>
+                    <lay-radio v-model="modify.basicfacetime" :value="40" label="40分钟" name="basicfacetime"></lay-radio>
+                    <lay-radio v-model="modify.basicfacetime" :value="50" label="50分钟" name="basicfacetime"></lay-radio>
+                    <lay-radio v-model="modify.basicfacetime" :value="60" label="60分钟" name="basicfacetime"></lay-radio>
+                </lay-form-item>
 				<lay-form-item label="考场简介" prop="basicdescribe">
 					<lay-textarea placeholder="请输入考场简介" v-model="modify.basicdescribe"></lay-textarea>
 				</lay-form-item>

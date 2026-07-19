@@ -4,6 +4,7 @@ namespace PHPEMS\App\User\Controller\App;
 
 use PHPEMS\App\User\Service\Model\User;
 use PHPEMS\App\User\Service\Model\UserGroup;
+use PHPEMS\App\User\Service\Model\UserLog;
 use PHPEMS\App\User\Service\Model\UserRandCode;
 use PHPEMS\App\User\Service\UserService;
 use PHPEMS\Lib\Auth\Auth;
@@ -202,6 +203,12 @@ class Login extends Controller implements ControllerInterface
                 $token = Auth::login([
                     'userid' => $user->userid,
                 ]);
+                UserLog::fillWithInit([
+                    'uluserid' => $user->userid,
+                    'ulip' => Env::getClientIp(),
+                    'ultime' => TIME,
+                    'ulclient' => Env::getClientEnv()
+                ])->save();
                 return ['token' => $token];
             }
             else return error(['error' => '用户名或密码错误']);

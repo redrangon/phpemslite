@@ -49,13 +49,11 @@
 		</lay-space>
 	</lay-card>
 	<lay-card>
-        <lay-quote>添加或删除试题后，请到科目管理中，更新对应科目的缓存。</lay-quote>
+        <lay-quote>添加或删除试题后，请到科目管理中，更新对应科目的缓存。批量导入请在普通试题管理页面进行导入。</lay-quote>
 		<lay-table id="qrid" ref="tableRef" v-model:selected-keys="selectedKeys" :columns="columns" :data-source="dataSource" :default-toolbar="false" even @change="getData">
 			<template #toolbar>
 				<lay-button size="sm" type="primary" @click="model = {};showAddPage = true">添加试题</lay-button>
-                <lay-button size="sm" type="primary" @click="importQuestion">导入试题</lay-button>
-                <a href="attach/rowsquestion.xlsx" style="margin-left:10px;"><lay-button size="sm" type="danger">下载试题模板</lay-button></a>
-			</template>
+            </template>
 			<template #footer>
 				<lay-row>
 					<lay-col md="12">
@@ -82,11 +80,15 @@
 	</lay-card>
 	<lay-layer v-model="showQuestionPage" :area="['960px','90vh']" :shade="true" :shadeClose="false" shadeOpacity="0.6" title="预览试题">
 		<div style="padding: 20px 50px 20px 20px;">
-			<div style="margin-top: 10px;padding:10px;display: block;" v-html="modelShow.question"></div>
+			<div class="parentQuestion" v-html="modelShow.question"></div>
 			<template v-for="(children,key) in modelShow.data" :key="key">
-				<lay-line>第{{key + 1}}题</lay-line>
-				<myQuestion :disabled="true" :question="children" :questionType="questionTypes[children.questiontype]" :userAnswer="children.questionanswer" childIndex="1" index="1"></myQuestion>
-			</template>
+                <lay-field>
+                    <template #title>
+                        <span class="legend">第{{key + 1}}题</span>
+                    </template>
+                    <myQuestion :disabled="true" :question="children" :questionType="questionTypes[children.questiontype]" :userAnswer="children.questionanswer" childIndex="1" index="1"></myQuestion>
+                </lay-field>
+            </template>
 		</div>
 	</lay-layer>
 	<lay-layer v-model="showAddPage" :area="['960px','90vh']" :btn="addPageBtns" :shade="true" :shadeClose="false" shadeOpacity="0.6" title="添加试题">
@@ -147,7 +149,15 @@
 		</div>
 	</lay-layer>
 </template>
-<style scoped></style>
+<style scoped>
+.parentQuestion{
+    margin-top: 10px;
+    padding:10px;
+    display: block;
+    font-size: 16px;
+    line-height: 2;
+}
+</style>
 <script>
 import examApi from '@/framework/api/admin/exam.js';
 import {layer} from '@layui/layui-vue';
@@ -327,13 +337,15 @@ export default {
 			input.setAttribute('accept', '.xlsx');
 			input.click();
 			input.onchange = async () => {
-				let formData = new FormData();
-				const id = layer.load(0);
-				formData.append('api','importquestions');
-				formData.append('file', input.files[0], input.files[0].name );
-				await examApi.importQuestion(formData);
-				layer.close(id);
-				await this.getData();
+                const formData = new FormData();
+                try{
+                    formData.append('file', input.files[0], input.files[0].name );
+                    await examApi.importQuestion(formData);
+                }catch (e) {
+                    layer.confirm(e.message || '操作失败');
+                }finally {
+                    await this.getData();
+                }
 			};
 		},
 		exportQuestion:async function(){

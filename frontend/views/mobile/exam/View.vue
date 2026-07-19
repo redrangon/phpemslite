@@ -93,7 +93,7 @@
         },        
         async mounted(){
             this.ehId = this.$route.params.ehid;
-	        this.questionTypes = await planApi.getQuestionTypes();
+	        this.questionTypes = await examApi.getQuestionTypes();
 		    await this.getData();
         },
         methods:{

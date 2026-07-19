@@ -3,7 +3,7 @@
 		<lay-space size="lg">
 			<lay-space></lay-space>
 			<lay-space>
-				<span style='width:70px'> 身份证号</span><lay-input v-model="search.passport" allow-clear style="width: 180px;"></lay-input>
+				<span style='width:70px'> 通行证ID</span><lay-input v-model="search.passport" allow-clear style="width: 180px;"></lay-input>
 			</lay-space>
 			<lay-space>
 				<span style='width:70px'> 用户名</span><lay-input v-model="search.username" allow-clear style="width: 180px;"></lay-input>
@@ -18,32 +18,47 @@
 			<template #toolbar>
 				<lay-button size="sm" type="primary" @click="userAddPage">添加人员</lay-button>
 				<span style="float:right;">
-					<lay-button size="sm" type="primary" @click="showImportPage = true">导入人员信息</lay-button>
 					<lay-button size="sm" type="danger" @click="refreshStats()">更新学习状态</lay-button>
                     <lay-button size="sm" type="danger" @click="refreshNumber()">更新人员数量</lay-button>
 				</span>
 			</template>
 			<template v-slot:cmstatus="{row}">
-				<span v-if="row.pmstatus === 1">已完成</span>
+				<span v-if="row.cmstatus === 1">已完成</span>
 				<span v-else>训练中</span>
 			</template>
 			<template #footer>
-                <lay-button :disabled="selectedKeys.length < 1" size="sm" type="primary" @click="verifyMember()">移除成员</lay-button>
+                <lay-button :disabled="selectedKeys.length < 1" size="sm" type="primary" @click="delCourseMember()">移除成员</lay-button>
 				<lay-page v-model="page.current"  v-model:limit="page.limit" :layout="layout" :total="page.total"  style="float:right;" @change="changePage"></lay-page>
 			</template>
 			<template v-slot:operator="{ row }">
 				<lay-button size="xs" type="primary" @click="showPageData(row)">档案</lay-button>
-				<lay-button size="xs" type="primary" @click="planCourse(row.cmpassport)">进度</lay-button>
+				<lay-button size="xs" type="primary" @click="showProgress(row.cmpassport)">进度</lay-button>
 				<lay-button size="xs" type="danger" @click="delCourseMember(row.cmid)">移出</lay-button>
 			</template>
 		</lay-table>
 	</lay-card>
+    <lay-layer v-model="showProgressPage" :area="['1000px']" title="进度详情">
+        <lay-table :columns="detailColumns" :data-source="progressSource" style="margin: 10px;">
+            <template v-slot:logstatus="{row}">
+                <lay-icon type="layui-icon-success" color="#16baaa" v-if="row.logstatus === 1"></lay-icon>
+                <lay-icon type="layui-icon-error" v-else></lay-icon>
+            </template>
+            <template v-slot:logendtime="{row}">
+                <span v-if="row.logendtime && row.logendtime !== 0">{{ row.logendtime }}</span>
+                <span v-else>未学完</span>
+            </template>
+            <template v-slot:logcameras="{row}">
+                <span v-if="row.logfaces && row.logfaces?.length > 0" @click="openCamera(row.logfaces)">{{row.logfaces?.length}}图</span>
+                <span v-else>无</span>
+            </template>
+        </lay-table>
+    </lay-layer>
 	<lay-layer v-model="showAddPage" :area="['840px','80%']" title="添加人员">
 		<lay-card>
 			<lay-space size="lg" style="margin:10px auto">
 				<lay-space></lay-space>
 				<lay-space>
-					<span style='width:70px'> 身份证</span><lay-input v-model="memberSearch.mpassport" allow-clear size="sm" style="width: 140px;"></lay-input>
+					<span style='width:70px'> 通行证ID</span><lay-input v-model="memberSearch.mpassport" allow-clear size="sm" style="width: 140px;"></lay-input>
 				</lay-space>
 				<lay-space>
 					<span style='width:70px'> 姓名</span><lay-input v-model="memberSearch.mname" allow-clear size="sm" style="width: 140px;"></lay-input>
@@ -89,7 +104,7 @@
                         <td>{{ member.mname }}</td>
                         <th>性别</th>
                         <td>{{ member.msex }}</td>
-                        <th>身份证号</th>
+                        <th>通行证ID</th>
                         <td>{{ member.mpassport }}</td>
                     </tr>
                     <tr>
@@ -203,10 +218,37 @@ export default {
 				key:'mname',
 				width:'100px'
 			},{
-				title:'身份证号',
+				title:'通行证ID',
 				key:'mpassport',
 				width:'240px'
 			}],
+            detailColumns:[{
+                title:'课件名称',
+                key:'coursetitle'
+            },{
+                title:'开始学习时间',
+                key:'logtime',
+                width:'160px'
+            },{
+                title:'已学时长',
+                key:'logprogress',
+                width:'120px'
+            },{
+                title:'学完时间',
+                customSlot:"logendtime",
+                key:'logendtime',
+                width:'160px'
+            },{
+                title:'完成情况',
+                key:"logstatus",
+                customSlot:'logstatus',
+                width:"80px"
+            },{
+                title:'人脸识别',
+                key:"logcameras",
+                customSlot:'logcameras',
+                width:"80px"
+            }],
 			searchType: 'files',
 			file:{},
 			memberSelectedKeys:[],
@@ -231,6 +273,7 @@ export default {
 			search:{},
 			memberSearch:{},
 			csId:0,
+            logPassport:'',
 			course:{},
 			model:{},
 			modify:{},
@@ -239,6 +282,7 @@ export default {
 			showAddPage:false,
 			showPage:false,
 			showMemberPage:false,
+            showProgressPage:false,
 			showPageBtns:[
 				{
 					text: "关闭",
@@ -375,15 +419,24 @@ export default {
 			this.member = await memberApi.getMember({passport:row.cmpassport});
 			this.showPage = true
 		},
-		planCourse:function(passport){
-			this.$router.push('/desktop/master/plan/course/'+this.planId+'/'+passport);
-		},
         refreshNumber:function(){
             this.confirmOperate('确定要刷新吗？',async () => {
                 await courseApi.refreshNumber(this.csId);
             });
         },
-
+        showProgress:async function(cmpassport){
+            this.logPassport = cmpassport
+            await this.getLogsData();
+            this.showProgressPage = true
+        },
+        getLogsData:async function(){
+            await this.execute(async () => {
+                this.progressSource = await courseApi.getCourseProgress({
+                    passport: this.logPassport,
+                    csId: this.csId
+                });
+            },null,null);
+        },
 	}
 }
 </script>

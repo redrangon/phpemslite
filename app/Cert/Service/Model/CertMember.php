@@ -51,4 +51,14 @@ class CertMember extends Model
         'cemtime' => '请填写cemtime',
         'cemstatus' => '请填写cemstatus',
     ];
+
+    static public function findByPassportAndCeId(string $passport, int $ceId):static
+    {
+        $query = static::getQuery();
+        $result = $query->where('cempassport', $passport)
+            ->where('cemceid',$ceId)
+            ->where('cemexpirytime', '<',TIME)
+            ->first();
+        return new static($result ?? []);
+    }
 }

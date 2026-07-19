@@ -8,6 +8,7 @@ use PHPEMS\App\Exam\Service\Model\ExamPaper;
 use PHPEMS\App\Exam\Service\Model\ExamPaperSession;
 use PHPEMS\App\Exam\Service\Model\ExamSession;
 use PHPEMS\Lib\Auth\Auth;
+use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Face\FaceProvider;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
@@ -22,24 +23,11 @@ class Session extends Controller implements ControllerInterface
     protected ExamSession $session;
     protected \PHPEMS\App\Exam\Service\Model\Basic $basic;
 
-    public function __construct()
+    public function __construct(protected RequestInterface $request)
     {
-        parent::__construct();
-        $user = $this->request->getUser();
-        $this->session = ExamSession::findByPassport($user->userpassport);
+        parent::__construct($this->request);
+        $this->session = $this->request->getStore('session');
         $this->basic = $this->request->getStore('basic');
-        $this->basic->basicexam = json_decode($this->basic->basicexam, true);
-        $this->basic->basicpoint = json_decode($this->basic->basicpoint, true);
-        $intime = 1;
-        if(($this->basic->basicexam['opentime']??false) && strtotime($this->basic->basicexam['opentime']) > TIME)
-        {
-            $intime = 0;
-        }
-        if(($this->basic->basicexam['closetime']??false) && strtotime($this->basic->basicexam['closetime']) < TIME)
-        {
-            $intime = 0;
-        }
-        $this->basic->intime = $intime;
     }
 
     static public function getRoutes():array
@@ -160,9 +148,9 @@ class Session extends Controller implements ControllerInterface
             $session->examSessionSign = json_encode($this->request->signs??[],JSON_UNESCAPED_UNICODE);
             $session->save();
         }
-        if($this->basic->basicExam['examface'] && $this->basic->basicexam['model'] == 2)
+        if($this->basic->basicfacetime && $this->basic->basicexam['model'] == 2)
         {
-            if(TIME - $this->session->psfadtime >= $this->basic->basicExam['examface'] * 60)
+            if(TIME - $this->session->esfadtime >= $this->basic->basicfacetime * 60)
             {
                 return ['faceVerify' => 1];
             }
@@ -179,7 +167,6 @@ class Session extends Controller implements ControllerInterface
                 $historyNumber = \PHPEMS\App\Exam\Service\Model\History::getQuery()->where('ehtype',2)
                     ->where('ehpassport',$user->userpassport)
                     ->where('ehbasicid',$this->basic->basicid)
-                    ->where('ehplanid',$this->plan->planid)
                     ->count();
                 if($historyNumber >= $this->basic->basicexam['examnumber'])
                 {
@@ -221,7 +208,7 @@ class Session extends Controller implements ControllerInterface
 
     public function FaceVerify(): array | Error
     {
-        if(!$this->plan->planexamface)return ['faceVerify' => 1];
+        if(!$this->basic->basicfacetime)return ['faceVerify' => 1];
         $user = $this->request->getUser();
         $face = $this->request->face??null;
         if(!$face)return error(['error' => '未上传照片']);
@@ -241,7 +228,7 @@ class Session extends Controller implements ControllerInterface
                     $imagePath = FaceProvider::PreventCheatingAndSave($face,$examSessionFaceList);
                     $examSessionFaceList[] = $imagePath;
                     $session->examSessionFaceList = json_encode($examSessionFaceList,JSON_UNESCAPED_UNICODE);
-                    $this->session->psfadtime = TIME;
+                    $this->session->esfadtime = TIME;
                     $this->session->save();
                 }
                 else throw new Exception('人脸识别校验失败');
@@ -295,7 +282,7 @@ class Session extends Controller implements ControllerInterface
                     return error(['error' => '考试次数已用完']);
                 }
             }
-            if($this->basic->basicexam['examface']??false)
+            if($this->basic->basicfacetime > 0)
             {
                 $face = $this->request->face??null;
                 if(!$face)return error(['error' => '未上传照片']);
@@ -347,7 +334,7 @@ class Session extends Controller implements ControllerInterface
             'questionTypes' => $paper->examSetting['questionTypes'],
             'questionScore' => $paper->examScore??[],
         ],JSON_UNESCAPED_UNICODE);
-        $pointIds = array_merge(...$this->basic->basicpoint);
+        $pointIds = array_merge(...$this->basic->basicpoint)??[];
         if($paper->examType == 2)
         {
             $session['examsessionquestion'] = ExamService::drawSelfPaper($paper,$pointIds);

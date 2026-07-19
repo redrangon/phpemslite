@@ -6,7 +6,7 @@
 				<span style='width:70px'> 姓名：</span><lay-input v-model="search.mname" allow-clear style="width:180px;"></lay-input>
 			</lay-space>
 			<lay-space>
-				<span style='width:70px'> 身份证号：</span><lay-input v-model="search.mpassport" allow-clear style="width:180px;"></lay-input>
+				<span style='width:100px'> 通行证ID：</span><lay-input v-model="search.mpassport" allow-clear style="width:180px;"></lay-input>
 			</lay-space>
 			<lay-space>
 				<lay-button type="primary" @click="getData">搜索</lay-button>
@@ -17,8 +17,15 @@
 		<lay-table id="mid" ref="tableRef" v-model:selected-keys="selectedKeys" :columns="columns" :data-source="dataSource" :default-toolbar="false" even>
 			<template #toolbar>
 				档案管理
-				<lay-button size="sm" style="float:right;" type="primary" @click="showImportPage = true">批量导入</lay-button>
-				<lay-button size="sm" style="float:right;margin-right:10px;" type="primary" @click="showAddPage = true">添加档案</lay-button>
+                <span style="float:right;">
+                    <lay-space>
+                        <lay-button size="sm" type="primary" @click="showImportPage = true">批量导入</lay-button>
+                        <lay-button size="sm" type="primary" @click="showAddPage = true">添加档案</lay-button>
+                        <a href="public/attach/member.xlsx">
+                            <lay-button size="sm" type="primary">模板下载</lay-button>
+                        </a>
+                    </lay-space>
+                </span>
 			</template>
 			<template #footer>
 				<lay-button :disabled="selectedKeys.length < 1" size="sm" type="primary" @click="">导出选中档案</lay-button>
@@ -48,8 +55,8 @@
 					<lay-radio v-model="model.msex" label="男" name="msex" value="男"></lay-radio>
 					<lay-radio v-model="model.msex" label="女" name="msex" value="女"></lay-radio>
 				</lay-form-item>
-				<lay-form-item label="身份证号" prop="mpassport" required>
-					<lay-input v-model="model.mpassport" placeholder="请输入身份证号"></lay-input>
+				<lay-form-item label="通行证ID" prop="mpassport" required>
+					<lay-input v-model="model.mpassport" placeholder="请输入通行证ID"></lay-input>
 				</lay-form-item>
 				<lay-form-item label="电话" prop="mphone" required>
 					<lay-input v-model="model.mphone" placeholder="请输入电话"></lay-input>
@@ -119,7 +126,7 @@
 					<lay-radio v-model="modelModify.msex" label="男" name="msex" value="男"></lay-radio>
 					<lay-radio v-model="modelModify.msex" label="女" name="msex" value="女"></lay-radio>
 				</lay-form-item>
-				<lay-form-item label="身份证号" prop="mpassport" required>
+				<lay-form-item label="通行证ID" prop="mpassport" required>
 					<lay-input v-model="modelModify.mpassport"></lay-input>
 				</lay-form-item>
 				<lay-form-item label="电话" prop="mphone" required>
@@ -181,52 +188,59 @@
 					<tr><td colspan="7">学员登记表</td></tr>
 				</thead>
 				<tbody>
-					<tr>
-						<th>职称</th>
-						<td colspan="3">{{ show.mjobtitle }}</td>
-						<th>职务</th>
-						<td>{{ show.mjob }}</td>
-						<td rowspan="4"><img :src="show.mphoto" width="90"></td>
-					</tr>
-					<tr>
-						<th>姓名</th>
-						<td>{{ show.mname }}</td>
-						<th>性别</th>
-						<td>{{ show.msex }}</td>
-						<th>身份证号</th>
-						<td>{{ show.mpassport }}</td>
-					</tr>
-					<tr>
-						<th>出生年月</th>
-						<td>{{ show.mbirthday }}</td>
-						<th>参加工作年份</th>
-						<td>{{ show.mjobtime }}</td>
-						<th>文化程度</th>
-						<td>{{ show.medu }}</td>
-					</tr>
-					<tr>
-						<th>政治面貌</th>
-						<td>{{ show.mpolitic }}</td>
-						<th>部门名称</th>
-						<td>{{ show.mteam }}</td>
-						<th>参加工作年份</th>
-						<td>{{ show.mjobtime }}年</td>
-					</tr>
-					<tr>
-						<th colspan="3">单位名称</th>
-						<td colspan="4">{{ show.munit }}</td>
-					</tr>
+                    <tr>
+                        <th>职称</th>
+                        <td colspan="3">{{ show.mjobtitle }}</td>
+                        <th>职务</th>
+                        <td>{{ show.mjob }}</td>
+                        <td rowspan="4"><img :src="show.mphoto" width="90"></td>
+                    </tr>
+                    <tr>
+                        <th>姓名</th>
+                        <td>{{ show.mname }}</td>
+                        <th>性别</th>
+                        <td>{{ show.msex }}</td>
+                        <th>通行证ID</th>
+                        <td>{{ show.mpassport }}</td>
+                    </tr>
+                    <tr>
+                        <th>出生年月</th>
+                        <td>{{ show.mbirthday }}</td>
+                        <th>参加工作年份</th>
+                        <td>{{ show.mjobtime }}</td>
+                        <th>文化程度</th>
+                        <td>{{ show.medu }}</td>
+                    </tr>
+                    <tr>
+                        <th>政治面貌</th>
+                        <td>{{ show.mpolitic }}</td>
+                        <th>部门名称</th>
+                        <td>{{ show.mteam }}</td>
+                        <th>参加工作年份</th>
+                        <td>{{ show.mjobtime }}年</td>
+                    </tr>
+                    <tr>
+                        <th>手机号</th>
+                        <td colspan="2">{{ show.mphone }}</td>
+                        <th>地址</th>
+                        <td colspan="3">{{ show.maddress }}</td>
+                    </tr>
+                    <tr>
+                        <th colspan="3">单位名称</th>
+                        <td colspan="4">{{ show.munit }}</td>
+                    </tr>
 				</tbody>
 			</table>
 			<lay-tab v-model="searchType" type="brief">
 				<lay-tab-item id="files" title="个人经历">
 					<table class="table">
+                        <tbody>
 						<tr>
 							<th colspan="7">证件信息</th>
 						</tr>
 						<tr>
 							<td colspan="7">
-								<img :src="show.mpassportimga" style="margin:5px;">
+								<img :src="show.mpassportimga" style="margin:5px;max-width: 96%">
 							</td>
 						</tr>
 						<tr>
@@ -241,6 +255,7 @@
 						<tr>
 							<td class="text-left" colspan="7" v-html="show.mtext"></td>
 						</tr>
+                        </tbody>
 					</table>
 				</lay-tab-item>
 			</lay-tab>
@@ -258,9 +273,9 @@
 			</lay-form>
 			<lay-field title="上传说明">
 				<p>档案信息表为.xlsx格式；档案附件支持.zip压缩包格式；<a href="public/attach/member.xlsx" style="color:#16baaa">下载导入模板</a></p>
-				<p>档案档案附件文件名称格式为身份证号+类型代码：如：620123199107010011zp；</p>
+				<p>档案档案附件文件名称格式为通行证ID+类型代码：如：620123199107010011zp；</p>
 				<p>类型代码说明：</p>
-				<p>身份证：仅身份证号即可，无类型代码；头像：身份证号+zp；</p>
+				<p>身份证：仅通行证ID即可，无类型代码；头像：通行证ID+zp；</p>
 			</lay-field>
 		</div>
 	</lay-layer>

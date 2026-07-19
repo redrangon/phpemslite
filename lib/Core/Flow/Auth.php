@@ -3,9 +3,14 @@
 namespace PHPEMS\Lib\Core\Flow;
 
 use PHPEMS\App\User\Service\Model\User;
+use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Rules\Error;
 
 class Auth {
+
+    public function __construct(
+        private readonly RequestInterface $request
+    ){}
     public function handle(callable $next)
     {
         $result = $this->check();
@@ -19,7 +24,7 @@ class Auth {
             if($userid)
             {
                 $user = User::find($userid);
-                DI('request')->setUser($user);
+                $this->request->setUser($user);
             }
             return $next();
         }
@@ -40,7 +45,7 @@ class Auth {
                 $user = User::find($userid);
                 if($user->isAdmin())
                 {
-                    DI('request')->setUser($user);
+                    $this->request->setUser($user);
                 }
                 else
                 {

@@ -1,5 +1,6 @@
 <?php
 
+use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Core\Request\RequestProvider;
 use PHPEMS\Lib\Core\Router;
 use PHPEMS\Lib\DataBase\DBProvider;
@@ -11,8 +12,8 @@ define("TIME",time());
 define("SSL","OFF");
 require_once(PEPATH."/vendor/autoload.php");
 require_once (PEPATH."/boot/helpers.php");
-DI::bind('request', function(){
-    return RequestProvider::Create();
+DI::bind(RequestInterface::class,function(){
+    return DI(RequestProvider::class)->getInstance();
 });
 DI::bind('mysql.default',function(){
     return DBProvider::Create();

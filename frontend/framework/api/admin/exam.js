@@ -48,6 +48,9 @@ const examApi = {
     modifyPaper: (paper) => http.post('/exam/master/paper/modify', paper),
     addPaper: (paper) => http.post('/exam/master/paper/add', paper),
     getPaper: (paperid) => http.post('/exam/master/paper/paper', {paperid}),
+    downloadPaper: (paperid) => http.post('/exam/master/paper/export',{paperid}, {
+        responseType: 'blob'
+    }),
     getPaperQuestion:(paperid) => http.post('/exam/master/paper/question',{paperid}),
     getAllQuestionTypes: () => http.post('/exam/master/questype/all'),
     getQuestionTypeList: (params) => http.post('/exam/master/questype/data',params),

@@ -129,7 +129,7 @@ export default {
 		},
 		goExamPaper:async function(paperId){
 			this.paperId = paperId;
-			if(this.basic.basicexam?.examface === 1)
+			if(this.basic.basicfacetime > 0)
 			{
 				this.showFace = true;
 				return ;

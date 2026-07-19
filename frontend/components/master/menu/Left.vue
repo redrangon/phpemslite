@@ -46,7 +46,7 @@
 				<router-link to="/desktop/master/user/user">
 					<lay-menu-item id="2"><lay-icon type="layui-icon-username"></lay-icon> 用户管理</lay-menu-item>
 				</router-link>
-				<router-link to="/desktop/master/user/verify">
+                <router-link to="/desktop/master/user/verify">
 					<lay-menu-item id="5"><lay-icon type="layui-icon-vercode"></lay-icon> 实名认证</lay-menu-item>
 				</router-link>
 				<router-link to="/desktop/master/user/group">
@@ -127,11 +127,6 @@
                 <router-link to="/desktop/master/cert/cert">
                     <lay-menu-item id="2">
                         <lay-icon type="layui-icon-carousel"></lay-icon> 证书管理
-                    </lay-menu-item>
-                </router-link>
-                <router-link to="/desktop/master/cert/member">
-                    <lay-menu-item id="3">
-                        <lay-icon type="layui-icon-diamond"></lay-icon> 证件管理
                     </lay-menu-item>
                 </router-link>
             </div>

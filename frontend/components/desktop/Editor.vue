@@ -45,7 +45,8 @@ const customUpload = (file, insertFn) => {
 
 }
 const editorConfig = {
-	MENU_CONF:{
+    autoFocus:false,
+    MENU_CONF:{
 		uploadImage: {
 			customUpload
 		}

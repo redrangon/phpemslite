@@ -132,7 +132,7 @@ export default {
         getUserPoints: async function () {
             await this.execute(async () => {
                 const user = await userApi.getCurrentUser();
-                this.userPoints = user.usercoin || 0;
+                this.userPoints = user?.usercoin || 0;
             }, null, null);
         },
         showRechargeDialog: function () {

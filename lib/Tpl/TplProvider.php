@@ -2,6 +2,7 @@
 
 namespace PHPEMS\Lib\Tpl;
 
+use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\DI\DI;
 
 class TplProvider
@@ -19,7 +20,7 @@ class TplProvider
 
     public static function Create():self
     {
-        $route = DI('request')->getRoute();
+        $route = DI(RequestInterface::class)->getRoute();
         switch ($route[0])
         {
             case 'plugins':

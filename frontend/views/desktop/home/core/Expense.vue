@@ -10,7 +10,7 @@
 						<lay-card>
 							<lay-table :columns="columns" :data-source="expenses"></lay-table>
 						</lay-card>
-						<lay-page v-if="expenses && expenses.lenth > page.limit" v-model="page.current"  :layout="layout" v-model:limit="page.limit" :total="page.total"  @change="pageChange" theme="blue" style="float:right">
+						<lay-page v-if="expenses && expenses.length > page.limit" v-model="page.current"  :layout="layout" v-model:limit="page.limit" :total="page.total"  @change="pageChange" theme="blue" style="float:right">
 						</lay-page>
 					</div>
 				</lay-tab-item>

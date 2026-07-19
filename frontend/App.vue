@@ -1,5 +1,7 @@
 <template>
-  <router-view :key="$route.meta.layout"/>
+    <router-view v-slot="{ Component, route }">
+        <component :is="Component" />
+    </router-view>
 </template>
 
 <script setup>

@@ -11,7 +11,7 @@ class SessionProvider
     protected static $instance = null;
     protected $driver;
 
-    private function __construct(string $driver = 'native', array $config = [])
+    private function __construct(string $driver , array $config = [])
     {
         $this->driver = match ($driver) {
             'native' => new NativeSessionDriver($config),
@@ -21,7 +21,7 @@ class SessionProvider
         $this->driver->start();
     }
 
-    public static function getInstance(string $driver = 'native', array $config = []): self
+    public static function getInstance(string $driver = 'redis', array $config = []): self
     {
         if (self::$instance === null) {
             self::$instance = new self($driver, $config);

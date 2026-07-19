@@ -47,7 +47,8 @@
 				{{paperTypes[row.examtype]}}
 			</template>
 			<template v-slot:operator="{ row }">
-				<lay-button v-if="row.examtype === 2" size="xs" type="primary" @click="showSetScore(row)">单题设分</lay-button>
+				<lay-button v-if="row.examtype === 2" size="xs" type="primary" @click="showSetScore(row)">设分</lay-button>
+                <lay-button v-if="row.examtype === 2" size="xs" type="primary" @click="downloadPaper(row.examid)">下载</lay-button>
 				<lay-button size="xs" type="primary" @click="showModify(row.examid)">编辑</lay-button>
 				<lay-button size="xs" type="danger" @click="delPaper(row.examid)">删除</lay-button>
 			</template>
@@ -116,11 +117,12 @@
 					<lay-form-item v-for="questid in model.examsetting.lite" :label="questionTypes[questid].questype">
 						<lay-space>共 <lay-input v-model="model.examsetting.questionTypes[questid].number" style="width:50px"></lay-input> 题 &nbsp;</lay-space>
 						<lay-space>每题 <lay-input v-model="model.examsetting.questionTypes[questid].score" style="width:50px"></lay-input> 分&nbsp;</lay-space>
-						<lay-space>题型描述 <lay-input v-model="model.examsetting.questionTypes[questid].describe" style="width:240px"></lay-input>&nbsp;</lay-space>
+						<lay-space>题型描述 <lay-input v-model="model.examsetting.questionTypes[questid].describe" style="width:200px"></lay-input>&nbsp;</lay-space>
 						<lay-space>
 							<lay-button style="width:116px;" type="primary" @click="showSelectedQuestions(questid)">普通题（{{selectednumber[questid]?.question??0}}）</lay-button>
 							<lay-button style="width:116px;" type="primary" @click="showSelectedQuestions(questid,1)">题帽题（{{selectednumber[questid]?.rowsquestion??0}}）</lay-button>
 							<lay-button type="primary" @click="selectQuestions(questid)">选题</lay-button>
+                            <lay-button type="primary" @click="clearSelectedQuestions(questid)">清空</lay-button>
 						</lay-space>
 					</lay-form-item>
 				</div>
@@ -192,11 +194,12 @@
 					<lay-form-item v-for="questid in model.examsetting.lite" :label="questionTypes[questid].questype">
 						<lay-space>共 <lay-input v-model="model.examsetting.questionTypes[questid].number" style="width:50px"></lay-input> 题 &nbsp;</lay-space>
 						<lay-space>每题 <lay-input v-model="model.examsetting.questionTypes[questid].score" style="width:50px"></lay-input> 分&nbsp;</lay-space>
-						<lay-space>题型描述 <lay-input v-model="model.examsetting.questionTypes[questid].describe" style="width:240px"></lay-input>&nbsp;</lay-space>
+						<lay-space>题型描述 <lay-input v-model="model.examsetting.questionTypes[questid].describe" style="width:200px"></lay-input>&nbsp;</lay-space>
 						<lay-space>
 							<lay-button style="width:116px;" type="primary" @click="showSelectedQuestions(questid)">普通题（{{selectednumber[questid].question}}）</lay-button>
 							<lay-button style="width:116px;" type="primary" @click="showSelectedQuestions(questid,1)">题帽题（{{selectednumber[questid].rowsquestion}}）</lay-button>
 							<lay-button type="primary" @click="selectQuestions(questid)">选题</lay-button>
+                            <lay-button type="primary" @click="clearSelectedQuestions(questid)">清空</lay-button>
 						</lay-space>
 					</lay-form-item>
 				</div>
@@ -353,7 +356,7 @@ export default {
 				title: '操作',
 				customSlot: "operator",
 				key: "operator",
-				width: "180px"
+				width: "190px"
 			}],
 			paperTypes:{
 				"1":"随机组卷",
@@ -728,6 +731,15 @@ export default {
 			model.sort = sort;
 			this.model = model;
 		},
+        clearSelectedQuestions:function(questype){
+            if(this.model.examquestions[questype]??false)
+            {
+                this.model.examquestions[questype] = {
+                    questions:[],
+                    rowsquestions:[]
+                };
+            }
+        },
 		showSelectedQuestions:function(questype,isrows){
 			if(isrows)
 			{
@@ -848,7 +860,25 @@ export default {
 			await examApi.modifyPaper(this.examscore);
 			layer.close(id);
 			await this.getData();
-		}
+		},
+        downloadPaper:async function(paperId){
+	        const id = layer.load(0);
+			try{
+				const data = await examApi.downloadPaper(paperId);
+				const a = document.createElement("a");
+				a.download = "data.docx";
+				// 创建二进制对象
+				const blob = new Blob([data]);
+				const downloadURL = (window.URL || window.webkitURL).createObjectURL(blob);
+				a.href = downloadURL;
+				a.click();
+				URL.revokeObjectURL(downloadURL);
+				layer.close(id);
+			}catch(e){
+				layer.close(id);
+				layer.msg(e.message || '下载失败')
+			}
+		},
 	},
 	computed:{
 		selectednumber:function(){

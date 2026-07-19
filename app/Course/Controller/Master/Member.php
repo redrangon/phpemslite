@@ -26,7 +26,8 @@ class Member extends Controller implements ControllerInterface
             'data' => 'Data',
             'addbypassport' => 'AddByPassport',
             'refresh' => 'RefreshNumber',
-            'stats' => 'Stats'
+            'stats' => 'Stats',
+            'progress' => 'Progress',
         ];
     }
 
@@ -39,6 +40,27 @@ class Member extends Controller implements ControllerInterface
     {
         $outFlows = [];
         return $outFlows[$action]??[];
+    }
+
+    public function Progress():array|Error
+    {
+        $csId = $this->request->csId??null;
+        $passport = $this->request->passport??null;
+        $query = CourseService::getCourseLogQueryWithCourse()
+            ->select(['courseid','coursetitle','logtime','logstatus','logendtime','logprogress','logfaces'])
+            ->orderBy('logid', 'DESC');
+        if($passport && $csId){
+            $data = $query->where('logpassport', $passport)
+                ->where('coursecsid', $csId)
+                ->get();
+            array_walk($data, function (&$item) {
+                $item['logtime'] = $item['logtime'] ? date('Y-m-d H:i:s', $item['logtime']) : '';
+                $item['logendtime'] = $item['logendtime'] ? date('Y-m-d H:i:s', $item['logendtime']) : '';
+                $item['logfaces'] = $item['logfaces']?json_decode($item['logfaces'], true):[];
+            });
+            return $data;
+        }
+        return error(['error' => '参数错误']);
     }
 
     public function Stats():array|Error

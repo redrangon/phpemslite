@@ -9,6 +9,17 @@
     --van-nav-bar-icon-color: white;
     --van-action-bar-background:transparent;
 }
+.scroll-container {
+    overflow-y: auto; /* 或 overflow-x: auto */
+}
+.scroll-container::-webkit-scrollbar {
+    display: none;
+}
+.scroll-container::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    background: transparent;
+}
 html,body{
     margin: 0;
     padding: 0;
@@ -22,6 +33,7 @@ html,body{
     box-sizing: border-box;
     padding:0;
     margin:0;
+    overflow: hidden;
     overflow-y: auto;
     text-align: left;
     color:#333333;

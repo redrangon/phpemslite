@@ -3,7 +3,7 @@
 		<lay-space size="lg">
 			<lay-space></lay-space>
 			<lay-space>
-				<span style='width:70px'> 身份证号</span><lay-input v-model="search.passport" allow-clear style="width: 180px;"></lay-input>
+				<span style='width:70px'> 通行证ID</span><lay-input v-model="search.passport" allow-clear style="width: 180px;"></lay-input>
 			</lay-space>
 			<lay-space>
 				<span style='width:70px'> 用户名</span><lay-input v-model="search.username" allow-clear style="width: 180px;"></lay-input>
@@ -83,7 +83,7 @@
                         <td>{{ member.mname }}</td>
                         <th>性别</th>
                         <td>{{ member.msex }}</td>
-                        <th>身份证号</th>
+                        <th>通行证ID</th>
                         <td>{{ member.mpassport }}</td>
                     </tr>
                     <tr>
@@ -192,7 +192,7 @@ export default {
 				key:'mname',
 				width:'100px'
 			},{
-				title:'身份证号',
+				title:'通行证ID',
 				key:'mpassport',
 				width:'240px'
 			}],

@@ -13,7 +13,7 @@
 					<span style='width:70px'> 姓名：</span><lay-input v-model="search.usertruename"></lay-input>
 				</lay-space>
 				<lay-space>
-					<span style='width:70px'> 身份证号：</span><lay-input v-model="search.userpassport"></lay-input>
+					<span style='width:80px'> 通行证ID：</span><lay-input v-model="search.userpassport"></lay-input>
 				</lay-space>
 				<lay-space>
 					<span style='width:70px'> 审核状态：</span>
@@ -84,7 +84,7 @@ export default {
 				key:'usertruename',
 				width:'200px'
 			},{
-				title:'身份证号',
+				title:'通行证ID',
 				key:'userpassport'
 			},{
 				title:'状态',

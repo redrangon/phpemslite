@@ -62,7 +62,7 @@
 							</RouterLink>
 						</div>
 						<RouterLink to="/mobile/core/verify">
-							<p> {{user.usertruename??'点击认证姓名和身份证号'}}</p>
+							<p> {{user.usertruename??'点击认证姓名和通行证ID'}}</p>
 						</RouterLink>
 
 					</van-col>
@@ -92,10 +92,17 @@
 				</div>
 			</div>
 		</template>
-        <van-dialog v-model:show="rechargeDialog">
+        <van-dialog v-model:show="rechargeDialog" :close-on-click-overlay="true">
             <van-cell-group inset>
                 <van-radio-group v-model="rechargeValue">
                     <van-cell-group>
+                        <van-cell class="price-cell" >
+                            <template #title>
+                                <div style="padding: 10px;font-size: 16px;text-align: center">
+                                    <span class="price-days">1元 = 10积分</span>
+                                </div>
+                            </template>
+                        </van-cell>
                         <van-cell v-for="coin in coins" :key="coin" @click="rechargeValue = coin" class="price-cell" >
                             <template #title>
                                 <div style="padding: 10px;font-size: 16px;">

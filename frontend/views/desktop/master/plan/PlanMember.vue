@@ -3,7 +3,7 @@
 		<lay-space size="lg">
 			<lay-space></lay-space>
 			<lay-space>
-				<span style='width:70px'> 身份证号</span><lay-input v-model="search.pmpassport" allow-clear style="width: 180px;"></lay-input>
+				<span style='width:70px'> 通行证ID</span><lay-input v-model="search.pmpassport" allow-clear style="width: 180px;"></lay-input>
 			</lay-space>
 			<lay-space>
 				<span style='width:70px'> 姓名</span><lay-input v-model="search.pmname" allow-clear style="width: 180px;"></lay-input>
@@ -109,7 +109,7 @@
                         <td>{{ member.mname }}</td>
                         <th>性别</th>
                         <td>{{ member.msex }}</td>
-                        <th>身份证号</th>
+                        <th>通行证ID</th>
                         <td>{{ member.mpassport }}</td>
                     </tr>
                     <tr>
@@ -176,9 +176,9 @@
 			</lay-form>
 			<lay-field title="上传说明">
 				<p>档案信息表为.xlsx格式；档案附件支持.zip压缩包格式；<a href="" style="color:#16baaa">下载导入模板</a></p>
-				<p>档案档案附件文件名称格式为身份证号+类型代码：如：620123199107010011zp；</p>
+				<p>档案档案附件文件名称格式为通行证ID+类型代码：如：620123199107010011zp；</p>
 				<p>类型代码说明：</p>
-				<p>头像：身份证号+zp；身份证：仅身份证号；</p>
+				<p>头像：通行证ID+zp；身份证：仅通行证ID；</p>
 			</lay-field>
 		</div>
 	</lay-layer>
@@ -210,7 +210,7 @@ export default {
 				key:'pmname',
 				width:'150px'
 			},{
-				title:'身份证号',
+				title:'通行证ID',
 				key:'pmpassport'
 			},{
 				title:'课程学习',
@@ -257,7 +257,7 @@ export default {
 				key:'mname',
 				width:'100px'
 			},{
-				title:'身份证号',
+				title:'通行证ID',
 				key:'mpassport',
 				width:'240px'
 			},{

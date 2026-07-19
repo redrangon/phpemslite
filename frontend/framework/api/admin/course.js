@@ -77,6 +77,7 @@ const courseApi = {
     modifyMember: (params) => http.post('/course/master/member/modify',params),
     deleteMember: (ids) => http.post('/course/master/member/delete',{ids}),
     refreshNumber: (csId) => http.post('/course/master/member/refresh',{csId}),
-    refreshMemberStats: (csId) => http.post('/course/master/member/stats',{csId}),
+    refreshMemberStats: (params) => http.post('/course/master/member/stats',params),
+    getCourseProgress: (params) => http.post('/course/master/member/progress',params),
 };
 export default courseApi;

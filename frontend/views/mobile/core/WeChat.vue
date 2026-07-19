@@ -5,7 +5,7 @@
         <div style="margin-top: 10px;"></div>
         <van-cell-group inset>
             <van-cell title="用户名" :value="user.username" />
-            <van-cell title="身份证号" :value="user.userpassport" />
+            <van-cell title="通行证ID" :value="user.userpassport" />
         </van-cell-group>
         <div style="margin: 16px;">
             <van-button round block type="primary" v-if="wechatEnv && useropenid" @click="unBindWechat()">

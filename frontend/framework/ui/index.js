@@ -8,7 +8,6 @@ const loadUI = async (app) => {
         await import('vant/lib/index.css')
         await import('@/assets/css/mobile/style.css')
     } else {
-
         const layui = await import('@layui/layui-vue')
         app.use(layui)
         await import('@layui/layui-vue/lib/index.css')

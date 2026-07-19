@@ -53,10 +53,28 @@ export default [
                     menu:"2",
                     breadcrumb: (route) => [
                         { title: '首页', path: '/desktop/master' },
-                        { title: '证书管理', path: '/desktop/master/,' },
+                        { title: '证书管理', path: '/desktop/master/cert' },
                         {
                             title: `证书列表`,
                             path: route.path
+                        }
+                    ]
+                },
+            },
+            {
+                path: 'member/:ceid',
+                component: () => import('@/views/desktop/master/cert/Member.vue'),
+                meta:{
+                    menu:"2",
+                    breadcrumb: (route) => [
+                        { title: '首页', path: '/desktop/master' },
+                        { title: '证书管理', path: '/desktop/master/cert' },
+                        {
+                            title: `证书列表`,
+                            path:'/desktop/master/cert/cert'
+                        },
+                        {
+                            title: `人员管理`
                         }
                     ]
                 },
@@ -95,6 +113,32 @@ export default [
                         }
                     ]
                 },
+            },
+            {
+                path: 'log/:userid',
+                component: () => import('@/views/desktop/master/user/Log.vue'),
+                meta: {
+                    menu: "2",
+                    breadcrumb: (route) => [
+                        { title: '首页', path: '/desktop/master' },
+                        { title: '用户模块', path: '/desktop/master/user' },
+                        { title: '用户管理', path: '/desktop/master/user/user' },
+                        { title: '登录日志', path: '/desktop/master/user/log' }
+                    ]
+                }
+            },
+            {
+                path: 'coin/:passport',
+                component: () => import('@/views/desktop/master/user/Coin.vue'),
+                meta: {
+                    menu: "2",
+                    breadcrumb: (route) => [
+                        { title: '首页', path: '/desktop/master' },
+                        { title: '用户模块', path: '/desktop/master/user' },
+                        { title: '用户管理', path: '/desktop/master/user/user' },
+                        { title: '积分管理', path: '/desktop/master/user/coin' }
+                    ]
+                }
             },
             {
                 path: 'verify',

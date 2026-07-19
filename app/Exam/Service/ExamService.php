@@ -123,7 +123,7 @@ class ExamService
         }
         elseif($data['questionselect']??false)
         {
-            if($data['questionselect'] !== $raw['questionselect'])
+            if($data['questionselect'] !== $raw['questionselect'] || empty($raw['questionhtml']) || $data['questiontype'] !== $raw['questiontype'])
             {
                 $selector = explode("\n",trim($data['questionselect']));
                 $data['questionselectnumber'] = count($selector);
@@ -187,7 +187,7 @@ class ExamService
         return Relation::getQuery()->join($questionTable, 'qkquestionid', '=', $questionKey);
     }
 
-    static public function drawSelfPaper(ExamPaper $paper, array $pointRange):array|Error
+    static public function drawSelfPaper(ExamPaper $paper, array $pointRange = []):array|Error
     {
         $data = [];
         $questionIds = array_column($paper->examQuestions,'questions');
@@ -204,11 +204,11 @@ class ExamService
         {
             $questionRelations[$relation['qkquestionid']][] = $relation['qkpointid'];
         }
-        $questions = Question::getQuery()->select(['questionid','questiontype','question','questionhtml','questionlevel','questionisparent','questionanswer'])
+        $questions = Question::getQuery()->select(['questionid','questiontype','question','questionhtml','questionlevel','questionisparent','questionanswer','questionselecttype'])
             ->whereIn('questionid',array_merge($questionIds,$rowIds))
             ->where('questionparent',0)
             ->get();
-        $children = Question::getQuery()->select(['questionid','questiontype','question','questionhtml','questionlevel','questionparent','questionanswer'])
+        $children = Question::getQuery()->select(['questionid','questiontype','question','questionhtml','questionlevel','questionparent','questionanswer','questionselecttype'])
             ->whereIn('questionparent',$rowIds)
             ->orderBy('questionparent','ASC')
             ->orderBy('questionsequence','ASC')
@@ -267,7 +267,7 @@ class ExamService
                 foreach($numbers as $level => $number)
                 {
                     if($number < 1)continue;
-                    $ids[$key][$level] = array_diff($ids[$key][$level],$existsIds);
+                    $ids[$key][$level] = array_diff($ids[$key][$level]??[],$existsIds);
                     if(count($ids[$key][$level]) <= $number)
                     {
                         $tmpIds = $ids[$key][$level];
@@ -277,6 +277,8 @@ class ExamService
                         $tmpIds = array_rand($ids[$key][$level],$number);
                         if(!is_array($tmpIds))$tmpIds = [$tmpIds];
                     }
+                    $tmpIds = array_intersect_key($ids[$key][$level], array_flip($tmpIds));
+
                     $relations = Relation::getQuery()->select(['qkquestionid','qkpointid'])
                         ->whereIn('qkquestionid',$tmpIds)
                         ->whereIn('qkpointid',$pointRange)
@@ -286,7 +288,7 @@ class ExamService
                     {
                         $questionRelations[$relation['qkquestionid']][] = $relation['qkpointid'];
                     }
-                    $tmpQuestions = Question::getQuery()->select(['questionid','questiontype','question','questionhtml','questionisparent','questionanswer'])
+                    $tmpQuestions = Question::getQuery()->select(['questionid','questiontype','question','questionhtml','questionisparent','questionanswer','questionselecttype'])
                         ->whereIn('questionid',$tmpIds)
                         ->get();
                     $levelNumber = 0;
@@ -295,7 +297,7 @@ class ExamService
                         if($question['questionisparent'])
                         {
                             $existsIds[] = $question['questionid'];
-                            $children = Question::getQuery()->select(['questionid','questiontype','question','questionhtml','questionlevel','questionparent','questionanswer'])
+                            $children = Question::getQuery()->select(['questionid','questiontype','question','questionhtml','questionlevel','questionparent','questionanswer','questionselecttype'])
                                 ->where('questionparent',$question['questionid'])
                                 ->orderBy('questionsequence','ASC')
                                 ->get();
@@ -391,6 +393,7 @@ class ExamService
                                     $tmpIds = array_rand($ids[$level],$number);
                                     if(!is_array($tmpIds))$tmpIds = [$tmpIds];
                                 }
+                                $tmpIds = array_intersect_key($ids[$level], array_flip($tmpIds));
                                 $relations = Relation::getQuery()->select(['qkquestionid','qkpointid'])
                                     ->whereIn('qkquestionid',$tmpIds)
                                     ->get();
@@ -399,7 +402,7 @@ class ExamService
                                 {
                                     $questionRelations[$relation['qkquestionid']][] = $relation['qkpointid'];
                                 }
-                                $tmpQuestions = Question::getQuery()->select(['questionid','questiontype','question','questionhtml','questionisparent','questionanswer'])
+                                $tmpQuestions = Question::getQuery()->select(['questionid','questiontype','question','questionhtml','questionisparent','questionanswer','questionselecttype'])
                                     ->whereIn('questionid',$tmpIds)
                                     ->get();
                                 $levelNumber = 0;
@@ -408,7 +411,7 @@ class ExamService
                                     if($question['questionisparent'])
                                     {
                                         $existsIds[] = $question['questionid'];
-                                        $children = Question::getQuery()->select(['questionid','questiontype','question','questionhtml','questionlevel','questionparent','questionanswer'])
+                                        $children = Question::getQuery()->select(['questionid','questiontype','question','questionhtml','questionlevel','questionparent','questionanswer','questionselecttype'])
                                             ->where('questionparent',$question['questionid'])
                                             ->orderBy('questionsequence','ASC')
                                             ->get();

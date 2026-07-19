@@ -2,7 +2,7 @@
 
 namespace PHPEMS\Lib\Utils;
 
-use _PHPStan_8c66d8255\Nette\Neon\Exception;
+use Exception;
 use finfo;
 use PHPEMS\Lib\Config\Site\Attach;
 use PHPEMS\Lib\Utils\FileService\FileStream;
@@ -11,7 +11,7 @@ use RuntimeException;
 
 class FileProvider
 {
-    private $allowedMimes = [
+    private array $allowedMimes = [
         'image/jpeg',
         'image/png',
         'image/gif',
@@ -19,38 +19,44 @@ class FileProvider
         'text/plain',
         'application/zip',
         'application/vnd.rar',
+        'application/json',
+        'application/x-wine-extension-ini',
         'video/mp4',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     ];
 
     /**
      * MIME 到扩展名的严格映射（用于安全生成文件扩展名）
      * 原因：防止扩展名与内容不一致（如 .jpg.php）
      */
-    private $mimeToExtension = [
+    private array $mimeToExtension = [
         'image/jpeg' => 'jpg',
         'image/png'  => 'png',
         'image/gif'  => 'gif',
         'application/pdf' => 'pdf',
+        'application/json' => 'json',
+        'application/x-wine-extension-ini' => 'json',
         'text/plain' => 'txt',
         'application/zip' => 'zip',
         'application/vnd.rar' => 'rar',
         'video/mp4' => 'mp4',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'xlsx'
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'xlsx',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
     ];
 
     /**
      * MIME 扩展名别名到真实扩展名映射（用于生成文件扩展名）
      * 某些 MIME 类型可能与标准扩展名不匹配
      */
-    private $aliasMap = ['jpeg' => 'jpg'];
+    private array $aliasMap = ['jpeg' => 'jpg'];
 
     /**
      * 最大文件大小（字节），默认 5MB
      */
-    private $maxSize = 524288000;
+    private int $maxSize = 524288000;
 
-    private $storagePath;
+    private string $storagePath;
 
     public function __construct($isPrivate = false)
     {
@@ -119,7 +125,7 @@ class FileProvider
 
         //  检查 MIME 是否在白名单中
         if (!in_array($mime, $this->allowedMimes, true)) {
-            return ['success' => false, 'error' => 'Invalid file type'];
+            return ['success' => false, 'error' => 'Invalid file type'.$mime];
         }
 
         //  从 MIME 映射出安全扩展名

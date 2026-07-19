@@ -5,10 +5,12 @@
 				<lay-form-item label="关闭注册" prop="closeregist" required>
 					<lay-switch v-model="model.closeregist"></lay-switch>
 				</lay-form-item>
+                <!--
 				<lay-form-item label="实名认证" prop="userverify" required>
 					<lay-radio v-model="model.userverify" label="自动认证" name="userverify" value="0"></lay-radio>
 					<lay-radio v-model="model.userverify" label="手动认证" name="userverify" value="1"></lay-radio>
 				</lay-form-item>
+				-->
 				<lay-form-item label="&nbsp;">
 					<lay-button type="primary" @click="submitSetting">提交</lay-button>
 				</lay-form-item>

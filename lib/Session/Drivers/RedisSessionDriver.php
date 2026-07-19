@@ -52,7 +52,9 @@ class RedisSessionDriver implements SessionDriverInterface
     // --- Handler for session_destroy() callback ---
     public function destroyHandler(string $id): bool
     {
-        return (bool)$this->redis->del($this->prefix . $id);
+        $result = $this->redis->del($this->prefix . $id);
+        if($result === false)return false;
+        return true;
     }
 
     public function start(): void

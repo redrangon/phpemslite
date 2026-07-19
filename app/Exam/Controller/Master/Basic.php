@@ -153,6 +153,7 @@ prompt;
             'basic' => $this->request->basic??null,
             'basicthumb' => $this->request->basicthumb??null,
             'basicsubjectid' => $this->request->basicsubjectid??null,
+            'basicfacetime' => $this->request->basicfacetime??0,
             'basicdescribe' => $this->request->basicdescribe??"",
             'basictext' => $this->request->basictext??"",
         ];
@@ -176,6 +177,7 @@ prompt;
         $data = [
             'basic' => $this->request->basic??null,
             'basicsubjectid' => $this->request->basicsubjectid??null,
+            'basicfacetime' => $this->request->basicfacetime??null,
             'basicthumb' => $this->request->basicthumb??null,
             'basicdescribe' => $this->request->basicdescribe??null,
             'basicpoint' => $this->request->basicpoint??null,
@@ -216,7 +218,7 @@ prompt;
     {
         // TODO: 实现数据查询逻辑
         // 示例：
-        $query = \PHPEMS\App\Exam\Service\Model\Basic::getQuery()->select(['basicid','basic','basicnumber','basicsubjectid','basicthumb','basicdescribe'])->orderBy('basicid', 'DESC');
+        $query = \PHPEMS\App\Exam\Service\Model\Basic::getQuery()->select(['basicid','basic','basicfacetime','basicnumber','basicsubjectid','basicthumb','basicdescribe','basictext'])->orderBy('basicid', 'DESC');
         $page = $this->request->page ?? 1;
         $limit = $this->request->limit ?? 20;
         $search = $this->request->search;

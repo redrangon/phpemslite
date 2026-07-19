@@ -2,16 +2,22 @@
 
 namespace PHPEMS\App\User\Controller\Master;
 
+use Exception;
+use PDOException;
 use PHPEMS\App\Core\Service\Model\App;
 use PHPEMS\App\Member\Service\Model\Member;
 use PHPEMS\App\User\Service\Model\UserGroup;
+use PHPEMS\App\User\Service\Model\UserLog;
+use PHPEMS\App\User\Service\Model\UserMoney;
 use PHPEMS\App\User\Service\UserService;
 use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
 use PHPEMS\Lib\Rules\Error;
 use PHPEMS\Lib\Utils\Env;
+use PHPEMS\Lib\Utils\ExcelProvider;
 use PHPEMS\Lib\Utils\FileProvider;
+use Throwable;
 
 class User extends Controller implements ControllerInterface
 {
@@ -26,6 +32,7 @@ class User extends Controller implements ControllerInterface
             'add' => 'Add',
             'modify' => 'Modify',
             'delete' => 'Delete',
+            'log' => 'Log',
             'password' => 'modifyPassword',
             'getconfig' => 'getConfig',
             'setconfig' => 'setConfig',
@@ -34,6 +41,7 @@ class User extends Controller implements ControllerInterface
             'modifygroup' => 'modifyGroup',
             'verify' => 'Verify',
             'defaultgroup' => 'setDefaultGroup',
+            'import' => 'Import'
         ];
     }
 
@@ -47,6 +55,26 @@ class User extends Controller implements ControllerInterface
     {
         $outFlows = [];
         return $outFlows[$action]??[];
+    }
+
+    public function Log():array|Error
+    {
+        $search = $this->request->search??null;
+        $page = $this->request->page??1;
+        $limit = $this->request->limit??10;
+        $userid = $this->request->userid??null;
+        if(!$userid)return error(['error' => '用户ID不能为空']);
+        $query = UserLog::getQuery()->where('uluserid', $userid)->orderBy('ultime', 'desc');
+        if($search['range']??false)
+        {
+            $query->where('ultime', '>=', strtotime($search['range'][0])??0);
+            $query->where('ultime', '<=', strtotime($search['range'][1])??TIME);
+        }
+        $data = $query->paginate($page, $limit);
+        array_walk($data['data'],function(&$item){
+            $item['ultime'] = date('Y-m-d H:i:s', $item['ultime']);
+        });
+        return $data;
     }
 
     public function setDefaultGroup():array|Error
@@ -157,7 +185,7 @@ class User extends Controller implements ControllerInterface
 
     public function  Delete():array|Error
     {
-        $ids = $this->request->ids;
+        $ids = $this->request->ids??[];
         if(empty($ids))return error(['error' => '未选择要删除的用户']);
         \PHPEMS\App\User\Service\Model\User::getQuery()->whereIN('userid', $ids)->delete();
         return ['msg'=>'删除成功'];
@@ -200,8 +228,17 @@ class User extends Controller implements ControllerInterface
             if($search['userstatus']??false)$query->where('userstatus', $search['userstatus']);
         }
         $data = $query->paginate($page, $limit);
-        array_walk($data['data'], function (&$item){
+        $coins = [];
+        $passports = [];
+        foreach($data['data'] as $item)
+        {
+            $passports[] = $item['userpassport'];
+        }
+        $coins = UserMoney::getQuery()->whereIN('umpassport', $passports)->get();
+        $coins = array_column($coins, 'umamount', 'umpassport');
+        array_walk($data['data'], function (&$item) use ($coins){
             $item['userregtime'] = date('Y-m-d', $item['userregtime']);
+            $item['usercoin'] = $coins[$item['userpassport']]??0;
             unset($item['userpassword']);
             return $item;
         });
@@ -237,6 +274,26 @@ class User extends Controller implements ControllerInterface
             $user->save();
         }
         return [];
+    }
+
+    public function Import(): array|Error
+    {
+        $service = new FileProvider();
+        $file = $this->request->getFile('file');
+        try{
+            $result = $service->upload($file);
+            if($result['success'])
+            {
+                $group = UserGroup::findDefaultGroup();
+                $data = ExcelProvider::importExcel($result['path'])??[];
+                if(empty($data))throw new Exception('导入文件数据为空');
+                UserService::importUser($data, $group->groupId);
+                return ['msg' => '导入成功'];
+            }
+            else return error($result['error']);
+        }catch (Throwable $e){
+            return error($e);
+        }
     }
 
     public function Index(): Error|array

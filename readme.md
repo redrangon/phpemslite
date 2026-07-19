@@ -418,7 +418,7 @@ magnolia/
    - 配置 URL 重写规则（.htaccess）
 ### 版本兼容性
 - PHP >= 8.2 是最低要求
-- 数据库版本要求: MySQL 5.7+ 或 MariaDB 10.2+
+- 数据库版本要求: MySQL 5.7.7+ 或 MariaDB 10.2+
 - Redis 5.0+ 用于会话和缓存（推荐）
 - Node.js >= 16.0 用于前端开发
 - OpenSSL 扩展用于加密功能（必需）
@@ -480,8 +480,10 @@ magnolia/
 如有问题或建议，请通过以下方式联系：
 - 提交 Issue
 - 官网 https://phpems.net
+- 演示 https://lite.phpems.net
+- 演示站账号密码均为 peadmin
 - 查看文档
 
 ---
 
-**最后更新**: 2026-06-30
+**最后更新**: 2026-07-18
