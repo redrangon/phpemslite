@@ -2,7 +2,7 @@
 	"name": "phpems/phpems",
 	"version": "12.0.0",
 	"require": {
-		"php": ">=8.1",
+		"php": ">=8.2",
 		"ext-json": "*",
 		"ext-pdo": "*",
 		"ext-redis": "*",
@@ -16,11 +16,8 @@
 		"endroid/qr-code": "^6.0",
 		"ext-curl": "*",
 		"yansongda/pay": "~3.7.0",
-		"hyperf/pimple": "~2.2.0",
 		"phpmailer/phpmailer": "^7.1",
         "ext-simplexml": "*",
-		"paperdoc-dev/paperdoc-lib": "^0.8.3",
-		"phpoffice/phpword": "^1.4",
       	"ext-dom": "*",
       	"ext-libxml": "*",
         "ext-ctype": "*"

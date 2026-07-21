@@ -2,11 +2,14 @@
 
 namespace PHPEMS\App\Exam\Controller\Master;
 
+use Exception;
 use PHPEMS\App\Exam\Service\ExamService;
 use PHPEMS\App\Exam\Service\Model\Point;
+use PHPEMS\App\Exam\Service\Model\Subject;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
 use PHPEMS\Lib\Rules\Error;
+use PHPEMS\Lib\Utils\FileProvider;
 
 class Section extends Controller implements ControllerInterface
 {
@@ -22,6 +25,8 @@ class Section extends Controller implements ControllerInterface
             'modify' => 'Modify',
             'delete' => 'Delete',
             'add' => 'Add',
+            'import' => 'Import',
+            'export' => 'Export',
             'refresh' => 'RefreshCache',
         ];
     }
@@ -36,6 +41,41 @@ class Section extends Controller implements ControllerInterface
     {
         $outFlows = [];
         return $outFlows[$action]??[];
+    }
+
+    public function Export():void
+    {
+        $subjectId = $this->request->subjectId??null;
+        if(!$subjectId)throw new Exception('参数错误');
+        $subject = Subject::find($subjectId);
+        if(!$subject->subjectId)throw new Exception('科目不存在');
+        $data = ExamService::exportSectionWithPoint($subjectId);
+        echo json_encode($data,JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    public function Import():array|Error
+    {
+        $subjectId = $this->request->subjectid??null;
+        if(!$subjectId)return error(['error' => '参数错误']);
+        $subject = Subject::find($subjectId);
+        if(!$subject->subjectId)return error(['error' => '科目不存在']);
+        $service = new FileProvider();
+        $file = $this->request->getFile('file');
+        try{
+            $result = $service->upload($file);
+            if($result['success'])
+            {
+                $JSON = file_get_contents($result['path']);
+                $JSON = json_decode($JSON,true,512,JSON_THROW_ON_ERROR);
+                if(empty($JSON))throw new \Exception('JSON文件格式错误');
+                ExamService::importSectionWithPoint($JSON,$subjectId);
+                return ['msg' => '导入成功'];
+            }
+            else return error(['error' => $result['error']]);
+        }catch (Exception $e){
+            return error(['error' => $e->getMessage()]);
+        }
     }
 
     public function RefreshCache():array|Error

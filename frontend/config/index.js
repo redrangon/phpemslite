@@ -3,7 +3,7 @@ const Config = {
     hashKey:'1234567812345678',
     hashIv:'1234567812345678',
     devUrl:"/api/phpemsvue/index.php/",
-    buildUrl:"/phpemsvue/index.php/",
+    buildUrl:"./index.php/",
     loginPage:'/login',
     wechatAppid:''
 };

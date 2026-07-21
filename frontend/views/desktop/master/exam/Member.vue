@@ -111,10 +111,10 @@
 			<lay-tab v-model="searchType" type="brief">
 				<lay-tab-item id="files" title="个人经历">
 					<table class="table">
-						<tr>
+                        <tbody>
+                        <tr>
                             <th colspan="7">证件信息</th>
 						</tr>
-                        <tbody>
 						<tr>
 							<td colspan="7">
 								<img :src="member.mpassportimg" style="margin:5px;">

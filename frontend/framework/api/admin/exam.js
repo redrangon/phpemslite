@@ -35,6 +35,10 @@ const examApi = {
     modifySection: (section) => http.post('/exam/master/section/modify', section),
     addSection: (section) => http.post('/exam/master/section/add', section),
     getSection: (sectionid) => http.post('/exam/master/section',{sectionid}),
+    importSection: (params) => http.post('/exam/master/section/import',params),
+    exportSection: (subjectId) => http.post('/exam/master/section/export',{subjectId}, {
+        responseType: 'blob'
+    }),
     refreshSectionCache: (ids) => http.post('/exam/master/section/refresh', {ids}),
     getAllPoints: (params) => http.post('/exam/master/point/all',params),
     getPointList: (params) => http.post('/exam/master/point/data',params),

@@ -113,7 +113,7 @@ export default {
 	async mounted(){
 		this.ehId = this.$route.params.ehid;
 		this.basic = this.authStore.basic;
-		if(this.basic.basicexam.model === 2)this.$router.replace('/desktop/home/exam/exam');
+		if(this.basic.basicexam?.model === 2)this.$router.replace('/desktop/home/exam/exam');
 		else
 		{
 			await this.getQuestionTypes();

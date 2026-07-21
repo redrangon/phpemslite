@@ -335,7 +335,7 @@ class Paper extends Controller implements ControllerInterface
     /**
      * 删除操作
      */
-    public function delete():array|Error
+    public function Delete():array|Error
     {
         // TODO: 实现删除逻辑
         // 示例：

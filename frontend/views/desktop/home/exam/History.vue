@@ -122,7 +122,7 @@ export default {
 				key: "operator",
 				width: "190px"
 			}],
-			tabCurrent:"2",
+			tabCurrent:"1",
 			histories:[],
 			page:{
 				current:1,
@@ -136,7 +136,7 @@ export default {
 	},
 	async mounted(){
 		this.basic = this.authStore.basic;
-		if(this.basic.basicexam.model === 2)this.$router.replace('/desktop/home/exam/exam');
+		if(this.basic.basicexam?.model === 2)this.$router.replace('/desktop/home/exam/exam');
 		else {
 			await this.getData();
 		}

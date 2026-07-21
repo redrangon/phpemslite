@@ -89,7 +89,7 @@ class Exercise extends Controller implements ControllerInterface
     {
         $user = $this->request->getUser();
         $pointId = $this->request->pointid??null;
-        $pointIds = array_merge(...$this->basic->basicpoint);
+        $pointIds = array_merge(...$this->basic->basicpoint)??[];
         if(!$pointId || !in_array($pointId, $pointIds))return error(['error' => '不存在的知识点']);
         $progress = \PHPEMS\App\Exam\Service\Model\Exercise::getQuery()->select(['exerid','exerpointid','exernumber'])
             ->where('exerpointid', $pointId)
@@ -107,7 +107,7 @@ class Exercise extends Controller implements ControllerInterface
                 'exerqutype' => 0
             ]);
         }
-        if($progress['exernumber'])return ['number' => $progress['exernumber']];
+        if($progress['exernumber']??false)return ['number' => $progress['exernumber']];
         else return ['number' => 0];
     }
 

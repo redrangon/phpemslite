@@ -52,7 +52,7 @@ export default {
 		}
 	},
 	async mounted(){
-		if(this.basic.basicexam.model === 2)
+		if(this.basic.basicexam?.model === 2)
 		{
 			this.$router.replace('/desktop/home/exam/exam');
 			return;

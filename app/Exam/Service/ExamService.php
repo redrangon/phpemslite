@@ -276,8 +276,8 @@ class ExamService
                     {
                         $tmpIds = array_rand($ids[$key][$level],$number);
                         if(!is_array($tmpIds))$tmpIds = [$tmpIds];
+                        $tmpIds = array_intersect_key($ids[$key][$level], array_flip($tmpIds));
                     }
-                    $tmpIds = array_intersect_key($ids[$key][$level], array_flip($tmpIds));
 
                     $relations = Relation::getQuery()->select(['qkquestionid','qkpointid'])
                         ->whereIn('qkquestionid',$tmpIds)
@@ -307,6 +307,7 @@ class ExamService
                                     $item['questionhtml'] = json_decode($item['questionhtml'],true);
                                 });
                                 $question['children'] = $children;
+                                $levelNumber += count($children);
                             }
                             else
                             {
@@ -319,6 +320,7 @@ class ExamService
                                 }
                             }
                             $questions[$key]['rowsQuestions'][] = $question;
+                            if($levelNumber == $number)break;
                         }
                         else
                         {
@@ -715,5 +717,47 @@ class ExamService
             else $history->ehstats = json_encode($ehstats, JSON_UNESCAPED_UNICODE);
         }
         return $history;
+    }
+
+    public static function importSectionWithPoint(array $data, int $subjectId):void
+    {
+        foreach($data as $item)
+        {
+            if($item['section']??false)
+            {
+                Section::getDB()->transaction(function () use ($item, $subjectId) {
+                    $section = Section::fillWithInit([
+                        'section' => $item['section'],
+                        'sectionsubjectid' => $subjectId,
+                        'sectiondescribe' => '',
+                        'sectionsequence' => 0
+                    ]);
+                    if(!$section->save())throw new \Exception('章节保存失败，请重试');
+                    if($item['children']??false)
+                    {
+                        $sectionId = $section->sectionId;
+                        foreach ($item['children'] as $point) {
+                            $model = Point::fillWithInit([
+                                'point' => $point,
+                                'pointdescribe' => '',
+                                'pointstatus' => 1,
+                                'pointsectionid' => $sectionId,
+                                'pointsequence' => 0
+                            ]);
+                            if(!$model->save())throw new \Exception('知识点保存失败，请重试');
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    public static function exportSectionWithPoint(int $subjectId):array
+    {
+        $sections = Section::getQuery()->select(['sectionid','section'])->where('sectionsubjectid', $subjectId)->get();
+        array_walk($sections, function (&$item) {
+            $item['children'] = Point::getQuery()->select(['pointid','point'])->where('pointsectionid', $item['sectionid'])->get();
+        });
+        return $sections;
     }
 }

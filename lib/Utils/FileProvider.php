@@ -121,7 +121,7 @@ class FileProvider
 
         // 第四步：检测 MIME 类型（只读取文件头部 16KB）
         // 优化：避免将整个文件加载到内存，对于 100MB 文件只需 16KB 内存
-        $mime = $this->detectMimeType(DI(FileStream::class, $file->getTempFilePath()));
+        $mime = $this->detectMimeType(DI(FileStream::class, $file->getTempFilePath()),$originalName);
 
         //  检查 MIME 是否在白名单中
         if (!in_array($mime, $this->allowedMimes, true)) {
@@ -135,7 +135,7 @@ class FileProvider
         $extension = $this->mimeToExtension[$mime];
         $normalizedOriginalExt = $this->aliasMap[$originalExt] ?? $originalExt;
         if ($originalExt !== '' && $normalizedOriginalExt !== $extension) {
-            return ['success' => false, 'error' => 'File extension does not match content type'];
+            return ['success' => false, 'error' => 'File extension does not match content type'.$mime];
         }
 
         //  子目录只允许字母、数字、下划线、连字符（禁止 / \）
@@ -193,13 +193,23 @@ class FileProvider
      * @param int $sampleSize 读取的样本大小（字节），默认 16KB
      * @return string MIME 类型
      */
-    private function detectMimeType(FileStream $stream, int $sampleSize = 16384): string
+    private function detectMimeType(FileStream $stream, ?string $originalName = null, int $sampleSize = 16384): string
     {
         $stream->rewind();
-        // 只读取文件头部，而不是整个文件
         $header = $stream->read($sampleSize);
         $fInfo = new finfo(FILEINFO_MIME_TYPE);
         $mime = $fInfo->buffer($header);
+
+        // 对 JSON 进行特殊处理
+        if ($originalName !== null && strtolower(pathinfo($originalName, PATHINFO_EXTENSION)) === 'json') {
+            // 如果 finfo 返回文本类 MIME，进一步验证内容是否为 JSON
+            if (in_array($mime, ['text/plain', 'text/x-json', 'application/json', 'application/octet-stream'], true)) {
+                $trimmed = ltrim($header);
+                if (str_starts_with($trimmed, '{') || str_starts_with($trimmed, '[')) {
+                    return 'application/json';
+                }
+            }
+        }
         return $mime ?: 'application/octet-stream';
     }
 

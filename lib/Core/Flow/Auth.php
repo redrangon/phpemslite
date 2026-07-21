@@ -68,7 +68,7 @@ class Auth {
         //$token = $_COOKIE['token'];
         if (!$token || !\PHPEMS\Lib\Auth\Auth::validateRequestToken($token)) {
             \PHPEMS\Lib\Auth\Auth::logout(); // 失效会话
-            return error(['error' => '请您先登录','code' => 301]);
+            return error(['error' => '请您再次登录','code' => 301]);
         }
         return true;
     }

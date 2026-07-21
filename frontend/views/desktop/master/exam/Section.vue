@@ -11,9 +11,12 @@
 		</lay-space>
 	</lay-card>
 	<lay-card>
-		<lay-table id="sectionid" ref="tableRef" v-model:selected-keys="selectedKeys" :columns="columns" :data-source="dataSource" :default-toolbar="false" :page="page" even>
+        <lay-quote>可以使用AI生成JSON格式保存为.json文件导入【<a href="javascript:" @click="showAIPromptDailog = true;">查看AI提示词</a>】。</lay-quote>
+        <lay-table id="sectionid" ref="tableRef" v-model:selected-keys="selectedKeys" :columns="columns" :data-source="dataSource" :default-toolbar="false" :page="page" even>
 			<template #toolbar>
 				<lay-button size="sm" type="primary" @click="showAddPage = true">添加章节</lay-button>
+                <lay-button size="sm" type="primary" @click="importSection">JSON导入</lay-button>
+                <lay-button size="sm" type="primary" @click="exportSection">JSON导出</lay-button>
 			</template>
 			<template #footer>
 				<lay-button :disabled="selectedKeys.length < 1" size="sm" type="primary" @click="refreshSection()">刷新缓存</lay-button>
@@ -47,6 +50,27 @@
 			</lay-form>
 		</div>
 	</lay-layer>
+    <lay-layer v-model="showAIPromptDailog"  :area="['800px']" title="AI提示词">
+        <div style="padding: 20px 50px 20px 20px;">
+            <pre>
+# 任务
+返回一个json格式的提示词，格式如下：
+[
+	{
+		section:'章节一',
+		children:[
+			'知识点一',
+			'知识点二',
+			'知识点三',
+		]
+	}
+]
+# 内容要求
+请以 初中生物内容为基础，生成符合格式要求的章节知识点数据。
+务必保证JSON格式正确，请勿添加多余字段。
+            </pre>
+        </div>
+    </lay-layer>
 </template>
 <style scoped></style>
 <script>
@@ -88,6 +112,7 @@ export default {
 			page:{ current: 1, limit: 20, total: 0 },
 			showAddPage:false,
 			showModifyPage:false,
+            showAIPromptDailog:false,
 			model:{},
 			modelModify:{},
 			addPageBtns:[
@@ -182,7 +207,43 @@ export default {
 		},
 		showPoint:function(id){
 			this.$router.push('/desktop/master/exam/point/' + this.subjectid + '/' + id);
-		}
+		},
+        importSection:function(){
+            let input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'json');
+            input.click();
+            input.onchange = async () => {
+                const formData = new FormData();
+                try{
+                    formData.append('subjectid', this.subjectid );
+                    formData.append('file', input.files[0], input.files[0].name );
+                    await examApi.importSection(formData);
+                }catch (e) {
+                    layer.confirm(e.message || '操作失败');
+                }finally {
+                    await this.getData();
+                }
+            };
+        },
+        exportSection:async function(){
+            const id = layer.load(0);
+            try{
+                const data = await examApi.exportSection(this.subjectid);
+                const a = document.createElement("a");
+                a.download = "data.json";
+                // 创建二进制对象
+                const blob = new Blob([data]);
+                const downloadURL = (window.URL || window.webkitURL).createObjectURL(blob);
+                a.href = downloadURL;
+                a.click();
+                URL.revokeObjectURL(downloadURL);
+                layer.close(id);
+            }catch(e){
+                layer.close(id);
+                layer.msg(e.message || '下载失败')
+            }
+        }
 	}
 }
 </script>

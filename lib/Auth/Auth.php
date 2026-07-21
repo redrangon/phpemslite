@@ -61,7 +61,6 @@ class Auth
         if (!self::check()) return false;
 
         $sessionId = session_id();
-        file_put_contents(PEPATH.'/storage/logs/lsession.txt', "sessionId:".$sessionId.";token:{$providedToken};time:".date('Y-m-d H:i:s')."\n", FILE_APPEND);
         $expectedToken = DataProvider::Create()->getAuthToken($sessionId);
 
         return hash_equals($expectedToken ?: '', $providedToken);
