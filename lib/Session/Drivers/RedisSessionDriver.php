@@ -33,7 +33,7 @@ class RedisSessionDriver implements SessionDriverInterface
         $redisClient = DI('redis.default');
         $this->redis = $redisClient->getClient(); // 获取底层 \Redis 实例
         $this->prefix = $config['prefix'] ?? 'sess:';
-        $this->lifetime = $config['lifetime'] ?? 1440;
+        $this->lifetime = $config['lifetime'] ?? 7200;
         $this->registerHandlers();
     }
 

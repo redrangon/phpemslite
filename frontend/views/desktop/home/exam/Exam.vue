@@ -78,7 +78,7 @@
 import examApi from '@/framework/api/exam.js';
 import {layer} from '@layui/layui-vue';
 import {ref} from 'vue';
-import myCamera from '@/components/desktop/Camera.vue';
+import myCamera from '@/views/components/desktop/Camera.vue';
 import {useAuthStore} from "@/stores/auth.js";
 import baseMixin from "@/framework/mixins/baseMixin.js";
 export default {

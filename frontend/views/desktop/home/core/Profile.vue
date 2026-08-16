@@ -89,7 +89,7 @@
 <script>
 import userApi from '@/framework/api/user.js';
 import {layer} from '@layui/layui-vue';
-import myThumb from '@/components/desktop/Thumb.vue';
+import myThumb from '@/views/components/desktop/Thumb.vue';
 import baseMixin from "@/framework/mixins/baseMixin.js";
 import {withConfirm} from "@/framework/utils/decorators.js";
 

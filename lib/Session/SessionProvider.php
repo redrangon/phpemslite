@@ -8,8 +8,8 @@ use PHPEMS\Lib\Session\Drivers\RedisSessionDriver;
 
 class SessionProvider
 {
-    protected static $instance = null;
-    protected $driver;
+    protected static ?self $instance = null;
+    protected SessionDriverInterface $driver;
 
     private function __construct(string $driver , array $config = [])
     {

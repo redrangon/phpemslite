@@ -74,11 +74,11 @@
 import courseApi from '@/framework/api/course.js';
 import {layer} from '@layui/layui-vue';
 import {ref} from 'vue';
-import myPlayer from '@/components/desktop/Player.vue';
-import myCamera from '@/components/desktop/Camera.vue';
-import courseTree from '@/components/desktop/CourseTree.vue';
+import myPlayer from '@/views/components/desktop/Player.vue';
+import myCamera from '@/views/components/desktop/Camera.vue';
+import courseTree from '@/views/components/desktop/CourseTree.vue';
 import baseMixin from "@/framework/mixins/baseMixin.js";
-import MarkDownView from "@/components/desktop/MarkDownView.vue";
+import MarkDownView from "@/views/components/desktop/MarkDownView.vue";
 import VueOfficePdf from '@vue-office/pdf'
 export default {
 	mixins: [baseMixin],
@@ -142,7 +142,7 @@ export default {
 		record:async function(time,player){
 			this.player = player;
 			await this.execute(async ()=>{
-				const res = await planApi.recordCourseProgress({
+				const res = await courseApi.recordCourseProgress({
 					courseid:this.courseid,
 					time:time
 				})

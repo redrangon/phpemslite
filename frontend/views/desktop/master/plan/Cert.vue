@@ -87,8 +87,8 @@
 <script>
 import certApi from '@/framework/api/admin/cert.js';
 import baseMixin from "@/framework/mixins/baseMixin.js";
-import myThumb from "@/components/desktop/Thumb.vue";
-import myEditor from "@/components/master/Editor.vue";
+import myThumb from "@/views/components/desktop/Thumb.vue";
+import myEditor from "@/views/components/master/Editor.vue";
 import planApi from "@/framework/api/admin/plan.js";
 
 export default {

@@ -7,7 +7,7 @@
 					<template #title>						
 						<span class="tabtitle">课后练习</span>
 					</template>
-					<lay-container>
+					<lay-container v-if="question && question.questionid">
 						<div class="title">
 							第{{page.current}}题 【{{questionType.questype}}】
 							<lay-space style="float:right">
@@ -21,7 +21,7 @@
 								</lay-button>
 							</lay-space>
 						</div>							
-						<lay-space v-if="question && question.questionid" class="question" direction="vertical" fill wrap>
+						<lay-space class="question" direction="vertical" fill wrap>
 							<question v-model:userAnswer="userAnswer" :childIndex="0" :index="page.current - 1" :question="question" :questionType="questionType" @saveAnswer="saveAnswer"></question>
 							<template v-if="questionType.questsort === 1 && !isshow">
 								<lay-button type="primary" @click="singleChange">查看答案</lay-button>
@@ -51,9 +51,6 @@
 									<div v-html="question.questiondescribe"></div>
 								</lay-field>
 							</div>
-						</lay-space>
-						<lay-space v-else>
-							没有试题
 						</lay-space>
 						<lay-page v-if="page.total > page.limit && page.current > 0" v-model="page.current" :layout="layout" :limit="page.limit" :total="page.total" style="float:right;margin-top:20px;" theme="blue" @change="changePage">
 							<template #prev>上一题</template>
@@ -88,7 +85,7 @@
 import examApi from '@/framework/api/exam.js';
 import {layer} from '@layui/layui-vue';
 import {ref} from 'vue';
-import question from '@/components/desktop/Question.vue';
+import question from '@/views/components/desktop/Question.vue';
 import baseMixin from "@/framework/mixins/baseMixin.js";
 import {useAuthStore} from "@/stores/auth.js";
 export default {

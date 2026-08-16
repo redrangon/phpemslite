@@ -48,7 +48,7 @@ class Category extends Controller implements ControllerInterface
             'catname' => $this->request->catname??null,
             'catthumb' => $this->request->catthumb??"",
             'caturl' => $this->request->caturl??"",
-            'catuseurl' => $this->request->catuseurl??"",
+            'catuseurl' => $this->request->catuseurl??0,
             'catparent' => $this->request->catparent??0,
             'catdes' => $this->request->catdes??""
         ];

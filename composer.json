@@ -20,7 +20,8 @@
         "ext-simplexml": "*",
       	"ext-dom": "*",
       	"ext-libxml": "*",
-        "ext-ctype": "*"
+        "ext-ctype": "*",
+		"dragonmantank/cron-expression": "^3.6"
     },
 	"require-dev": {
 		"phpunit/phpunit": "^9.5",

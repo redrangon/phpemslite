@@ -285,9 +285,9 @@ import memberApi from '@/framework/api/admin/member.js';
 import baseMixin from "@/framework/mixins/baseMixin.js";
 import {layer} from '@layui/layui-vue';
 import {ref} from 'vue';
-import myThumb from '@/components/desktop/Thumb.vue';
-import myUploadFile from '@/components/desktop/UploadFile.vue';
-import myEditor from '@/components/master/Editor.vue';
+import myThumb from '@/views/components/desktop/Thumb.vue';
+import myUploadFile from '@/views/components/desktop/UploadFile.vue';
+import myEditor from '@/views/components/master/Editor.vue';
 export default {
 	mixins:[baseMixin],
 	data() {

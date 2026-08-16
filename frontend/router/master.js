@@ -724,4 +724,52 @@ export default [
             }
         ]
     },
+    {
+        path: 'task',
+        component: () => import('@/views/desktop/master/task/Index.vue'),
+        meta: {
+            module:"task"
+        },
+        children: [
+            {
+                path: '',
+                component: () => import('@/views/desktop/master/task/Home.vue'),
+                meta:{
+                    menu:"1",
+                    breadcrumb: (route) => [
+                        { title: '首页', path: '/desktop/master' },
+                        { title: '任务调度中心', path: '/desktop/master/task' }
+                    ]
+                },
+            },
+            {
+                path: 'schedule',
+                name: 'taskSchedule',
+                component: () => import('@/views/desktop/master/task/Schedule.vue'),
+                meta:{
+                    menu:"2",
+                    keepAlive:true,
+                    breadcrumb: (route) => [
+                        { title: '首页', path: '/desktop/master' },
+                        { title: '任务调度中心', path: '/desktop/master/task' },
+                        { title: '任务计划', path: '/desktop/master/task/schedule' }
+                    ]
+                },
+            },
+            {
+                path: 'queue',
+                name: 'taskQueue',
+                component: () => import('@/views/desktop/master/task/Queue.vue'),
+                meta:{
+                    menu:"3",
+                    keepAlive:true,
+                    breadcrumb: (route) => [
+                        { title: '首页', path: '/desktop/master' },
+                        { title: '任务调度中心', path: '/desktop/master/task' },
+                        { title: '任务队列', path: '/desktop/master/task/queue' }
+                    ]
+                },
+            },
+        ]
+    },
 ];

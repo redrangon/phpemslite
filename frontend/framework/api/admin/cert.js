@@ -55,6 +55,7 @@ const certApi = {
     getCertMemberList: (search) => http.post('/cert/master/cert/member', search),
     getMemberList: (params) => http.post('/cert/master/member/data',params),
     addMember: (params) => http.post('/cert/master/member/add',params),
+    importCertMember: (params) => http.post('/cert/master/member/import',params),
     addMemberByPassport: (params) => http.post('/cert/master/member/addbypassport',params),
     modifyMember: (params) => http.post('/cert/master/member/modify',params),
     deleteMember: (ids) => http.post('/cert/master/member/delete',{ids}),

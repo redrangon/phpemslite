@@ -151,7 +151,7 @@ prompt;
         // 获取请求数据
         $data = [
             'basic' => $this->request->basic??null,
-            'basicthumb' => $this->request->basicthumb??null,
+            'basicthumb' => $this->request->basicthumb??"",
             'basicsubjectid' => $this->request->basicsubjectid??null,
             'basicfacetime' => $this->request->basicfacetime??0,
             'basicdescribe' => $this->request->basicdescribe??"",

@@ -318,7 +318,7 @@ import examApi from '@/framework/api/admin/exam.js';
 import {layer} from '@layui/layui-vue';
 import {ref} from 'vue';
 import {withConfirm, withLayer} from "@/framework/utils/decorators.js";
-import mySort from "@/components/master/Sort.vue";
+import mySort from "@/views/components/master/Sort.vue";
 
 export default {
 	data() {

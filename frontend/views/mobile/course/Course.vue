@@ -59,10 +59,10 @@
 <script>
 import courseApi from '@/framework/api/course.js';
 import {ref} from 'vue';
-import myPlayer from '@/components/mobile/Player.vue';
-import myCamera from '@/components/mobile/Camera.vue';
-import courseTree from '@/components/mobile/CourseTree.vue';
-import MarkDownView from "@/components/mobile/MarkDownView.vue";
+import myPlayer from '@/views/components/mobile/Player.vue';
+import myCamera from '@/views/components/mobile/Camera.vue';
+import courseTree from '@/views/components/mobile/CourseTree.vue';
+import MarkDownView from "@/views/components/mobile/MarkDownView.vue";
 import VueOfficePdf from '@vue-office/pdf'
 import baseMixin from "@/framework/mixins/baseMixin.js";
 export default {

@@ -97,7 +97,7 @@ import {layer} from '@layui/layui-vue';
 import {ref} from 'vue';
 import {useAuthStore} from "@/stores/auth.js";
 import baseMixin from "@/framework/mixins/baseMixin.js";
-import myQuestion from "@/components/desktop/Question.vue";
+import myQuestion from "@/views/components/desktop/Question.vue";
 export default {
 	components: {myQuestion},
 	data() {

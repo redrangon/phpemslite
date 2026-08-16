@@ -202,8 +202,8 @@
 import planApi from '@/framework/api/plan.js';
 import {layer} from '@layui/layui-vue';
 import {ref} from 'vue';
-import myEditor from '@/components/desktop/Editor.vue';
-import myThumb from '@/components/desktop/Thumb.vue';
+import myEditor from '@/views/components/desktop/Editor.vue';
+import myThumb from '@/views/components/desktop/Thumb.vue';
 import userApi from '@/framework/api/user.js';
 export default {
 	data() {

@@ -131,9 +131,9 @@
 <script>
 import contentApi from '@/framework/api/admin/content.js';
 import {layer} from '@layui/layui-vue';
-import myThumb from '@/components/desktop/Thumb.vue';
+import myThumb from '@/views/components/desktop/Thumb.vue';
 import {ref} from 'vue';
-import myEditor from '@/components/master/Editor.vue';
+import myEditor from '@/views/components/master/Editor.vue';
 import baseMixin from '@/framework/mixins/baseMixin.js';
 export default {
 	mixins: [baseMixin],

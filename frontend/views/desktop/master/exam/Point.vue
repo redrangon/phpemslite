@@ -177,7 +177,7 @@ export default {
 			},this.getData)
 		},
 		addPoint:async function(){
-			this.base( async() => {
+			await this.base( async() => {
 				await examApi.addPoint({
 					pointsectionid:this.sectionid,
 					...this.model

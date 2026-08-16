@@ -4,6 +4,7 @@ namespace PHPEMS\Lib\DataBase;
 
 use Closure;
 use PDOException;
+
 class QueryBuilder
 {
     protected $connection;
@@ -18,7 +19,14 @@ class QueryBuilder
     protected $limit = null;
     protected $offset = null;
 
-    public function __construct(DB $db,string $table)
+    // ============================================
+    // 锁相关属性
+    // ============================================
+    protected $lockMode = null;          // 锁模式：'for_update', 'shared', null
+    protected $lockSkipLocked = false;   // 是否使用 SKIP LOCKED
+    protected $lockNowait = false;       // 是否使用 NOWAIT
+
+    public function __construct(DB $db, string $table)
     {
         $this->connection = $db;
         if ($table) {
@@ -26,17 +34,102 @@ class QueryBuilder
         }
     }
 
+    // ============================================
+    // 锁方法
+    // ============================================
+
+    /**
+     * 添加 FOR UPDATE 锁
+     *
+     * @param bool $skipLocked 是否使用 SKIP LOCKED
+     * @param bool $nowait 是否使用 NOWAIT
+     * @return self
+     */
+    public function lockForUpdate(bool $skipLocked = false, bool $nowait = false): self
+    {
+        $this->lockMode = 'for_update';
+        $this->lockSkipLocked = $skipLocked;
+        $this->lockNowait = $nowait;
+        return $this;
+    }
+
+    /**
+     * 添加 LOCK IN SHARE MODE 锁
+     *
+     * @param bool $skipLocked 是否使用 SKIP LOCKED
+     * @param bool $nowait 是否使用 NOWAIT
+     * @return self
+     */
+    public function sharedLock(bool $skipLocked = false, bool $nowait = false): self
+    {
+        $this->lockMode = 'shared';
+        $this->lockSkipLocked = $skipLocked;
+        $this->lockNowait = $nowait;
+        return $this;
+    }
+
+    /**
+     * 清除锁设置
+     */
+    public function clearLock(): self
+    {
+        $this->lockMode = null;
+        $this->lockSkipLocked = false;
+        $this->lockNowait = false;
+        return $this;
+    }
+
+    // ============================================
+    // 核心方法
+    // ============================================
+
+    /**
+     * 字段名转义，防止 SQL 注入
+     */
+    protected function wrap(string $value): string
+    {
+        if ($value === '*') return $value;
+        // 移除已有的反引号，然后重新包裹，防止重复包裹
+        $value = str_replace('`', '', $value);
+        return '`' . $value . '`';
+    }
+
+    /**
+     * 转义字段名，支持 `table.column` 格式，也支持表达式
+     */
+    protected function wrapColumn(string $column): string
+    {
+        // 如果是表达式（包含括号、空格、函数调用），不转义
+        if (preg_match('/[()\s,.]/', $column) && !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $column)) {
+            // 简单的字段名检测：如果是纯字母数字下划线，则转义
+            // 否则视为表达式
+            if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)?$/', $column)) {
+                return $column;
+            }
+        }
+
+        // 如果是 table.column 格式，分别转义
+        if (strpos($column, '.') !== false) {
+            $parts = explode('.', $column);
+            $parts = array_map([$this, 'wrap'], $parts);
+            return implode('.', $parts);
+        }
+
+        return $this->wrap($column);
+    }
+
     public function buildTableName(string $table, bool $useAlias = true): string
     {
+        $table = str_replace('`', '', $table);
         if ($prefix = $this->connection->getConfig('tablePrefix')) {
-            return $useAlias? $prefix . $table .' AS ' . $table:$prefix . $table ;
+            return $useAlias ? $prefix . $table . ' AS ' . $table : $prefix . $table;
         }
-        return $table;
+        return $useAlias ? $table . ' AS ' . $table : $table;
     }
 
     public function from(string $table): self
     {
-        $this->table = $this->buildTableName($table,false);
+        $this->table = $this->buildTableName($table, false);
         $this->tableWithAlias = $this->buildTableName($table);
         return $this;
     }
@@ -48,6 +141,7 @@ class QueryBuilder
     }
 
     // ===== JOIN =====
+
     public function join(string $table, $first, string $operator = null, string $second = null): self
     {
         $conditions = $this->normalizeJoinConditions($first, $operator, $second);
@@ -69,17 +163,8 @@ class QueryBuilder
         return $this;
     }
 
-    /**
-     * 标准化 JOIN 条件
-     * 
-     * @param mixed $first 第一个字段或条件数组
-     * @param string|null $operator 运算符
-     * @param string|null $second 第二个字段
-     * @return array 标准化的条件数组
-     */
     protected function normalizeJoinConditions($first, ?string $operator, ?string $second): array
     {
-        // 如果是数组，说明是多条件
         if (is_array($first)) {
             $conditions = [];
             foreach ($first as $condition) {
@@ -93,14 +178,13 @@ class QueryBuilder
             }
             return $conditions;
         }
-        
-        // 单条件（向后兼容）
         return [
             ['first' => $first, 'operator' => $operator, 'second' => $second]
         ];
     }
 
-    // ===== WHERE (支持嵌套/OR) =====
+    // ===== WHERE =====
+
     public function where($column, $operator = null, $value = null): self
     {
         if ($column instanceof Closure) {
@@ -135,16 +219,66 @@ class QueryBuilder
         return $this;
     }
 
+    public function whereNotIn(string $column, array $values): self
+    {
+        $this->wheres[] = ['type' => 'In', 'column' => $column, 'values' => $values, 'not' => true, 'boolean' => 'and'];
+        return $this;
+    }
+
     public function whereNull(string $column): self
     {
         $this->wheres[] = ['type' => 'Null', 'column' => $column, 'not' => false, 'boolean' => 'and'];
         return $this;
     }
 
-    // ===== GROUP / HAVING / ORDER / LIMIT =====
-    public function groupBy(string $column): self
+    public function whereNotNull(string $column): self
     {
-        $this->groups[] = $column;
+        $this->wheres[] = ['type' => 'Null', 'column' => $column, 'not' => true, 'boolean' => 'and'];
+        return $this;
+    }
+
+    public function whereRaw(string $sql, array $bindings = []): self
+    {
+        $this->wheres[] = [
+            'type' => 'Raw',
+            'sql' => $sql,
+            'bindings' => $bindings,
+            'boolean' => 'and'
+        ];
+        return $this;
+    }
+
+    public function orWhereRaw(string $sql, array $bindings = []): self
+    {
+        $this->wheres[] = [
+            'type' => 'Raw',
+            'sql' => $sql,
+            'bindings' => $bindings,
+            'boolean' => 'or'
+        ];
+        return $this;
+    }
+
+    // ===== GROUP / HAVING =====
+
+    public function groupBy($columns): self
+    {
+        if (is_string($columns)) {
+            $columns = [$columns];
+        }
+        foreach ($columns as $column) {
+            if (preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $column)) {
+                $this->groups[] = $this->wrap($column);
+            } else {
+                $this->groups[] = $column;
+            }
+        }
+        return $this;
+    }
+
+    public function groupByRaw(string $sql): self
+    {
+        $this->groups[] = $sql;
         return $this;
     }
 
@@ -165,7 +299,7 @@ class QueryBuilder
         return $this;
     }
 
-    public function orHavingRaw(string $sql, array $bindings = [])
+    public function orHavingRaw(string $sql, array $bindings = []): self
     {
         $this->havings[] = [
             'type' => 'Raw',
@@ -176,44 +310,61 @@ class QueryBuilder
         return $this;
     }
 
-    public function orderBy(string $column, string $direction = 'asc')
+    // ===== ORDER / LIMIT =====
+
+    public function orderBy(string $column, string $direction = 'asc'): self
     {
         $dir = strtolower($direction) === 'desc' ? 'DESC' : 'ASC';
-        $this->orders[] = "{$column} {$dir}";
+
+        if (preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $column)) {
+            $this->orders[] = $this->wrap($column) . " {$dir}";
+        } else {
+            $this->orders[] = "{$column} {$dir}";
+        }
         return $this;
     }
 
-    public function limit(int $limit)
+    public function orderByRaw(string $sql): self
+    {
+        $this->orders[] = $sql;
+        return $this;
+    }
+
+    public function limit(int $limit): self
     {
         $this->limit = $limit;
         return $this;
     }
 
-    public function offset(int $offset)
+    public function offset(int $offset): self
     {
         $this->offset = $offset;
         return $this;
     }
 
     // ===== 执行 =====
+
     public function get(): array
     {
         [$sql, $bindings] = $this->toSql();
         return $this->connection->fetchAll($sql, $bindings);
     }
 
-    public function paginate( int $page = 1,int $limit = 20):array
-    {
-        if($this->groups || $this->havings)$total = $this->countGroup();
-        else $total = $this->count();
-        $offset = ($page - 1) * $limit;
-        $data = $this->limit($limit)->offset($offset)->get();
-        return ['page' => $page, 'total' => $total, 'limit' => $limit, 'data' => $data];
-    }
-
     public function first(): ?array
     {
         $clone = clone $this;
+        $result = $clone->limit(1)->get();
+        return $result[0] ?? null;
+    }
+
+    /**
+     * 获取第一个结果并加锁（FOR UPDATE SKIP LOCKED）
+     * 专门用于 Worker 拉取任务
+     */
+    public function firstForUpdate(bool $skipLocked = true): ?array
+    {
+        $clone = clone $this;
+        $clone->lockForUpdate($skipLocked);
         $result = $clone->limit(1)->get();
         return $result[0] ?? null;
     }
@@ -226,49 +377,123 @@ class QueryBuilder
         $origLimit = $this->limit;
         $origOffset = $this->offset;
         $origColumns = $this->columns;
+        $origLockMode = $this->lockMode;
+        $origLockSkipLocked = $this->lockSkipLocked;
+        $origLockNowait = $this->lockNowait;
 
-        // 清除所有可能干扰 COUNT(*) 的子句
-        $this->groups = $this->havings = $this->orders = [];
-        $this->limit = $this->offset = null;
+        $this->groups = [];
+        $this->havings = [];
+        $this->orders = [];
+        $this->limit = null;
+        $this->offset = null;
         $this->columns = ["COUNT({$column}) as aggregate"];
+        $this->lockMode = null;
+        $this->lockSkipLocked = false;
+        $this->lockNowait = false;
 
         try {
             $row = $this->first();
             return (int) ($row['aggregate'] ?? 0);
         } finally {
-            // 恢复原始状态
             $this->groups = $origGroups;
             $this->havings = $origHavings;
             $this->orders = $origOrders;
             $this->limit = $origLimit;
             $this->offset = $origOffset;
             $this->columns = $origColumns;
+            $this->lockMode = $origLockMode;
+            $this->lockSkipLocked = $origLockSkipLocked;
+            $this->lockNowait = $origLockNowait;
         }
     }
 
     public function countGroup(): int
     {
         $original = $this->columns;
+        $origLockMode = $this->lockMode;
+        $origLockSkipLocked = $this->lockSkipLocked;
+        $origLockNowait = $this->lockNowait;
+
         $this->columns = ['1'];
+        $this->lockMode = null;
+        $this->lockSkipLocked = false;
+        $this->lockNowait = false;
+
         [$innersql, $bindings] = $this->toSubSql();
         $sql = "SELECT COUNT(*) AS aggregate FROM ({$innersql}) AS grouped";
         $result = $this->connection->fetch($sql, $bindings);
+
         $this->columns = $original;
+        $this->lockMode = $origLockMode;
+        $this->lockSkipLocked = $origLockSkipLocked;
+        $this->lockNowait = $origLockNowait;
+
         return (int) ($result['aggregate'] ?? 0);
     }
 
+    // ===== 分页 =====
+
+    public function paginate(int $page = 1, int $limit = 20): array
+    {
+        if ($this->groups || $this->havings) {
+            $total = $this->countGroup();
+        } else {
+            $total = $this->count();
+        }
+        $offset = ($page - 1) * $limit;
+        $data = $this->limit($limit)->offset($offset)->get();
+
+        return [
+            'page' => $page,
+            'total' => $total,
+            'limit' => $limit,
+            'data' => $data
+        ];
+    }
+
     // ===== 写操作 =====
+
     public function insert(array $data): int
     {
         $columns = array_keys($data);
         $placeholders = str_repeat('?,', count($columns) - 1) . '?';
         $sql = "INSERT INTO {$this->table} (" . implode(', ', $columns) . ") VALUES ({$placeholders})";
         $values = array_values($data);
-        $values = array_map(function($item){
-            if(is_array($item))$item = json_encode($item, JSON_UNESCAPED_UNICODE);
+
+        $values = array_map(function($item) {
+            if (is_array($item)) {
+                return json_encode($item, JSON_UNESCAPED_UNICODE);
+            }
             return $item;
         }, $values);
+
         return $this->connection->insertGetId($sql, $values);
+    }
+
+    public function insertMultiple(array $data): int
+    {
+        if (empty($data)) {
+            return 0;
+        }
+
+        $columns = array_keys($data[0]);
+        $placeholders = '(' . str_repeat('?,', count($columns) - 1) . '?)';
+        $valuePlaceholders = implode(', ', array_fill(0, count($data), $placeholders));
+
+        $sql = "INSERT INTO {$this->table} (" . implode(', ', $columns) . ") VALUES {$valuePlaceholders}";
+
+        $values = [];
+        foreach ($data as $row) {
+            foreach ($row as $val) {
+                if (is_array($val)) {
+                    $values[] = json_encode($val, JSON_UNESCAPED_UNICODE);
+                } else {
+                    $values[] = $val;
+                }
+            }
+        }
+
+        return $this->connection->execute($sql, $values);
     }
 
     public function update(array $data): int
@@ -298,7 +523,7 @@ class QueryBuilder
     public function delete(): int
     {
         if (empty($this->wheres)) {
-            throw new \PDOException('Delete without where clause is not allowed.');
+            throw new PDOException('Delete without where clause is not allowed.');
         }
         $sql = "DELETE FROM {$this->table}";
         [$whereSql, $whereBindings] = $this->compileWheres();
@@ -306,7 +531,10 @@ class QueryBuilder
         return $this->connection->execute($sql, $whereBindings);
     }
 
-    // ===== SQL 生成 =====
+    // ============================================
+    // SQL 构建
+    // ============================================
+
     public function toSubSql(): array
     {
         $columns = implode(', ', $this->columns);
@@ -322,7 +550,9 @@ class QueryBuilder
         }
 
         [$whereSql, $bindings] = $this->compileWheres();
-        if ($whereSql) $sql .= " WHERE {$whereSql}";
+        if ($whereSql) {
+            $sql .= " WHERE {$whereSql}";
+        }
 
         if (!empty($this->groups)) {
             $sql .= ' GROUP BY ' . implode(', ', $this->groups);
@@ -333,25 +563,46 @@ class QueryBuilder
             $sql .= " HAVING {$havingSql}";
             $bindings = array_merge($bindings, $havingBindings);
         }
+
         return [$sql, $bindings];
     }
 
     public function toSql(): array
     {
-        [$sql,  $bindings] =  $this->toSubSql();
+        [$sql, $bindings] = $this->toSubSql();
 
         if (!empty($this->orders)) {
             $sql .= ' ORDER BY ' . implode(', ', $this->orders);
         }
 
         if ($this->limit !== null) {
-            $sql .= ' LIMIT ' . (int)$this->limit;
+            $sql .= ' LIMIT ' . (int) $this->limit;
             if ($this->offset !== null) {
-                $sql .= ' OFFSET ' . (int)$this->offset;
+                $sql .= ' OFFSET ' . (int) $this->offset;
             }
         }
+
+        // 锁支持（MySQL 8.0+）
+        if ($this->lockMode !== null) {
+            if ($this->lockMode === 'for_update') {
+                $sql .= ' FOR UPDATE';
+            } elseif ($this->lockMode === 'shared') {
+                $sql .= ' LOCK IN SHARE MODE';
+            }
+            if ($this->lockSkipLocked) {
+                $sql .= ' SKIP LOCKED';
+            }
+            if ($this->lockNowait) {
+                $sql .= ' NOWAIT';
+            }
+        }
+
         return [$sql, $bindings];
     }
+
+    // ============================================
+    // 编译方法
+    // ============================================
 
     protected function compileWheres(): array
     {
@@ -365,7 +616,9 @@ class QueryBuilder
 
     protected function compileConditions(array $conditions): array
     {
-        if (empty($conditions)) return ['', []];
+        if (empty($conditions)) {
+            return ['', []];
+        }
 
         $parts = [];
         $bindings = [];
@@ -375,7 +628,8 @@ class QueryBuilder
 
             switch ($cond['type']) {
                 case 'Basic':
-                    $parts[] = ltrim("{$connector} {$cond['column']} {$cond['operator']} ?");
+                    $column = $this->wrapColumn($cond['column']);
+                    $parts[] = ltrim("{$connector} {$column} {$cond['operator']} ?");
                     $bindings[] = $cond['value'];
                     break;
 
@@ -390,16 +644,20 @@ class QueryBuilder
                         $parts[] = ltrim("{$connector} 1 = 0");
                         break;
                     }
+                    $column = $this->wrapColumn($cond['column']);
                     $placeholders = str_repeat('?,', count($cond['values']) - 1) . '?';
-                    $parts[] = ltrim("{$connector} {$not}{$cond['column']} IN ({$placeholders})");
+                    $parts[] = ltrim("{$connector} {$not}{$column} IN ({$placeholders})");
                     $bindings = array_merge($bindings, $cond['values']);
                     break;
+
                 case 'Null':
+                    $column = $this->wrapColumn($cond['column']);
                     $isNull = $cond['not'] ? 'IS NOT NULL' : 'IS NULL';
-                    $parts[] = ltrim("{$connector} {$cond['column']} {$isNull}");
+                    $parts[] = ltrim("{$connector} {$column} {$isNull}");
                     break;
+
                 case 'Nested':
-                    $nested = new static();
+                    $nested = new static($this->connection, '');
                     $cond['callback']($nested);
                     [$nestedSql, $nestedBindings] = $nested->compileWheres();
                     if ($nestedSql) {

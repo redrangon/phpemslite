@@ -119,7 +119,7 @@
 <script>
 import courseApi from '@/framework/api/course.js';
 import baseMixin from "@/framework/mixins/baseMixin.js";
-import courseTree from '@/components/desktop/CourseTree.vue';
+import courseTree from '@/views/components/desktop/CourseTree.vue';
 import examApi from "@/framework/api/exam.js";
 
 export default {

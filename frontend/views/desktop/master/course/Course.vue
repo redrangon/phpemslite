@@ -128,11 +128,11 @@
 <style scoped></style>
 <script>
 import courseApi from '@/framework/api/admin/course.js';
-import myThumb from '@/components/desktop/Thumb.vue';
-import myUploadFile from '@/components/desktop/UploadFile.vue';
-import myEditor from '@/components/master/Editor.vue';
-import MDEditor from "@/components/master/MDEditor.vue";
-import courseTree from '@/components/master/CourseTree.vue';
+import myThumb from '@/views/components/desktop/Thumb.vue';
+import myUploadFile from '@/views/components/desktop/UploadFile.vue';
+import myEditor from '@/views/components/master/Editor.vue';
+import MDEditor from "@/views/components/master/MDEditor.vue";
+import courseTree from '@/views/components/master/CourseTree.vue';
 import {withConfirm, withLayer} from "@/framework/utils/decorators.js";
 import baseMixin from "@/framework/mixins/baseMixin.js";
 

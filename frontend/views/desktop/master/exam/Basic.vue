@@ -206,9 +206,9 @@
 <script>
 import examApi from '@/framework/api/admin/exam.js';
 import {layer} from '@layui/layui-vue';
-import myThumb from '@/components/desktop/Thumb.vue';
+import myThumb from '@/views/components/desktop/Thumb.vue';
 import {withConfirm, withLayer} from "@/framework/utils/decorators.js";
-import MyEditor from "@/components/master/Editor.vue";
+import MyEditor from "@/views/components/master/Editor.vue";
 
 export default {
 	name:'examBasic',

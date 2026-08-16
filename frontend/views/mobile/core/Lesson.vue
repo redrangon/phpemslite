@@ -33,10 +33,10 @@
 import plan from '@/framework/api/plan.js';
 import courseApi from '@/framework/api/course.js';
 import {ref} from 'vue';
-import myPlayer from '@/components/desktop/Player.vue';
-import myCamera from '@/components/desktop/Camera.vue';
+import myPlayer from '@/views/components/desktop/Player.vue';
+import myCamera from '@/views/components/desktop/Camera.vue';
 import { showSuccessToast, showFailToast } from 'vant';
-import courseTree from '@/components/desktop/CourseTree.vue';
+import courseTree from '@/views/components/desktop/CourseTree.vue';
 export default {
     data() {
         return {

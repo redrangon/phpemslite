@@ -140,14 +140,11 @@ class Section extends Controller implements ControllerInterface
     /**
      * 删除操作
      */
-    public function delete():array|Error
+    public function Delete():array|Error
     {
-        // TODO: 实现删除逻辑
-        // 示例：
-        $ids = $this->request->ids;
+        $ids = $this->request->ids??[];
         if(empty($ids)) return error(['error' => '未选择要删除的记录']);
-        \PHPEMS\App\Exam\Service\Model\Section::getQuery()->whereIn('id', $ids)->delete();
-
+        \PHPEMS\App\Exam\Service\Model\Section::getQuery()->whereIn('sectionid', $ids)->delete();
         return ['msg' => '删除成功'];
     }
 

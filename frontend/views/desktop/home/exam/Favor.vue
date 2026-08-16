@@ -50,7 +50,7 @@ import {layer} from '@layui/layui-vue';
 import baseMixin from "@/framework/mixins/baseMixin.js";
 import {ref} from 'vue';
 import {useAuthStore} from "@/stores/auth.js";
-import question from '@/components/desktop/Question.vue';
+import question from '@/views/components/desktop/Question.vue';
 export default {
 	mixins: [baseMixin],
 	setup() {

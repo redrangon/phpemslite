@@ -63,7 +63,7 @@
 	import baseMixin from "@/framework/mixins/baseMixin.js";
 	import { showConfirmDialog,showDialog,showFailToast  } from 'vant';
     import { ref } from 'vue';
-    import question from '@/components/mobile/Question.vue';
+    import question from '@/views/components/mobile/Question.vue';
     import { Virtual } from 'swiper/modules';
     import { Swiper, SwiperSlide } from 'swiper/vue';
     import 'swiper/css';

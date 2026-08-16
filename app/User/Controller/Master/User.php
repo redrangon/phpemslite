@@ -41,7 +41,8 @@ class User extends Controller implements ControllerInterface
             'modifygroup' => 'modifyGroup',
             'verify' => 'Verify',
             'defaultgroup' => 'setDefaultGroup',
-            'import' => 'Import'
+            'import' => 'Import',
+            'sync' => 'Sync'
         ];
     }
 
@@ -55,6 +56,33 @@ class User extends Controller implements ControllerInterface
     {
         $outFlows = [];
         return $outFlows[$action]??[];
+    }
+
+    public function Sync():array|Error
+    {
+        $ids = $this->request->ids??null;
+        if(!$ids)return error(['error' => '用户ID不能为空']);
+        $users = \PHPEMS\App\User\Service\Model\User::getQuery()->whereIn('userid', $ids)->get();
+        if(!$users)return error(['error' => '用户不存在']);
+        foreach ($users as $user)
+        {
+            $memberModel = Member::findByPassport($user['userpassport']);
+            if(!$memberModel->mId)
+            {
+                $memberModel = Member::fillWithInit([
+                    'mpassport' => $user['userpassport'],
+                    'mname' => $user['usertruename'],
+                    'msex' => $user['usergender']
+                ]);
+            }
+            else
+            {
+                $memberModel->mname = $user['usertruename'];
+                $memberModel->msex = $user['usergender'];
+            }
+            $memberModel->save();
+        }
+        return ['msg' => '导入完成'];
     }
 
     public function Log():array|Error

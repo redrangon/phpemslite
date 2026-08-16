@@ -147,8 +147,8 @@
 </template>
 <style scoped></style>
 <script>
-import myEditor from '@/components/master/Editor.vue';
-import myQuestion from '@/components/master/Question.vue';
+import myEditor from '@/views/components/master/Editor.vue';
+import myQuestion from '@/views/components/master/Question.vue';
 import examApi from '@/framework/api/admin/exam.js';
 import {layer} from '@layui/layui-vue';
 import {withConfirm, withLayer} from "@/framework/utils/decorators.js";

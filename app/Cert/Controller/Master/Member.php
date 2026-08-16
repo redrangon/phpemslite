@@ -25,6 +25,7 @@ class Member extends Controller implements ControllerInterface
             'addbypassport' => 'AddByPassport',
             'refresh' => 'RefreshNumber',
             'verify' => 'Verify',
+            'import' => 'Import'
         ];
     }
 
@@ -37,6 +38,71 @@ class Member extends Controller implements ControllerInterface
     {
         $outFlows = [];
         return $outFlows[$action]??[];
+    }
+
+    public function Import():array | Error
+    {
+        $importType = $this->request->importType??null;
+        $importData = $this->request->importData??null;
+        if($importType && $importData)
+        {
+            $ceId = $this->request->ceId??null;
+            if(!$ceId) return error(['error' => '参数错误']);
+            $cert = \PHPEMS\App\Cert\Service\Model\Cert::find($ceId);
+            if(!$cert->ceId) return error(['error' => '参数错误']);
+            $passports = [];
+            $importData = explode("\n",$importData);
+            foreach($importData as $data)
+            {
+                $data = trim($data);
+                if($importType == 1)
+                {
+                    $userModel = User::findByUserName($data);
+                    if($userModel->userpassport)
+                    {
+                        $passports[] = [
+                            $userModel->userpassport,
+                            $data
+                        ];
+                    }
+                    else return error(['error' => '用户名'.$data.'不存在']);
+                }
+                else
+                {
+                    $memberModel = \PHPEMS\App\Member\Service\Model\Member::findByPassport($data);
+                    if($memberModel->mPassport)
+                    {
+                        $passports[] = [
+                            $userModel->userpassport
+                        ];
+                    }
+                    else return error(['error' => '通行证'.$data.'不存在']);
+                }
+            }
+            $endTime = TIME + $cert->cedays * 24 * 60 * 60;
+            foreach($passports as $indexId => $data) {
+                $passport = $data[0];
+                $userName = $data[1]??null;
+                $model = CertMember::findByPassportAndCeId($passport, $ceId);
+                if (!$model->cemId) {
+                    $model = CertMember::fillWithInit([
+                        'cemceid' => $ceId,
+                        'cemexpirytime' => $endTime,
+                        'cemtime' => TIME,
+                        'cempassport' => $passport,
+                        'cemstatus' => 0,
+                        'cemsn' => date('YmdHis') . rand(100, 999) . ($indexId >= 1000 ?: str_pad($indexId, 4, '0', STR_PAD_LEFT))
+                    ]);
+                    $result = $model->toValidate();
+                    if ($result !== true) return error(['error' => ($userName?'用户名:'.$userName:'').'通行证ID：' . $passport . '用户添加失败']);
+                    if (!$model->save()) return error(['error' => ($userName?'用户名:'.$userName:'').'通行证ID：' . $passport . '用户添加失败']);
+                } else {
+                    return error(['error' => ($userName?'用户名:'.$userName:'').'通行证ID：' . $passport . '用户有未过期证件']);
+                }
+            }
+            return ['msg' => '导入成功'];
+        }
+        return error(['error' => '参数错误']);
     }
 
     public function RefreshNumber():array | Error

@@ -68,7 +68,7 @@
 import contentApi from '@/framework/api/admin/content.js';
 import {layer} from '@layui/layui-vue';
 import {ref} from 'vue';
-import myThumb from '@/components/desktop/Thumb.vue';
+import myThumb from '@/views/components/desktop/Thumb.vue';
 import baseMixin from '@/framework/mixins/baseMixin.js';
 export default {
 	mixins: [baseMixin],

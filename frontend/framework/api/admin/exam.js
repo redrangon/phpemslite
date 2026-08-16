@@ -61,6 +61,7 @@ const examApi = {
     delQuestionTypes: (ids) => http.post('/exam/master/questype/delete', {ids}),
     modifyQuestionType: (paper) => http.post('/exam/master/questype/modify', paper),
     addQuestionType: (paper) => http.post('/exam/master/questype/add', paper),
+    insertQuestionPoint: (params) => http.post('/exam/master/question/point', params),
     getQuestionList: (params) => http.post('/exam/master/question/data',params),
     getQuestion:(questionid)=> http.post('/exam/master/question',{questionid}),
     delQuestions: (params) => http.post('/exam/master/question/delete', params),

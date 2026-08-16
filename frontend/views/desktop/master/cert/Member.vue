@@ -18,7 +18,7 @@
 			<template #toolbar>
 				<lay-button size="sm" type="primary" @click="userAddPage">添加人员</lay-button>
 				<span style="float:right;">
-					<lay-button size="sm" type="primary" @click="showImportPage = true">导入人员信息</lay-button>
+					<lay-button size="sm" type="primary" @click="showImport()">导入人员信息</lay-button>
 				</span>
 			</template>
 			<template v-slot:cemstatus="{row}">
@@ -41,7 +41,7 @@
 			<lay-space size="lg" style="margin:10px auto">
 				<lay-space></lay-space>
 				<lay-space>
-					<span style='width:70px'> 身份证</span><lay-input v-model="memberSearch.mpassport" allow-clear size="sm" style="width: 140px;"></lay-input>
+					<span style='width:70px'> 通行证ID</span><lay-input v-model="memberSearch.mpassport" allow-clear size="sm" style="width: 140px;"></lay-input>
 				</lay-space>
 				<lay-space>
 					<span style='width:70px'> 姓名</span><lay-input v-model="memberSearch.mname" allow-clear size="sm" style="width: 140px;"></lay-input>
@@ -67,6 +67,19 @@
 			</lay-table>
 		</lay-card>
 	</lay-layer>
+    <lay-layer v-model="showImportPage" :area="['900px','600px']" :btn="showImportPageBtns" title="人员导入">
+        <div style="padding: 20px 50px 20px 20px;">
+            <lay-form :model="importModel" size="md" :labelWidth="100" class="form" ref="importPageFrom">
+                <lay-form-item label="识别字段" prop="importType" required>
+                    <lay-radio v-model="importModel.importType" name="importType" :value="1" label="用户名"></lay-radio>
+                    <lay-radio v-model="importModel.importType" name="importType" :value="2" label="通行证ID"></lay-radio>
+                </lay-form-item>
+                <lay-form-item label="人员数据" prop="importData" required>
+                    <lay-textarea placeholder="请输入人员数据，一行一个" v-model="importModel.importData" rows="18"></lay-textarea>
+                </lay-form-item>
+            </lay-form>
+        </div>
+    </lay-layer>
 	<lay-layer v-model="showPage" :area="['900px','90%']" :btn="showPageBtns" title="档案详情">
 		<div style="padding: 20px;">
 			<table class="table">
@@ -120,18 +133,18 @@
 			<lay-tab v-model="searchType" type="brief">
 				<lay-tab-item id="files" title="个人经历">
 					<table class="table">
-						<tr>
-                            <th colspan="7">证件信息</th>
-						</tr>
                         <tbody>
-						<tr>
-							<td colspan="7">
-								<img :src="member.mpassportimg" style="margin:5px;max-width: 96%">
-							</td>
-						</tr>
-						<tr>
-						    <th colspan="7">工作经历</th>
-						</tr>
+                            <tr>
+                                <th colspan="7">证件信息</th>
+                            </tr>
+                            <tr>
+                                <td colspan="7">
+                                    <img :src="member.mpassportimg" style="margin:5px;max-width: 96%">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th colspan="7">工作经历</th>
+                            </tr>
                             <tr>
                                 <td class="text-left" colspan="7" v-html="member.mworktext"></td>
                             </tr>
@@ -151,8 +164,8 @@
 <script>
 import certApi from '@/framework/api/admin/cert.js';
 import memberApi from '@/framework/api/admin/member.js';
-import myUploadFile from '@/components/desktop/UploadFile.vue';
-import myThumb from '@/components/desktop/Thumb.vue';
+import myUploadFile from '@/views/components/desktop/UploadFile.vue';
+import myThumb from '@/views/components/desktop/Thumb.vue';
 import baseMixin from "@/framework/mixins/baseMixin.js";
 export default {
 	mixins: [baseMixin],
@@ -239,6 +252,10 @@ export default {
 			cert:{},
 			model:{},
 			modify:{},
+            importModel:{
+                importType:1,
+                importData:''
+            },
 			member:{},
             endTime:'',
 			showAddPage:false,
@@ -259,7 +276,7 @@ export default {
 					callback: () => {
 						this.$refs['importPageFrom'].validate().then((res) => {
 							this.showImportPage = false;
-							this.importPlanMember();
+							this.importCertMember();
 						}).catch( res => {
 							console.log(res);
 						});
@@ -371,7 +388,20 @@ export default {
                 await certApi.verifyMember(this.selectedKeys);
             },this.getData);
         },
-
+        showImport:function(){
+            this.showImportPage = true;
+            this.importModel = {
+                importType:1,
+                importData:'',
+                ceId:this.ceId
+            };
+        },
+        importCertMember:async function(){
+            await this.base(async () => {
+                this.showImportPage = false;
+                await certApi.importCertMember(this.importModel);
+            });
+        }
 	}
 }
 </script>

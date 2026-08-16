@@ -177,7 +177,7 @@ export default {
 			this.showModifyPage = true;
 		},
 		delSection:function(id){
-			this.confirmDelete('确定要删除吗？', async () => {
+			this.confirmDelete(async () => {
 				await examApi.delSections(id?[id]:this.selectedKeys);
 			},this.getData)
 		},

@@ -75,7 +75,7 @@
 
 <script>
 	import examApi from '@/framework/api/exam.js';
-	import myCamera from '@/components/mobile/Camera.vue';
+	import myCamera from '@/views/components/mobile/Camera.vue';
     import { showConfirmDialog,showLoadingToast,closeToast } from 'vant';
 	import baseMixin from "@/framework/mixins/baseMixin.js";
     import {ref} from 'vue';

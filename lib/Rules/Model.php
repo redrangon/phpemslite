@@ -14,6 +14,8 @@ abstract class Model
 
     protected $properties = [];
 
+    protected ?string $instanceDbName = null;
+
     protected static $defaultValues = [];
 
     protected static $rules = [];
@@ -54,6 +56,17 @@ abstract class Model
         if($properties[$this->getKeyName()]??false)$this->exists = true;
     }
 
+    public function withDataBase(?string $dbName = null): static
+    {
+        $this->instanceDbName = $dbName??static::$dbName;
+        return $this;
+    }
+
+    public function getInstanceQuery(): QueryBuilder
+    {
+        return static::getQuery($this->instanceDbName??static::$dbName);
+    }
+
     public function __get($key)
     {
         $key = strtolower($key);
@@ -84,7 +97,7 @@ abstract class Model
     // ===== 持久化 =====
     public function save(): bool
     {
-        $query = static::getQuery();
+        $query = $this->getInstanceQuery();
         $pk = $this->getKeyName();
         if ($this->exists) {
             // 更新：使用主键
@@ -106,7 +119,7 @@ abstract class Model
     {
         if (!$this->exists) return false;
         $pk = $this->getKeyName();
-        return (bool)static::getQuery()->where($pk, $this->properties[$pk])->delete();
+        return (bool)$this->getInstanceQuery()->where($pk, $this->properties[$pk])->delete();
     }
 
     public static function getPrimaryKey()
@@ -119,29 +132,29 @@ abstract class Model
         return static::$dbTable;
     }
 
-    public static function __callStatic($method, $params)
+    public function __call($method, $params)
     {
-        $query = static::getQuery();
+        $query = $this->getInstanceQuery();
         if(method_exists($query, $method))
         return $query->$method(...$params);
         else return null;
     }
 
-    public static function find($id): static
+    public static function find(mixed $id, ?string $dbName = null): static
     {
-        $query = static::getQuery();
+        $query = static::getQuery($dbName);
         $result = $query->where(static::getPrimaryKey(), $id)->first();
-        return new static($result ?? []);
+        return (new static($result ?? []))->withDataBase($dbName);
     }
 
 
-    public static function getQuery(): QueryBuilder
+    public static function getQuery(?string $dbName = null): QueryBuilder
     {
-        return new QueryBuilder(DI(static::$dbName), static::$dbTable);
+        return new QueryBuilder(DI($dbName??static::$dbName), static::$dbTable);
     }
 
-    public static function getDB():DB
+    public static function getDB(?string $dbName = null):DB
     {
-        return DI(static::$dbName);
+        return DI($dbName??static::$dbName);
     }
 }

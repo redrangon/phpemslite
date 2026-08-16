@@ -8,7 +8,6 @@ class MessengerProvider
 {
     static public function sendMessage(string $to, array $message): bool | Error
     {
-        return true;
         return Mailer::sendMessage($to, $message);
     }
 }

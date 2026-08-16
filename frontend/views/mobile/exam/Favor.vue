@@ -47,8 +47,8 @@
 <script>
 	import examApi from '@/framework/api/exam.js';
 	import baseMixin from "@/framework/mixins/baseMixin.js";
-    import myEditor from '@/components/mobile/Editor.vue';
-    import question from '@/components/mobile/Question.vue';
+    import myEditor from '@/views/components/mobile/Editor.vue';
+    import question from '@/views/components/mobile/Question.vue';
     import {ref} from 'vue';
     import {showFailToast,showSuccessToast } from 'vant'
     export default {

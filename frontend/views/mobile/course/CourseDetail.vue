@@ -89,7 +89,7 @@
 <script>
 import courseApi from '@/framework/api/course.js';
 import baseMixin from "@/framework/mixins/baseMixin.js";
-import courseTree from '@/components/mobile/CourseTree.vue';
+import courseTree from '@/views/components/mobile/CourseTree.vue';
 
 export default {
 	mixins: [baseMixin],

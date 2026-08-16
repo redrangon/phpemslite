@@ -56,7 +56,7 @@
 	</lay-card>
 	<lay-card>
         <lay-quote>添加或删除试题后，请到科目管理中，更新对应科目的缓存。使用Excel文件导入时，请使用 |--| 来隔开选项，excel文件内不支持图片。带有图片的试题请使用Word文档导入。也可以使用AI生成JSON格式保存为.json文件导入【<a href="javascript:" @click="showAIPromptDailog = true;">查看AI提示词</a>】。</lay-quote>
-		<lay-table id="questionid" ref="tableRef" v-model:selected-keys="selectedKeys" :columns="columns" :data-source="dataSource" :default-toolbar="false" even>
+		<lay-table id="qkid" ref="tableRef" v-model:selected-keys="selectedKeys" :columns="columns" :data-source="dataSource" :default-toolbar="false" even>
 			<template #toolbar>
                 <lay-space>
                     <lay-button size="sm" type="primary" @click="model = {};showAddPage = true">添加试题</lay-button>
@@ -85,7 +85,8 @@
 			<template #footer>
 				<lay-row>
 					<lay-col md="12">
-						<lay-button :disabled="selectedKeys.length < 1" size="sm" type="primary" @click="delQuestion()">删除选中数据</lay-button>
+						<lay-button :disabled="selectedKeys.length < 1" size="sm" type="danger" @click="delQuestion()">删除选中数据</lay-button>
+                        <lay-button :disabled="selectedKeys.length < 1" size="sm" type="primary" @click="showInsertPoint()">插入知识点</lay-button>
 					</lay-col>
 					<lay-col md="12">
 						<lay-page v-model="page.current" v-model:limit="page.limit" :layout="layout" :total="page.total" style="float:right;" @change="changePage"></lay-page>
@@ -101,7 +102,7 @@
 			<template v-slot:operator="{ row }">
 				<lay-button size="xs" type="primary" @click="showQuestion(row)">预览</lay-button>
 				<lay-button size="xs" type="primary" @click="showModify(row)">编辑</lay-button>
-				<lay-button size="xs" type="danger" @click="delQuestion(row.questionid)">删除</lay-button>
+				<lay-button size="xs" type="danger" @click="delQuestion(row.qkid)">删除</lay-button>
 			</template>
 		</lay-table>
 	</lay-card>
@@ -110,6 +111,30 @@
 			<myQuestion :disabled="true" :question="modelShow" :questionType="questionTypes[modelShow.questiontype]" :userAnswer="modelShow.questionanswer" childIndex="0" index="1"></myQuestion>
 		</div>
 	</lay-layer>
+    <lay-layer v-model="showInsertPointPage" :area="['720px','450px']" :btn="insertPointPageBtns" :shade="true" :shadeClose="false" shadeOpacity="0.6" title="插入知识点">
+        <div style="padding: 20px 30px 20px 30px;">
+            <lay-quote>
+                知识点仅插入，不删除，需要删除知识点对应关系请直接删除试题。
+            </lay-quote>
+            <lay-form ref="insertPointPageFrom" :labelWidth="100" :model="model" :pane="false" class="form" size="md">
+                <lay-form-item label="科目">
+                    <lay-select v-model="model.subjectid" allow-clear placeholder="请选择" style="width:100%" @change="changeSubject(model.subjectid)">
+                        <lay-select-option v-for="(subject,sid) in subjects" :key="sid" :label="subject" :value="sid"></lay-select-option>
+                    </lay-select>
+                </lay-form-item>
+                <lay-form-item label="章节">
+                    <lay-select v-model="model.sections" allow-clear multiple placeholder="请选择" style="width:100%" @change="changeSection(model.sections)">
+                        <lay-select-option v-for="(section,seid) in sections" :key="seid" :label="section" :value="seid"></lay-select-option>
+                    </lay-select>
+                </lay-form-item>
+                <lay-form-item label="知识点" prop="points" required>
+                    <lay-select v-model="model.points" allow-clear multiple placeholder="请选择" style="width:100%">
+                        <lay-select-option v-for="(point,pid) in points" :key="pid" :label="point" :value="pid"></lay-select-option>
+                    </lay-select>
+                </lay-form-item>
+            </lay-form>
+        </div>
+    </lay-layer>
 	<lay-layer v-model="showAddPage" :area="['960px','90vh']" :btn="addPageBtns" :shade="true" :shadeClose="false" shadeOpacity="0.6" title="添加试题">
 		<div style="padding: 20px 50px 20px 20px;">
 			<lay-form ref="addPageFrom" :labelWidth="100" :model="model" :pane="false" class="form" size="md">
@@ -304,8 +329,8 @@
 <script>
 import examApi from '@/framework/api/admin/exam.js';
 import {layer} from '@layui/layui-vue';
-import myQuestion from '@/components/master/Question.vue';
-import myEditor from '@/components/master/Editor.vue';
+import myQuestion from '@/views/components/master/Question.vue';
+import myEditor from '@/views/components/master/Editor.vue';
 import baseMixin from "@/framework/mixins/baseMixin.js";
 
 export default {
@@ -334,6 +359,10 @@ export default {
 				customSlot: 'questiontypename',
 				width: '120px'
 			}, {
+                title: '知识点',
+                key: 'point',
+                width: '200px'
+            }, {
 				title: '难度',
 				key: 'questionlevelname',
 				customSlot: 'questionlevelname',
@@ -363,12 +392,13 @@ export default {
 			modelModify:{},
 			modelShow:{},
             levels:{'1':'易','2':'中','3':'难'},
+            insertPoints:[],
+            showInsertPointPage:false,
             showAIPromptDailog:false,
 			addPageBtns:[
 				{
 					text: "确认",
 					callback: () => {
-						console.log(this.model);
 						this.$refs['addPageFrom'].validate().then((res) => {
 							this.showAddPage = false;
 							this.addQuestion();
@@ -402,7 +432,26 @@ export default {
 						this.showModifyPage = false;
 					}
 				}
-			]
+			],
+            insertPointPageBtns:[
+                {
+                    text: "确认",
+                    callback: () => {
+                        this.$refs['insertPointPageFrom'].validate().then((res) => {
+                            this.showInsertPointPage = false;
+                            this.insertPoint();
+                        }).catch( res => {
+                            console.log(res);
+                        });
+                    }
+                },
+                {
+                    text: "取消",
+                    callback: () => {
+                        this.showInsertPointPage = false;
+                    }
+                }
+            ]
 		}
 	},
 	components:{myEditor,myQuestion},
@@ -454,14 +503,14 @@ export default {
 			this.showModifyPage = true;
 		},
 		batDelQuestions:function(){
-			withConfirm('删除仅删除与知识点关联，试题不删除，确定要操作吗？',async () => {
+			this.confirmOperate('删除仅删除与知识点关联，试题不删除，确定要操作吗？',async () => {
 				await examApi.delQuestions({
 					search:this.search
 				});
 			},this.getData)
 		},
 		delQuestion:function(id){
-			withConfirm('删除仅删除与知识点关联，试题不删除，确定要操作吗？',async () => {
+            this.confirmOperate('删除仅删除与知识点关联，试题不删除，确定要操作吗？',async () => {
 				await examApi.delQuestions({
 					ids:id?[id]:this.selectedKeys
 				});
@@ -527,7 +576,25 @@ export default {
 				});	
 			}
 			else this.points = [];
-		}
+		},
+        showInsertPoint:function(id){
+            this.insertPoints = id?[id] :this.selectedKeys;
+            if(this.insertPoints.length < 1)
+            {
+                layer.msg('请选择要插入知识点的试题');
+                return;
+            }
+            this.showInsertPointPage = true;
+            this.model = {};
+        },
+        insertPoint:async function(){
+            await this.base(async () => {
+                await examApi.insertQuestionPoint({
+                    ids:this.insertPoints,
+                    points:this.model.points
+                });
+            });
+        }
 	}
 }
 </script>

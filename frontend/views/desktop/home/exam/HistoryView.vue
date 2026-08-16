@@ -87,7 +87,7 @@ import {layer} from '@layui/layui-vue';
 import {ref} from 'vue';
 import baseMixin from "@/framework/mixins/baseMixin.js";
 import {useAuthStore} from "@/stores/auth.js";
-import question from '@/components/master/Question.vue';
+import question from '@/views/components/master/Question.vue';
 import {Swiper, SwiperSlide} from "swiper/vue";
 export default {
 	mixins:[baseMixin],

@@ -1,12 +1,9 @@
 <?php
 
 namespace PHPEMS\Lib\Core;
+use PHPEMS\App\Task\Service\Model\TaskSchedules;
 use PHPEMS\Lib\Config\Site\Site;
 use PHPEMS\Lib\Core\Request\RequestInterface;
-use PHPEMS\Lib\Core\Request\RequestProvider;
-use PHPEMS\Lib\DI\DI;
-use PHPEMS\Lib\Http\Cookie;
-use PHPEMS\Lib\Rules\Error;
 use Throwable;
 
 class Router
@@ -92,6 +89,7 @@ class Router
                 );
             }
         }else{
+            echo $class;
             http_response_code(404);
             echo "页面未找到";
             exit;

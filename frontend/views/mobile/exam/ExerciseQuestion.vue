@@ -45,8 +45,8 @@
     </div>    
 </template>
 <script>
-    import myEditor from '@/components/mobile/Editor.vue';
-    import question from '@/components/mobile/Question.vue';
+    import myEditor from '@/views/components/mobile/Editor.vue';
+    import question from '@/views/components/mobile/Question.vue';
     import {ref} from 'vue';
     import {showFailToast,showSuccessToast,showLoadingToast  } from 'vant'
     import examApi from "@/framework/api/exam.js";

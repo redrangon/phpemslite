@@ -74,7 +74,7 @@
 import courseApi from '@/framework/api/admin/course.js';
 import {layer} from '@layui/layui-vue';
 import {ref} from 'vue';
-import myThumb from '@/components/desktop/Thumb.vue';
+import myThumb from '@/views/components/desktop/Thumb.vue';
 import {withConfirm, withLayer} from "@/framework/utils/decorators.js";
 export default {
 	data() {

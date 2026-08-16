@@ -45,6 +45,7 @@
 			<template #footer>
 				<lay-col md="12">
 					<lay-button type="primary" size="sm" :disabled="selectedKeys.length < 1" @click="delUser()">删除选中用户</lay-button>
+                    <lay-button type="primary" size="sm" :disabled="selectedKeys.length < 1" @click="syncUser()">同步选中用户</lay-button>
 				</lay-col>
 				<lay-col md="12">
 					<lay-page v-model="page.current" v-model:limit="page.limit" :total="page.total" :layout="layout" @change="changePage" style="float:right;"></lay-page>
@@ -134,7 +135,7 @@
 import userApi from '@/framework/api/admin/user.js';
 import {layer} from '@layui/layui-vue';
 import {ref, onMounted} from 'vue';
-import myThumb from '@/components/desktop/Thumb.vue';
+import myThumb from '@/views/components/desktop/Thumb.vue';
 import {withConfirm} from "@/framework/utils/decorators.js";
 import {withLayer} from "@/framework/utils/decorator-adapter.js";
 
@@ -361,6 +362,16 @@ const showCoin = (row) => {
 
 const downloadTemplate = (tpl) => {
 	window.location.href="../../files/public/usertpl.xlsx";
+};
+
+const syncUser = () => {
+	withConfirm(
+		'确定要同步吗？',
+		async () => {
+			await userApi.syncUser(selectedKeys.value);
+		},
+		getData
+	)
 };
 
 // 在组件挂载时执行初始化逻辑

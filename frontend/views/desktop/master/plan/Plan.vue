@@ -158,8 +158,8 @@
 import planApi from '@/framework/api/admin/plan.js';
 import {layer} from '@layui/layui-vue';
 import {ref} from 'vue';
-import myThumb from '@/components/desktop/Thumb.vue';
-import myUploadFile from '@/components/desktop/UploadFile.vue';
+import myThumb from '@/views/components/desktop/Thumb.vue';
+import myUploadFile from '@/views/components/desktop/UploadFile.vue';
 import {withConfirm, withLayer} from "@/framework/utils/decorators.js";
 import examApi from "@/framework/api/admin/exam.js";
 import baseMixin from "@/framework/mixins/baseMixin.js";

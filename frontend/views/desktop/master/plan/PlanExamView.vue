@@ -80,7 +80,7 @@ import planApi from '@/framework/api/admin/plan.js';
 import examApi from '@/framework/api/admin/exam.js';
 import baseMixin from "@/framework/mixins/baseMixin.js";
 import {useAuthStore} from "@/stores/auth.js";
-import question from '@/components/master/Question.vue';
+import question from '@/views/components/master/Question.vue';
 export default {
 	mixins:[baseMixin],
 	setup() {

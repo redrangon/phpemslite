@@ -164,8 +164,8 @@
 import courseApi from '@/framework/api/admin/course.js';
 import memberApi from '@/framework/api/admin/member.js';
 import {layer} from '@layui/layui-vue';
-import myUploadFile from '@/components/desktop/UploadFile.vue';
-import myThumb from '@/components/desktop/Thumb.vue';
+import myUploadFile from '@/views/components/desktop/UploadFile.vue';
+import myThumb from '@/views/components/desktop/Thumb.vue';
 import baseMixin from "@/framework/mixins/baseMixin.js";
 export default {
 	mixins: [baseMixin],

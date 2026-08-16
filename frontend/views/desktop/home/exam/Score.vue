@@ -32,7 +32,7 @@
 <script>
 import {layer} from '@layui/layui-vue';
 import {ref} from 'vue';
-import paperMenu from '@/components/core/papermenu.vue';
+import paperMenu from '@/views/components/core/papermenu.vue';
 export default {
 	data() {
 		return {

@@ -116,13 +116,13 @@
 <script>
 import baseMixin from "@/framework/mixins/baseMixin.js";
 import examApi from '@/framework/api/exam.js';
-import myCamera from '@/components/desktop/Camera.vue';
+import myCamera from '@/views/components/desktop/Camera.vue';
 import storage from '@/framework/utils/storage.js';
 import clock from '@/framework/utils/clock.js';
 import {layer} from '@layui/layui-vue';
 import {computed, ref} from 'vue';
 import { useAuthStore} from '@/stores/auth.js';
-import question from '@/components/desktop/ExamQuestion.vue';
+import question from '@/views/components/desktop/ExamQuestion.vue';
 import {Swiper, SwiperSlide} from 'swiper/vue';
 import 'swiper/css';
 

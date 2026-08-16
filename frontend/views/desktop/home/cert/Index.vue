@@ -12,8 +12,8 @@
 </template>
 <script setup>
 import {useAuthStore} from "@/stores/auth.js";
-import headerMenu from "@/components/desktop/menu/Header.vue";
-import leftMenu from "@/components/desktop/menu/ExamLeft.vue";
+import headerMenu from "@/views/components/desktop/menu/Header.vue";
+import leftMenu from "@/views/components/desktop/menu/ExamLeft.vue";
 import {useRouter} from "vue-router";
 const user = useAuthStore();
 const router = useRouter();

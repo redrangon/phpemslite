@@ -13,6 +13,7 @@ const userApi = {
     addGroup: (group) => http.post('/user/master/user/addgroup', group),
     modifyGroup: (group) => http.post('/user/master/user/modifygroup', group),
     deleteGroup: (groupId) => http.post('/user/master/user/delgroup' , {ids:[groupId]}),
+    syncUser: (ids) => http.post('/user/master/user/sync',{ids}),
     deleteGroups: (ids) => http.post('/user/master/user/delgroup' , {ids}),
     importUsers: (params) => http.post('/user/master/user/import', params),
     setConfig: (params) => http.post('/user/master/user/setconfig', params),

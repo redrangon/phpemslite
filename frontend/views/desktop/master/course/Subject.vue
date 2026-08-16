@@ -117,8 +117,8 @@
 <style scoped></style>
 <script>
 import courseApi from '@/framework/api/admin/course.js';
-import myThumb from '@/components/desktop/Thumb.vue';
-import myEditor from '@/components/master/Editor.vue';
+import myThumb from '@/views/components/desktop/Thumb.vue';
+import myEditor from '@/views/components/master/Editor.vue';
 import {withConfirm, withLayer} from "@/framework/utils/decorators.js";
 export default {
 	data() {

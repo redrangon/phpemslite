@@ -28,6 +28,7 @@ class Question extends Controller implements ControllerInterface
             'add' => 'Add',
             'setrelation' => 'SetRelation',
             'import' => 'Import',
+            'point' => 'Point',
         ];
     }
 
@@ -78,6 +79,37 @@ class Question extends Controller implements ControllerInterface
             if($search['range'][1]??false)$query->where('questioncreatetime', '<=',strtotime($search['range'][1]));
         }
         return $query;
+    }
+
+    public function Point():array | Error
+    {
+        $ids = $this->request->ids??[];
+        $points = $this->request->points??[];
+        if(!empty($ids) && !empty($points)){
+            $relations = Relation::getQuery()->select(['qkquestionid'])
+                ->whereIn('qkid', $ids)
+                ->get();
+            foreach($relations as $relation)
+            {
+                $questionId = $relation['qkquestionid'];
+                $exists = Relation::getQuery()->select(['qkpointid'])
+                    ->where('qkquestionid', $questionId)
+                    ->get();
+                $exists = array_column($exists, 'qkpointid');
+                $plusPoints = array_diff($points, $exists);
+                foreach($plusPoints as $point)
+                {
+                    $model = Relation::fillWithInit([
+                        'qkquestionid' => $questionId,
+                        'qkpointid' => $point,
+                        'qkstatus' => 1
+                    ]);
+                    $model->save();
+                }
+            }
+            return ['msg' => '设置成功'];
+        }
+        else return error(['error' => '缺少参数']);
     }
 
     public function Import():array | Error
@@ -228,7 +260,7 @@ class Question extends Controller implements ControllerInterface
     /**
      * 删除操作
      */
-    public function delete():array|Error
+    public function Delete():array|Error
     {
         // TODO: 实现删除逻辑
         // 示例：
@@ -263,13 +295,24 @@ class Question extends Controller implements ControllerInterface
         $hasChildren = $this->request->haschildren ?? false;
         if($hasChildren)$query->where('questionisparent',"1");
         else $query->where('questionisparent',"0");
-        $search = $this->request->search;
+        $search = $this->request->search??null;
         if($search) {
             $query = $this->buildSearchQuery($query, $search);
         }
         $data = $query->paginate($page, $limit);
-        array_walk($data['data'],function(&$item){
+        $points = [];
+        foreach($data['data'] as $item)
+        {
+            $points[] = $item['qkpointid'];
+        }
+        $points = array_unique($points);
+        $points = \PHPEMS\App\Exam\Service\Model\Point::getQuery()->select(['pointid','point'])
+            ->whereIn('pointid',$points)
+            ->get();
+        $points = array_column($points,'point','pointid');
+        array_walk($data['data'],function(&$item) use ($points){
             $item['questionhtml'] = json_decode($item['questionhtml'],true)??[];
+            $item['point'] = $points[$item['qkpointid']]??'';
         });
         return $data;
     }
