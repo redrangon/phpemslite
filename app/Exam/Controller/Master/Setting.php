@@ -6,7 +6,7 @@ use PHPEMS\App\Core\Service\Model\App;
 use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Setting extends Controller implements ControllerInterface
 {
@@ -60,7 +60,7 @@ class Setting extends Controller implements ControllerInterface
         return $config;
     }
 
-    public function setConfig():array|Error
+    public function setConfig():array
     {
         $config = [
             'watermark' => $this->request->watermark?1:0,
@@ -70,11 +70,11 @@ class Setting extends Controller implements ControllerInterface
         ];
         $app = App::getAppByCode('exam');
         $app->appsetting = json_encode($config, JSON_UNESCAPED_UNICODE);
-        if(!$app->save())return error(['error' => '修改失败']);
+        if(!$app->save())error(['error' => '修改失败']);
         return ['msg'=>'设置成功'];
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         return [];
     }

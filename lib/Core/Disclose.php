@@ -2,26 +2,31 @@
 
 namespace PHPEMS\Lib\Core;
 
+use PDOException;
 use PHPEMS\Lib\Auth\Auth;
 use PHPEMS\Lib\Config\Site\Site;
 use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Http\Cookie;
-use PHPEMS\Lib\Rules\Error;
+
+use Throwable;
 
 class Disclose
 {
     static public function export(mixed $result): void
     {
-        if($result instanceof Error)
-        {
-            $result = $result();
-            self::discloseJson($result);
-        }
-        else
-        {
-            if(DI(Site::class)->responseType == 'json')self::discloseJson($result);
-            else self::discloseTpl($result);
-        }
+        $payload = match (true) {
+            $result instanceof PDOException => [
+                'code' => 300,
+                'error' => '数据库执行错误',
+            ],
+            $result instanceof Throwable => [
+                'code' => $result->getCode(),
+                'error' => $result->getMessage(),
+            ],
+            default => $result
+        };
+        if(DI(Site::class)->responseType == 'json')self::discloseJson($payload);
+        else self::discloseTpl($payload);
     }
 
     static private function discloseJson(array $result): void

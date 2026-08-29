@@ -6,7 +6,7 @@ use PHPEMS\App\Course\Service\Model\CoursePrice;
 use PHPEMS\App\Course\Service\Model\CourseSubject;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Price extends Controller implements ControllerInterface
 {
@@ -35,7 +35,7 @@ class Price extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Data():array | Error
+    public function Data():array
     {
         $csId = $this->request->csId??null;
         if($csId)
@@ -49,20 +49,20 @@ class Price extends Controller implements ControllerInterface
         return [];
     }
 
-    public function Delete():array | Error
+    public function Delete():array
     {
         $ids = $this->request->ids??[];
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
         CoursePrice::getQuery()->whereIn('cpid', $ids)->delete();
         return ['msg' => '删除成功'];
     }
 
-    public function Modify():array | Error
+    public function Modify():array
     {
         $cpId = $this->request->cpid??null;
-        if(!$cpId) return error(['error' => '参数错误']);
+        if(!$cpId) error(['error' => '参数错误']);
         $model = CoursePrice::find($cpId);
-        if(!$model->cpId) return error(['error' => '记录不存在']);
+        if(!$model->cpId) error(['error' => '记录不存在']);
         $data = [
             'cpcsid' => $this->request->cpcsid??null,
             'cpdays' => $this->request->cpdays??null,
@@ -74,11 +74,11 @@ class Price extends Controller implements ControllerInterface
         foreach ($data as $key => $value) {
             $model->$key = $value;
         }
-        if(!$model->save()) return error(['error' => '修改失败']);
+        if(!$model->save()) error(['error' => '修改失败']);
         return ['msg' => '修改成功'];
     }
 
-    public function Add():array | Error
+    public function Add():array
     {
         $data = [
             'cpcsid' => $this->request->cpcsid??null,
@@ -88,10 +88,10 @@ class Price extends Controller implements ControllerInterface
         $model = CoursePrice::fillWithInit($data);
         $result = $model->toValidate();
         if($result !== true)return $result;
-        if(!$model->save()) return error(['error' => '添加失败']);
+        if(!$model->save()) error(['error' => '添加失败']);
         return ['msg' => '添加成功'];
     }
-    public function Index():array | Error
+    public function Index():array
     {
         return [];
     }

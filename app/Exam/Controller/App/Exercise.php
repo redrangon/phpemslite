@@ -12,7 +12,7 @@ use PHPEMS\App\Exam\Service\Model\Section;
 use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Exercise extends Controller implements ControllerInterface
 {
@@ -53,7 +53,7 @@ class Exercise extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Data(): array | Error
+    public function Data(): array
     {
         $user = $this->request->getUser();
         $sectionIds = array_keys($this->basic->basicpoint);
@@ -85,12 +85,12 @@ class Exercise extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Progress(): array | Error
+    public function Progress(): array
     {
         $user = $this->request->getUser();
         $pointId = $this->request->pointid??null;
         $pointIds = array_merge(...$this->basic->basicpoint)??[];
-        if(!$pointId || !in_array($pointId, $pointIds))return error(['error' => '不存在的知识点']);
+        if(!$pointId || !in_array($pointId, $pointIds))error(['error' => '不存在的知识点']);
         $progress = \PHPEMS\App\Exam\Service\Model\Exercise::getQuery()->select(['exerid','exerpointid','exernumber'])
             ->where('exerpointid', $pointId)
             ->where('exerbasicid',$this->basic->basicid)
@@ -111,11 +111,11 @@ class Exercise extends Controller implements ControllerInterface
         else return ['number' => 0];
     }
 
-    public function index():array | Error
+    public function index():array
     {
         $pointId = $this->request->pointid??null;
         $pointIds = array_merge(...$this->basic->basicpoint);
-        if(!$pointId || !in_array($pointId, $pointIds))return error(['error' => '不存在的知识点']);
+        if(!$pointId || !in_array($pointId, $pointIds))error(['error' => '不存在的知识点']);
         $user = $this->request->getUser();
         $page = max($this->request->page??1,1);
         if($page > 1)
@@ -145,7 +145,7 @@ class Exercise extends Controller implements ControllerInterface
             $questionId = $childQuestions[$page - $rowsStart - 1]['questionid']??0;
         }
         else $questionId = $questions[$page - 1]['questionid']??0;
-        if(!$questionId)return error(['error' => '没有题目']);
+        if(!$questionId)error(['error' => '没有题目']);
         $isFavor = Favor::getQuery()->where('favorquestionid',$questionId)
             ->where('favorpassport',$user->userpassport)
             ->first();

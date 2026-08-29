@@ -7,7 +7,7 @@ use PHPEMS\App\Trade\Service\TradeService;
 use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\Lib\Utils\PayProvider;
 use Yansongda\Pay\Pay;
 
@@ -45,7 +45,7 @@ class Alipay extends Controller implements ControllerInterface
     /**
      * 获取单个订单详情
      */
-    public function Index(): Error|array
+    public function Index(): array
     {
         $pay = new PayProvider('alipay');
         $data = $pay->callBack();

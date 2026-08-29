@@ -7,7 +7,7 @@ use PHPEMS\App\User\Service\Model\UserMoney;
 use PHPEMS\App\User\Service\UserService;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Coin extends Controller implements ControllerInterface
 {
@@ -35,11 +35,11 @@ class Coin extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Save(): Error|array
+    public function Save(): array
     {
         $passport = $this->request->passport??null;
         $coin = $this->request->coin??0;
-        if($coin <= 0)return error(['error' => '积分数不能小于0']);
+        if($coin <= 0)error(['error' => '积分数不能小于0']);
         $user = $this->request->getUser();
         $userMoney = UserMoney::findByPassport($passport);
         if(!$userMoney->uepassport)$userMoney->umpassport = $passport;
@@ -57,13 +57,13 @@ class Coin extends Controller implements ControllerInterface
         return [];
     }
 
-    public function Data(): array | Error
+    public function Data(): array
     {
         $search = $this->request->search??null;
         $page = $this->request->page??1;
         $limit = $this->request->limit??10;
         $passport = $this->request->passport??null;
-        if(!$passport)return error(['error' => '请选择用户']);
+        if(!$passport)error(['error' => '请选择用户']);
         $query = UserExpense::getQuery()
             ->where('uepassport' , $passport)
             ->orderBy('ueid', 'DESC');
@@ -79,7 +79,7 @@ class Coin extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         return [];
     }

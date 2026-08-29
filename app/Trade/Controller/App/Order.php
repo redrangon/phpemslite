@@ -7,7 +7,7 @@ use PHPEMS\Lib\Config\Pay\Wechat;
 use PHPEMS\Lib\Config\Pay\Alipay;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\Lib\Utils\Env;
 use PHPEMS\Lib\Utils\PayProvider;
 
@@ -38,12 +38,12 @@ class Order extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Pay():array|Error
+    public function Pay():array
     {
         $orderSn = $this->request->orderSn??null;
         $type = $this->request->type??null;
         if(!in_array($type,['wechatpay','alipay'])){
-            return error(['error' => '选择支付方式']);
+            error(['error' => '选择支付方式']);
         }
         $order = TradeOrder::findByOrderSn($orderSn);
         if ($order->orderSn) {
@@ -63,21 +63,21 @@ class Order extends Controller implements ControllerInterface
                 {
                     return $pay->mobile($order);
                 }
-                else return error(['error' => '错误的支付环境']);
+                else error(['error' => '错误的支付环境']);
             }
-            else return error(['error' => '订单记录不存在']);
+            else error(['error' => '订单记录不存在']);
         }
-        else return error(['error' => '订单记录不存在']);
+        else error(['error' => '订单记录不存在']);
     }
 
     /**
      * 删除订单
      */
-    public function Cancel():array|Error
+    public function Cancel():array
     {
         $orderSn = $this->request->orderSn??null;
         if (!$orderSn) {
-            return error(['error' => '未选择要取消的记录']);
+            error(['error' => '未选择要取消的记录']);
         }
         $order = TradeOrder::findByOrderSn($orderSn);
         $user = $this->request->getUser();
@@ -152,7 +152,7 @@ class Order extends Controller implements ControllerInterface
     /**
      * 获取单个订单详情
      */
-    public function Index(): Error|array
+    public function Index(): array
     {
         $orderSn = $this->request->orderSn??null;
         if ($orderSn) {
@@ -169,9 +169,9 @@ class Order extends Controller implements ControllerInterface
                         ]
                     ];
                 }
-                else return error(['error' => '记录不存在']);
+                else error(['error' => '记录不存在']);
             }
-            else return error(['error' => '记录不存在']);
+            else error(['error' => '记录不存在']);
         }
         return [];
     }

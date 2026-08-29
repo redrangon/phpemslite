@@ -2,6 +2,7 @@
 
 namespace PHPEMS\Lib\Rules;
 
+use Exception;
 use PHPEMS\Lib\DataBase\DB;
 use PHPEMS\Lib\DataBase\QueryBuilder;
 use PHPEMS\Lib\Utils\Validator;
@@ -40,12 +41,15 @@ abstract class Model
         return new static(static::fill($attributes));
     }
 
-    public static function validate(array $data): bool|Error
+    /**
+     * @throws Exception
+     */
+    public static function validate(array $data): bool
     {
         $validator = new Validator( $data, static::$rules, static::$ruleMessages);
         if($validator->fails())
         {
-            return error(['error' => $validator->firstError()]);
+            throw new Exception($validator->firstError());
         }
         else return true;
     }
@@ -89,7 +93,7 @@ abstract class Model
         return static::$primaryKeys[0] ?? 'id';
     }
 
-    public function toValidate(): bool|Error
+    public function toValidate(): bool
     {
         return self::validate($this->properties);
     }

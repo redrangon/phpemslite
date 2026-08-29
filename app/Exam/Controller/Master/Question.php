@@ -9,7 +9,7 @@ use PHPEMS\App\Exam\Service\QuestionImporter;
 use PHPEMS\Lib\DataBase\QueryBuilder;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\Lib\Utils\FileProvider;
 
 class Question extends Controller implements ControllerInterface
@@ -81,7 +81,7 @@ class Question extends Controller implements ControllerInterface
         return $query;
     }
 
-    public function Point():array | Error
+    public function Point():array
     {
         $ids = $this->request->ids??[];
         $points = $this->request->points??[];
@@ -109,10 +109,10 @@ class Question extends Controller implements ControllerInterface
             }
             return ['msg' => '设置成功'];
         }
-        else return error(['error' => '缺少参数']);
+        else error(['error' => '缺少参数']);
     }
 
-    public function Import():array | Error
+    public function Import():array
     {
         $service = new FileProvider();
         $file = $this->request->getFile('file');
@@ -123,13 +123,13 @@ class Question extends Controller implements ControllerInterface
                 $result = DI(QuestionImporter::class, ['filePath' => $result['path']])->importQuestion();
                 return ['msg' => '导入成功'];
             }
-            else return error(['error' => $result['error']]);
+            else error(['error' => $result['error']]);
         }catch (Exception $e){
-            return error(['error' => $e->getMessage()]);
+            error(['error' => $e->getMessage()]);
         }
     }
 
-    public function SetRelation():array | Error
+    public function SetRelation():array
     {
         $points = $this->request->points;
         $questionId = $this->request->questionid;
@@ -138,13 +138,13 @@ class Question extends Controller implements ControllerInterface
             if($result === true)return ['msg' => '操作成功'];
             else return $result;
         }
-        else return error(['error' => '缺少参数']);
+        else error(['error' => '缺少参数']);
     }
 
     /**
      * 添加操作
      */
-    public function Add():array | Error
+    public function Add():array
     {
         // 获取请求数据
         $user = $this->request->getUser();
@@ -193,7 +193,7 @@ class Question extends Controller implements ControllerInterface
                 }
             });
         }catch (\Exception $e){
-            return error(['error' => $e->getMessage()]);
+            error(['error' => $e->getMessage()]);
         }
         return ['msg' => '添加成功'];
     }
@@ -201,13 +201,13 @@ class Question extends Controller implements ControllerInterface
     /**
      * 修改操作
      */
-    public function modify():array|Error
+    public function modify():array
     {
         // TODO: 实现修改逻辑
         // 示例：
         $questionid = $this->request->questionid;
         $model = \PHPEMS\App\Exam\Service\Model\Question::find($questionid);
-        if(!$model->questionid) return error(['error' => '记录不存在']);
+        if(!$model->questionid) error(['error' => '记录不存在']);
         $user = $this->request->getUser();
         $data = [
             'questiontype' => $this->request->questiontype??null,
@@ -231,14 +231,14 @@ class Question extends Controller implements ControllerInterface
         foreach ($data as $key => $value) {
             $model->$key = $value;
         }
-        if(!$model->save()) return error(['error' => '修改失败']);
+        if(!$model->save()) error(['error' => '修改失败']);
         return ['msg' => '修改成功'];
     }
 
-    public function DeleteChildren():array|Error
+    public function DeleteChildren():array
     {
         $ids = $this->request->ids;
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
         $parents = [];
         foreach($ids as $id){
             $model = \PHPEMS\App\Exam\Service\Model\Question::find($id);
@@ -260,13 +260,13 @@ class Question extends Controller implements ControllerInterface
     /**
      * 删除操作
      */
-    public function Delete():array|Error
+    public function Delete():array
     {
         // TODO: 实现删除逻辑
         // 示例：
         $ids = $this->request->ids;
         $search = $this->request->search;
-        if(empty($ids) && empty($search)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids) && empty($search)) error(['error' => '未选择要删除的记录']);
         if($search)
         {
             $query = ExamService::getQuestionQueryWithRelation()->select(['qkid']);
@@ -317,12 +317,12 @@ class Question extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         $questionId = $this->request->questionid??null;
-        if(!$questionId)return error(['error' => '记录不存在']);
+        if(!$questionId)error(['error' => '记录不存在']);
         $question = \PHPEMS\App\Exam\Service\Model\Question::find($questionId);
-        if(!$question->questionId)return error(['error' => '记录不存在']);
+        if(!$question->questionId)error(['error' => '记录不存在']);
         if($question->questionIsParent)
         {
             $children = \PHPEMS\App\Exam\Service\Model\Question::getQuery()->orderBy('questionsequence','desc')->groupBy('questionid','ASC')

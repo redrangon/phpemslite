@@ -6,7 +6,7 @@ use PHPEMS\App\Trade\Service\Model\TradeOrder;
 use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\Lib\Utils\PayProvider;
 
 class Order extends Controller implements ControllerInterface
@@ -38,11 +38,11 @@ class Order extends Controller implements ControllerInterface
     }
 
 
-    public function Pay():array|Error
+    public function Pay():array
     {
         $ids = $this->request->ids??null;
         if (empty($ids)) {
-            return error(['error' => '未选择要支付的记录']);
+            error(['error' => '未选择要支付的记录']);
         }
         foreach ($ids as $id) {
             $order = TradeOrder::findByOrderSn($id);
@@ -55,11 +55,11 @@ class Order extends Controller implements ControllerInterface
         return ['msg' => '设置成功'];
     }
 
-    public function Cancel():array|Error
+    public function Cancel():array
     {
         $ids = $this->request->ids??null;
         if (empty($ids)) {
-            return error(['error' => '未选择要取消的记录']);
+            error(['error' => '未选择要取消的记录']);
         }
         foreach ($ids as $id) {
             $order = TradeOrder::findByOrderSn($id);
@@ -74,11 +74,11 @@ class Order extends Controller implements ControllerInterface
     /**
      * 删除订单
      */
-    public function Delete():array|Error
+    public function Delete():array
     {
         $ids = $this->request->ids??null;
         if (empty($ids)) {
-            return error(['error' => '未选择要取消的记录']);
+            error(['error' => '未选择要取消的记录']);
         }
         foreach ($ids as $id) {
             $order = TradeOrder::findByOrderSn($id);
@@ -158,13 +158,13 @@ class Order extends Controller implements ControllerInterface
     /**
      * 获取单个订单详情
      */
-    public function Index(): Error|array
+    public function Index(): array
     {
         $ordersn = $this->request->ordersn;
         if ($ordersn) {
             $order = TradeOrder::find($ordersn);
             if (!$order || !$order->ordersn) {
-                return error(['error' => '记录不存在']);
+                error(['error' => '记录不存在']);
             }
             return $order->getRaw();
         }

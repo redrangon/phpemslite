@@ -12,7 +12,7 @@ use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Face\FaceProvider;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\App\Member\Service\Model\Member;
 use PHPEMS\Lib\Utils\Env;
 
@@ -59,13 +59,12 @@ class Session extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function ReTest(): array | Error
+    public function ReTest(): array
     {
         $ehId = $this->request->ehId??null;
-        if(!$ehId)return error(['error' => '错误的参数']);
-        if($this->basic->basicexam['model'] == 2)return error(['error' => '错误的考场模式']);
+        if(!$ehId)error(['error' => '错误的参数']);
+        if($this->basic->basicexam['model'] == 2)error(['error' => '错误的考场模式']);
         $history = ExamService::getExamHistoryWithDetailById($ehId);
-        if($history instanceof Error)return $history;
         $session = [];
         $session['examsessionfacelist'] = [];
         $session['examsessionpaperid'] = $history['ehpaperid'];
@@ -85,13 +84,13 @@ class Session extends Controller implements ControllerInterface
         $result = $session->toValidate();
         if($result !== true)return $result;
         if($session->save())return ['sessionid' => $session->examSessionId];
-        else return error(['error' => '参数错误']);
+        else error(['error' => '参数错误']);
     }
 
     public function Time()
     {
         $sessionId = $this->request->sessionId??null;
-        if(!$sessionId)return error(['error' => '参数错误']);
+        if(!$sessionId)error(['error' => '参数错误']);
         $session = ExamPaperSession::findBySessionId($sessionId);
         $leftTime = TIME - $session->examSessionStartTime;
         if($leftTime < 0 )
@@ -101,23 +100,23 @@ class Session extends Controller implements ControllerInterface
         return ['time' => $leftTime];
     }
 
-    public function Drop(): array | Error
+    public function Drop(): array
     {
         $sessionId = $this->request->sessionId??null;
-        if(!$sessionId)return error(['error' => '参数错误']);
+        if(!$sessionId)error(['error' => '参数错误']);
         $session = ExamPaperSession::findBySessionId($sessionId);
         if($session->examSessionPassport == $this->request->getUser()->userpassport)
         {
             $session->delete();
             return [];
         }
-        return error(['error' => '错误的参数请求']);
+        error(['error' => '错误的参数请求']);
     }
 
-    public function Recover(): array | Error
+    public function Recover(): array
     {
         $sessionId = $this->request->sessionId??null;
-        if(!$sessionId)return error(['error' => '参数错误']);
+        if(!$sessionId)error(['error' => '参数错误']);
         $session = ExamPaperSession::findBySessionId($sessionId);
         if($session->examSessionPassport == $this->request->getUser()->userpassport)
         {
@@ -130,16 +129,16 @@ class Session extends Controller implements ControllerInterface
             {
                 $session->examSessionToken = $token;
                 if($session->save())return [];
-                else return error(['error' => '参数错误']);
+                else error(['error' => '参数错误']);
             }
         }
-        else return error(['error' => '参数错误']);
+        else error(['error' => '参数错误']);
     }
 
-    public function Save(): array | Error
+    public function Save(): array
     {
         $sessionId = $this->request->sessionId??null;
-        if(!$sessionId)return error(['error' => '参数错误']);
+        if(!$sessionId)error(['error' => '参数错误']);
         $session = ExamPaperSession::findBySessionId($sessionId);
         $token = md5($session->examsessionid.'-'.Auth::getSessionSalt());
         if($token == $session->examSessionToken)
@@ -158,7 +157,7 @@ class Session extends Controller implements ControllerInterface
         return [];
     }
 
-    public function Finish(): array | Error
+    public function Finish(): array
     {
         if($this->basic->basicexam['model'] == 2){
             if($this->basic->basicexam['examnumber'] > 0)
@@ -170,12 +169,12 @@ class Session extends Controller implements ControllerInterface
                     ->count();
                 if($historyNumber >= $this->basic->basicexam['examnumber'])
                 {
-                    return error(['error' => '考试次数已用完']);
+                    error(['error' => '考试次数已用完']);
                 }
             }
         }
         $sessionId = $this->request->sessionId??null;
-        if(!$sessionId)return error(['error' => '参数错误，请联系监考老师！']);
+        if(!$sessionId)error(['error' => '参数错误，请联系监考老师！']);
         $session = ExamPaperSession::findBySessionId($sessionId);
         $token = md5($session->examsessionid.'-'.Auth::getSessionSalt());
         if($token == $session->examSessionToken)
@@ -185,17 +184,16 @@ class Session extends Controller implements ControllerInterface
             $session->examSessionQuestion = json_decode($session->examSessionQuestion,true);
             $session->examSessionFaceList = json_decode($session->examSessionFaceList,true);
             $result = ExamService::finishExamSession($session);
-            if($result instanceof Error)return $result;
             return ['ehid' => $result];
         }
-        return error(['error' => '参数错误，请联系监考老师！']);
+        error(['error' => '参数错误，请联系监考老师！']);
     }
 
-    public function Delete(): array | Error
+    public function Delete(): array
     {
         $sessionId = $this->request->sessionid??null;
         $token = $this->request->token??null;
-        if(!$sessionId || !$token)return error(['error' => '参数错误']);
+        if(!$sessionId || !$token)error(['error' => '参数错误']);
         $user = $this->request->getUser();
         $result = ExamPaperSession::getQuery()->where('sessionid', $sessionId)
             ->where('examsessiontoken', $token)
@@ -203,17 +201,17 @@ class Session extends Controller implements ControllerInterface
             ->where('examsessiontype',$this->basic->basicexam['model'] === 2?:1)
             ->delete();
         if($result)return ['msg' => '删除成功'];
-        else return error(['error' => '操作失败']);
+        else error(['error' => '操作失败']);
     }
 
-    public function FaceVerify(): array | Error
+    public function FaceVerify(): array
     {
         if(!$this->basic->basicfacetime)return ['faceVerify' => 1];
         $user = $this->request->getUser();
         $face = $this->request->face??null;
-        if(!$face)return error(['error' => '未上传照片']);
+        if(!$face)error(['error' => '未上传照片']);
         $member = Member::findByPassport($user->userpassport);
-        if(!file_exists($member->mphoto))return error(['error' => '用户未认证照片']);
+        if(!file_exists($member->mphoto))error(['error' => '用户未认证照片']);
         $source = base64_encode(file_get_contents($member->mphoto));
         if(!FaceProvider::FaceComparison($face,$source))error(['error' => '人脸识别校验失败']);
         else
@@ -233,7 +231,7 @@ class Session extends Controller implements ControllerInterface
                 }
                 else throw new Exception('人脸识别校验失败');
             }catch (Exception $e){
-                return error(['error' => '人脸识别校验失败']);
+                error(['error' => '人脸识别校验失败']);
             }
         }
         $this->session->psfadtime = TIME;
@@ -241,7 +239,7 @@ class Session extends Controller implements ControllerInterface
         return [];
     }
 
-    public function Data(): array | Error
+    public function Data(): array
     {
         $user = $this->request->getUser();
         $data = ExamPaperSession::getQuery()->orderBy('esid','DESC')
@@ -254,7 +252,7 @@ class Session extends Controller implements ControllerInterface
         return $data??[];
     }
 
-    public function Draw(): array | Error
+    public function Draw(): array
     {
         $paperId = $this->request->paperId??null;
         if(!$paperId)
@@ -262,15 +260,15 @@ class Session extends Controller implements ControllerInterface
             if($this->basic->basicexam['model'] == 2 && $this->basic->basicexam['selectrule'] == 0)
             {
                 $ids = $this->basic->basicexam['self'];
-                if(empty($ids))return error(['error' => '后台配置错误']);
+                if(empty($ids))error(['error' => '后台配置错误']);
                 $paperId = $ids[array_rand($ids)];
             }
-            else return error(['error' => '参数错误']);
+            else error(['error' => '参数错误']);
         }
         $user = $this->request->getUser();
         $examSessionFaceList = [];
         if($this->basic->basicexam['model'] == 2){
-            if(!$this->basic->intime)return error(['error' => '不在考试时间段']);
+            if(!$this->basic->intime)error(['error' => '不在考试时间段']);
             if($this->basic->basicexam['examnumber'] > 0)
             {
                 $historyNumber = \PHPEMS\App\Exam\Service\Model\History::getQuery()->where('ehtype',2)
@@ -279,15 +277,15 @@ class Session extends Controller implements ControllerInterface
                     ->count();
                 if($historyNumber >= $this->basic->basicexam['examnumber'])
                 {
-                    return error(['error' => '考试次数已用完']);
+                    error(['error' => '考试次数已用完']);
                 }
             }
             if($this->basic->basicfacetime > 0)
             {
                 $face = $this->request->face??null;
-                if(!$face)return error(['error' => '未上传照片']);
+                if(!$face)error(['error' => '未上传照片']);
                 $member = Member::findByPassport($user->userpassport);
-                if(!file_exists($member->mphoto))return error(['error' => '用户未认证照片'.$member->mphoto]);
+                if(!file_exists($member->mphoto))error(['error' => '用户未认证照片'.$member->mphoto]);
                 $source = base64_encode(file_get_contents($member->mphoto));
                 if(!FaceProvider::FaceComparison($face,$source))error(['error' => '人脸识别校验失败']);
                 else
@@ -300,13 +298,13 @@ class Session extends Controller implements ControllerInterface
                         $this->session->esfadtime = TIME;
                         $this->session->save();
                     }catch (Exception $e){
-                        return error(['error' => '人脸识别校验失败']);
+                        error(['error' => '人脸识别校验失败']);
                     }
                 }
             }
         }
         $paper = ExamPaper::find($paperId);
-        if(!$paper->examid)return error(['error' => '试卷配置错误']);
+        if(!$paper->examid)error(['error' => '试卷配置错误']);
         $paper->examSetting = json_decode($paper->examSetting,true);
         $paper->examQuestions = json_decode($paper->examQuestions,true);
         $paper->examScore = json_decode($paper->examScore,true);
@@ -350,13 +348,13 @@ class Session extends Controller implements ControllerInterface
         $result = $session->toValidate();
         if($result !== true)return $result;
         if($session->save())return ['sessionid' => $session->examSessionId];
-        else return error(['error' => '参数错误']);
+        else error(['error' => '参数错误']);
     }
 
-    public function index():array | Error
+    public function index():array
     {
         $sessionId = $this->request->sessionId??null;
-        if(!$sessionId)return error(['error' => '参数错误']);
+        if(!$sessionId)error(['error' => '参数错误']);
         $session = ExamPaperSession::findBySessionId($sessionId);
         $token = md5($session->examsessionid.'-'.Auth::getSessionSalt());
         if($token == $session->examSessionToken)
@@ -398,6 +396,6 @@ class Session extends Controller implements ControllerInterface
             $session->examSessionQuestion = $formatedQuestions;
             return $session->getRaw();
         }
-        else return error(['error' => '参数错误']);
+        else error(['error' => '参数错误']);
     }
 }

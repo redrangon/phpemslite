@@ -11,7 +11,7 @@ use PHPEMS\App\User\Service\Model\UserMoney;
 use PHPEMS\App\Course\Service\Model\Course;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Subject extends Controller implements ControllerInterface
 {
@@ -41,7 +41,7 @@ class Subject extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Buy(): array | Error
+    public function Buy(): array
     {
         $priceId = $this->request->priceId??null;
         if($priceId)
@@ -89,14 +89,14 @@ class Subject extends Controller implements ControllerInterface
                     }
                     catch (\Exception $e)
                     {
-                        return error(['error' => '扣款失败，请稍后尝试！'.$e->getMessage()]);
+                        error(['error' => '扣款失败，请稍后尝试！'.$e->getMessage()]);
                     }
                 }
-                else return error(['error' => '金额不足']);
+                else error(['error' => '金额不足']);
             }
-            return error(['error' => '价格记录不存在']);
+            error(['error' => '价格记录不存在']);
         }
-        return error(['error' => '记录不存在']);
+        error(['error' => '记录不存在']);
     }
 
     public function Price(): array
@@ -113,7 +113,7 @@ class Subject extends Controller implements ControllerInterface
         return [];
     }
 
-    public function Detail(): array | Error
+    public function Detail(): array
     {
         // TODO: 实现数据查询逻辑
         // 示例：
@@ -156,7 +156,7 @@ class Subject extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         $csId = $this->request->csId??null;
         if($csId)

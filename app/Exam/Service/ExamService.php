@@ -19,7 +19,7 @@ use PHPEMS\App\Exam\Service\Model\Subject;
 use PHPEMS\App\Plan\Controller\App\Member;
 use PHPEMS\App\Plan\Service\Model\PlanMember;
 use PHPEMS\Lib\DataBase\QueryBuilder;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\Lib\Utils\Env;
 
 class ExamService
@@ -85,7 +85,7 @@ class ExamService
         return $questionNumber;
     }
 
-    public static function setQuestionRelation(array $points = [], int $questionId = 0):bool|Error
+    public static function setQuestionRelation(array $points = [], int $questionId = 0):bool
     {
         $relations = Relation::getQuery()->select(['qkid','qkpointid'])->where('qkquestionid', '=', $questionId)->get();
         $relationPoints = [];
@@ -105,7 +105,7 @@ class ExamService
                 }
             });
         }catch (\Exception $e){
-            return error(['error' => $e->getMessage()]);
+            error(['error' => $e->getMessage()]);
         }
         return true;
     }
@@ -143,7 +143,7 @@ class ExamService
         return $data;
     }
 
-    public static function getExamHistoryWithDetailById(int $ehId):array | Error
+    public static function getExamHistoryWithDetailById(int $ehId):array
     {
         $data = History::find($ehId)->getRaw();
         if($data) {
@@ -187,7 +187,7 @@ class ExamService
         return Relation::getQuery()->join($questionTable, 'qkquestionid', '=', $questionKey);
     }
 
-    static public function drawSelfPaper(ExamPaper $paper, array $pointRange = []):array|Error
+    static public function drawSelfPaper(ExamPaper $paper, array $pointRange = []):array
     {
         $data = [];
         $questionIds = array_column($paper->examQuestions,'questions');
@@ -236,7 +236,7 @@ class ExamService
         return $data;
     }
 
-    static public function drawPaper(ExamPaper $paper, array $pointRange):array|Error
+    static public function drawPaper(ExamPaper $paper, array $pointRange):array
     {
         if($paper->examScaleModel)return self::drawScalePaper($paper);
         $points = Point::getQuery()->select(['pointid','pointquestions'])
@@ -337,7 +337,7 @@ class ExamService
         return $questions;
     }
 
-    static private function drawScalePaper(ExamPaper $paper):array|Error
+    static private function drawScalePaper(ExamPaper $paper):array
     {
         $questions = [];
         $existsIds = [];
@@ -454,7 +454,7 @@ class ExamService
         return $questions;
     }
 
-    public static function finishExamSession(ExamPaperSession $examSession):int | Error
+    public static function finishExamSession(ExamPaperSession $examSession):int
     {
         $userAnswers = $examSession->examSessionUserAnswer;
         array_walk($userAnswers,function(&$item){
@@ -616,20 +616,16 @@ class ExamService
             'ehdtimes' => json_encode([],JSON_UNESCAPED_UNICODE)
         ];
         $detail = HistoryDetail::fillWithInit($detailData);
-        try {
-            return History::getDB()->transaction(function () use ($history,$detail,$examSession) {
-                $history->toValidate();
-                $history->save();
-                $ehId = $history->ehid;
-                $detail->ehdEhId = $ehId;
-                $detail->toValidate();
-                $detail->save();
-                $examSession->delete();
-                return $ehId;
-            });
-        } catch (\Exception $e) {
-            return error(['error' => $e->getMessage()]);
-        }
+        return History::getDB()->transaction(function () use ($history,$detail,$examSession) {
+            $history->toValidate();
+            $history->save();
+            $ehId = $history->ehid;
+            $detail->ehdEhId = $ehId;
+            $detail->toValidate();
+            $detail->save();
+            $examSession->delete();
+            return $ehId;
+        });
     }
 
     static public function cacheExamHistoryDetail(History $history):History

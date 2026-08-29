@@ -5,7 +5,7 @@ namespace PHPEMS\App\Content\Controller\Master;
 use PHPEMS\App\Core\Service\Model\App;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Index extends Controller implements ControllerInterface
 {
@@ -30,7 +30,7 @@ class Index extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         return [];
     }

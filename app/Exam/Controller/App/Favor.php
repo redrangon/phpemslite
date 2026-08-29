@@ -9,7 +9,7 @@ use PHPEMS\App\Exam\Service\Model\Question;
 use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Favor extends Controller implements ControllerInterface
 {
@@ -50,11 +50,11 @@ class Favor extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function UnFavor(): array | Error
+    public function UnFavor(): array
     {
         if($this->basic->basicexam['model'] == 2)
         {
-            return error(['error' => '错误的模式']);
+            error(['error' => '错误的模式']);
         }
         $questionId = $this->request->questionId??null;
         if($questionId)
@@ -65,14 +65,14 @@ class Favor extends Controller implements ControllerInterface
                 ->delete();
             return [];
         }
-        return error(['error' => '错误的试题ID']);
+        error(['error' => '错误的试题ID']);
     }
 
-    public function Favor(): array | Error
+    public function Favor(): array
     {
         if($this->basic->basicexam['model'] == 2)
         {
-            return error(['error' => '错误的模式']);
+            error(['error' => '错误的模式']);
         }
         $questionId = $this->request->questionId??null;
         if($questionId)
@@ -91,14 +91,14 @@ class Favor extends Controller implements ControllerInterface
             $favor->save();
             return [];
         }
-        return error(['error' => '错误的试题ID']);
+        error(['error' => '错误的试题ID']);
     }
 
-    public function index():array | Error
+    public function index():array
     {
         if($this->basic->basicexam['model'] == 2)
         {
-            return error(['error' => '错误的模式']);
+            error(['error' => '错误的模式']);
         }
         $page = $this->request->page??1;
         $query = ExamService::getFavorQueryWithQuestion()->select(['questionid','question','questiontype','questionhtml','questionparent','questionanswer','questiondescribe'])

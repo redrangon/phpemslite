@@ -7,7 +7,7 @@ use PHPEMS\App\Exam\Service\Model\ExamMember;
 use PHPEMS\App\User\Service\Model\User;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Member extends Controller implements ControllerInterface
 {
@@ -38,13 +38,13 @@ class Member extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function RefreshNumber():array | Error
+    public function RefreshNumber():array
     {
         $basicId = $this->request->basicId??null;
         if($basicId)
         {
             $basic = Basic::find($basicId);
-            if(!$basic->basicId) return error(['error' => '考场不存在']);
+            if(!$basic->basicId) error(['error' => '考场不存在']);
             $query = ExamMember::getQuery()->where('embasicId', $basicId);
             $number = $query->count();
             if($number != $basic->basicNumber)
@@ -56,7 +56,7 @@ class Member extends Controller implements ControllerInterface
         return ['msg' => '刷新成功'];
     }
 
-    public function Data():array | Error
+    public function Data():array
     {
         $basicId = $this->request->basicId??null;
         if($basicId)
@@ -88,41 +88,41 @@ class Member extends Controller implements ControllerInterface
             });
             return $data;
         }
-        return error(['error' => '参数错误']);
+        error(['error' => '参数错误']);
     }
 
-    public function Delete():array | Error
+    public function Delete():array
     {
         $ids = $this->request->ids??[];
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
         ExamMember::getQuery()->whereIn('emid', $ids)->delete();
         return ['msg' => '删除成功'];
     }
 
-    public function Modify():array | Error
+    public function Modify():array
     {
         $cmId = $this->request->emId??null;
-        if(!$cmId) return error(['error' => '参数错误']);
+        if(!$cmId) error(['error' => '参数错误']);
         $model = ExamMember::find($cmId);
-        if(!$model->emId) return error(['error' => '记录不存在']);
+        if(!$model->emId) error(['error' => '记录不存在']);
         $cmendtime = $this->request->emendtime??null;
-        if(!$cmendtime) return error(['error' => '请输入到期时间']);
+        if(!$cmendtime) error(['error' => '请输入到期时间']);
         $cmendtime = strtotime($cmendtime);
-        if($cmendtime < TIME) return error(['error' => '请输入正确的到期时间']);
+        if($cmendtime < TIME) error(['error' => '请输入正确的到期时间']);
         $model->emendtime = $cmendtime;
-        if(!$model->save()) return error(['error' => '修改失败']);
+        if(!$model->save()) error(['error' => '修改失败']);
         return ['msg' => '修改成功'];
     }
 
-    public function AddByPassport():array | Error
+    public function AddByPassport():array
     {
         $mids = $this->request->mids??[];
-        if(empty($mids)) return error(['error' => '请选择用户']);
+        if(empty($mids)) error(['error' => '请选择用户']);
         $basicId = $this->request->basicId??null;
-        if(!$basicId) return error(['error' => '请选择课程']);
+        if(!$basicId) error(['error' => '请选择课程']);
         $endTime = $this->request->endTime??'';
         $endTime = strtotime($endTime);
-        if($endTime < TIME)return error(['error' => '请输入正确的到期时间']);
+        if($endTime < TIME)error(['error' => '请输入正确的到期时间']);
         foreach($mids as $passport)
         {
             $model = ExamMember::findByPassportAndSubjectId($passport,$basicId);
@@ -136,21 +136,21 @@ class Member extends Controller implements ControllerInterface
                 ]);
                 $result = $model->toValidate();
                 if($result !== true)return $result;
-                if(!$model->save()) return error(['error' => '通行证ID：'.$passport.'用户添加失败']);
+                if(!$model->save()) error(['error' => '通行证ID：'.$passport.'用户添加失败']);
             }
             else
             {
                 if($model->emendtime != $endTime)
                 {
                     $model->emendtime = $endTime;
-                    if(!$model->save()) return error(['error' => '通行证ID：'.$passport.'用户添加失败']);
+                    if(!$model->save()) error(['error' => '通行证ID：'.$passport.'用户添加失败']);
                 }
             }
         }
         return ['msg' => '添加成功'];
     }
 
-    public function Add():array | Error
+    public function Add():array
     {
         $data = [
             'embasicId' => $this->request->embasicId??null,
@@ -158,24 +158,24 @@ class Member extends Controller implements ControllerInterface
             'emstarttime' => TIME,
             'empassport' => $this->request->empassport??null,
         ];
-        if($data['emendtime'] < TIME) return error(['error' => '请输入正确的到期时间']);
+        if($data['emendtime'] < TIME) error(['error' => '请输入正确的到期时间']);
         $model = ExamMember::findByPassportAndSubjectId($data['empassport'],$data['embasicId']);
         if(!$model->emId)
         {
             $model = ExamMember::fillWithInit($data);
             $result = $model->toValidate();
             if($result !== true)return $result;
-            if(!$model->save()) return error(['error' => '添加失败']);
+            if(!$model->save()) error(['error' => '添加失败']);
         }
         else
         {
-            if($data['emendtime'] < $model->emendtime)return error(['error' => '请输入正确的到期时间']);
+            if($data['emendtime'] < $model->emendtime)error(['error' => '请输入正确的到期时间']);
             $model->emendtime = $data['emendtime'];
-            if(!$model->save()) return error(['error' => '添加失败']);
+            if(!$model->save()) error(['error' => '添加失败']);
         }
         return ['msg' => '添加成功'];
     }
-    public function Index():array | Error
+    public function Index():array
     {
         return [];
     }

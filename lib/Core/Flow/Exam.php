@@ -5,7 +5,7 @@ namespace PHPEMS\Lib\Core\Flow;
 use PHPEMS\App\Exam\Service\Model\ExamSession;
 use PHPEMS\App\Exam\Service\Model\Basic;
 use PHPEMS\Lib\Core\Request\RequestInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Exam
 {
@@ -17,11 +17,11 @@ class Exam
         $user = $this->request->getUser();
         $session = ExamSession::findByPassport($user->userpassport);
         if(!$session->esid) {
-            return error(['error' => '会话不存在']);
+            error(['error' => '会话不存在']);
         }
         $basic = Basic::find($session->esbasicid);
         if(!$basic->basicid) {
-            return error(['error' => '课程不存在']);
+            error(['error' => '课程不存在']);
         }
         $basic->basicexam = json_decode($basic->basicexam, true);
         $basic->basicpoint = json_decode($basic->basicpoint, true);

@@ -9,7 +9,7 @@ use PHPEMS\App\Course\Service\Model\CourseSubject;
 use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Course extends Controller implements ControllerInterface
 {
@@ -50,14 +50,14 @@ class Course extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function FaceVerify(): array | Error
+    public function FaceVerify(): array
     {
         $user = $this->request->getUser();
         $courseId = $this->request->courseid??null;
         $course = \PHPEMS\App\Course\Service\Model\Course::find($courseId);
-        if(!$course->courseid || $course->coursecsid != $this->subject->csid)return error(['error' => '课程不存在']);
+        if(!$course->courseid || $course->coursecsid != $this->subject->csid)error(['error' => '课程不存在']);
         $face = $this->request->face??null;
-        if(!$face)return error(['error' => '人脸不存在']);
+        if(!$face)error(['error' => '人脸不存在']);
         $log = CourseLog::findByUserCourse($user->userpassport, $courseId);
         $log->logfaces = $log->logfaces?json_decode($log->logfaces, true):[];
         $log->logfaces = json_encode($log->logfaces, JSON_UNESCAPED_UNICODE);
@@ -67,14 +67,14 @@ class Course extends Controller implements ControllerInterface
         return ['faceVerify' => 1];
     }
 
-    public function Finish(): array | Error
+    public function Finish(): array
     {
         $user = $this->request->getUser();
         $courseId = $this->request->courseid??null;
         $course = \PHPEMS\App\Course\Service\Model\Course::find($courseId);
-        if(!$course->courseid || $course->coursecsid != $this->subject->csid)return error(['error' => '课程不存在']);
+        if(!$course->courseid || $course->coursecsid != $this->subject->csid)error(['error' => '课程不存在']);
         $log = CourseLog::findByUserCourse($user->userpassport, $courseId);
-        if(!$log->logid)return error(['error' => '课程记录不存在']);
+        if(!$log->logid)error(['error' => '课程记录不存在']);
         if(!$log->logstatus)
         {
             $log->logstatus = 1;
@@ -82,17 +82,17 @@ class Course extends Controller implements ControllerInterface
             $log->logprogress = 0;
         }
         else $log->logprogress = 0;
-        if(!$log->save())return error(['error' => '保存失败']);
+        if(!$log->save())error(['error' => '保存失败']);
         CourseService::getCourseProgress($user->userpassport,$course->coursecsid);
         return ['msg' => '保存成功'];
     }
 
-    public function Progress(): array | Error
+    public function Progress(): array
     {
         $user = $this->request->getUser();
         $courseId = $this->request->courseid??null;
         $course = \PHPEMS\App\Course\Service\Model\Course::find($courseId);
-        if(!$course->courseid || $course->coursecsid != $this->subject->csid)return error(['error' => '课程不存在']);
+        if(!$course->courseid || $course->coursecsid != $this->subject->csid)error(['error' => '课程不存在']);
         $log = CourseLog::findByUserCourse($user->userpassport, $courseId);
         $time = $this->request->time??0;
         if(!$log->logid)$log = CourseLog::fillWithInit([
@@ -112,7 +112,7 @@ class Course extends Controller implements ControllerInterface
         return ['msg' => '保存成功'];
     }
 
-    public function Data(): array | Error
+    public function Data(): array
     {
         $query = \PHPEMS\App\Course\Service\Model\Course::getQuery()
             ->select(['courseid', 'coursetitle', 'coursemodule', 'coursecsid','coursedirid'])
@@ -138,16 +138,16 @@ class Course extends Controller implements ControllerInterface
         return $courses;
     }
 
-    public function Subject(): array | Error
+    public function Subject(): array
     {
         return $this->subject->getRaw();
     }
 
-    public function index():array | Error
+    public function index():array
     {
         $courseId = $this->request->courseid??null;
         $course = \PHPEMS\App\Course\Service\Model\Course::find($courseId);
-        if(!$course->courseid || $course->coursecsid != $this->subject->csid)return error(['error' => '课程不存在']);
+        if(!$course->courseid || $course->coursecsid != $this->subject->csid)error(['error' => '课程不存在']);
         $user = $this->request->getUser();
         $log = CourseLog::findByUserCourse($user->userpassport, $courseId);
         if(!$log->logid)

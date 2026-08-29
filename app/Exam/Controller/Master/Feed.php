@@ -6,7 +6,7 @@ use PHPEMS\App\Exam\Service\Model\FeedBack;
 use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Feed extends Controller implements ControllerInterface
 {
@@ -38,12 +38,12 @@ class Feed extends Controller implements ControllerInterface
     /**
      * 修改操作
      */
-    public function Sign():array|Error
+    public function Sign():array
     {
         // TODO: 实现修改逻辑
         // 示例：
         $ids = $this->request->ids??null;
-        if(!$ids)return error(['error' => '参数错误']);
+        if(!$ids)error(['error' => '参数错误']);
         FeedBack::getQuery()->whereIn('fbid', $ids)->update([
             'fbstatus' => 1,
             'fbdonetime' => TIME,
@@ -55,12 +55,12 @@ class Feed extends Controller implements ControllerInterface
     /**
      * 删除操作
      */
-    public function delete():array|Error
+    public function delete():array
     {
         // TODO: 实现删除逻辑
         // 示例：
         $ids = $this->request->ids;
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
         FeedBack::getQuery()->whereIn('fbid', $ids)->delete();
         return ['msg' => '删除成功'];
     }
@@ -68,7 +68,7 @@ class Feed extends Controller implements ControllerInterface
     /**
      * 获取数据列表
      */
-    public function Data(): array|Error
+    public function Data(): array
     {
         // TODO: 实现数据查询逻辑
         // 示例：
@@ -87,7 +87,7 @@ class Feed extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         return [];
     }

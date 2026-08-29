@@ -18,6 +18,6 @@ class PayProvider
     public function __call(string $name, array $arguments)
     {
         if(method_exists($this->pay,$name))return $this->pay->$name(...$arguments);
-        else return error(['错误的方法']);
+        else error(['错误的方法']);
     }
 }

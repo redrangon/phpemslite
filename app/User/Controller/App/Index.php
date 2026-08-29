@@ -17,7 +17,7 @@ use PHPEMS\Lib\Auth\Auth;
 use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\Lib\Utils\FileProvider;
 
 class Index extends Controller implements ControllerInterface
@@ -55,11 +55,11 @@ class Index extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Recharge():array|Error
+    public function Recharge():array
     {
         $amount = $this->request->amount??0;
-        if($amount < 10)return error(['error' => '最少充值10积分']);
-        if($amount % 10 > 0)return error(['error' => '参数错误']);
+        if($amount < 10)error('最少充值10积分');
+        if($amount % 10 > 0)error('参数错误');
         $user = $this->request->getUser();
         $order = TradeOrder::fillWithInit([
             'ordersn' => date('YmdHis').rand(100,999),
@@ -76,13 +76,12 @@ class Index extends Controller implements ControllerInterface
             'orderprice' => intval($amount / 10),
             'orderrawprice' => intval($amount / 10),
         ]);
-        $result = $order->toValidate();
-        if($result !== true)return $result;
+        $order->toValidate();
         $order->save();
         return $order->getRaw();
     }
 
-    public function LastStudy():array|Error
+    public function LastStudy():array
     {
         $user = $this->request->getUser();
         $data = [];
@@ -97,7 +96,7 @@ class Index extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Cert():array|Error
+    public function Cert():array
     {
         $page = $this->request->page??1;
         $limit = $this->request->limit??10;
@@ -113,7 +112,7 @@ class Index extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Basic():array|Error
+    public function Basic():array
     {
         $page = $this->request->page??1;
         $limit = $this->request->limit??10;
@@ -129,7 +128,7 @@ class Index extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Course():array|Error
+    public function Course():array
     {
         $page = $this->request->page??1;
         $limit = $this->request->limit??10;
@@ -145,7 +144,7 @@ class Index extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Expense():array|Error
+    public function Expense():array
     {
         $page = $this->request->page??1;
         $limit = $this->request->limit??10;
@@ -160,7 +159,7 @@ class Index extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Profile():array|Error
+    public function Profile():array
     {
         $user = $this->request->getUser();
         $data = [
@@ -170,7 +169,7 @@ class Index extends Controller implements ControllerInterface
             return $value !== null;
         });
         if(empty($data)){
-            return error(['error' => '未提交任何修改']);
+            error('未提交任何修改');
         }
 
         // 更新数据
@@ -179,13 +178,13 @@ class Index extends Controller implements ControllerInterface
         }
 
         if (!$user->save()) {
-            return error(['error' => '修改失败']);
+            error('修改失败');
         }
 
         return ['msg' => '修改成功'];
     }
 
-    public function cancelVerify(): array|Error
+    public function cancelVerify(): array
     {
         $user = $this->request->getUser();
         if($user->userstatus === 1)
@@ -194,10 +193,10 @@ class Index extends Controller implements ControllerInterface
             $result = $user->save();
             if($result)return ['msg' => '撤回成功'];
         }
-        return error(['error' => '撤回失败']);
+        error('撤回失败');
     }
 
-    public function Password():array|Error
+    public function Password():array
     {
         $user = $this->request->getUser();
         $oldpassword = $this->request->oldpassword??null;
@@ -205,10 +204,10 @@ class Index extends Controller implements ControllerInterface
         $newpassword2 = $this->request->newpassword2??null;
         if($oldpassword && $newpassword && $newpassword2)
         {
-            if($newpassword != $newpassword2)return error(['error' => '两次密码输入不一致，请重新输入！']);
-            if(!$newpassword || strlen($newpassword) < 6)return error(['error' => '密码不符合规范']);
-            if(!$user->validatePassword($oldpassword))return error(['error' => '原密码校验失败，请重新输入！']);
-            if(!$newpassword || strlen($newpassword) < 6)return error(['error' => '密码不符合规范']);
+            if($newpassword != $newpassword2)error(['error' => '两次密码输入不一致，请重新输入！']);
+            if(!$newpassword || strlen($newpassword) < 6)error(['error' => '密码不符合规范']);
+            if(!$user->validatePassword($oldpassword))error(['error' => '原密码校验失败，请重新输入！']);
+            if(!$newpassword || strlen($newpassword) < 6)error(['error' => '密码不符合规范']);
             $user->userpassword = User::saltPassword($newpassword);
             $result = $user->save();
             if($result)
@@ -216,12 +215,12 @@ class Index extends Controller implements ControllerInterface
                 Auth::logout();
                 return ['msg' => '修改密码成功'];
             }
-            else return error(['error' => '修改密码失败']);
+            else error(['error' => '修改密码失败']);
         }
-        else return error(['error' => '密码不符合规范']);
+        else error(['error' => '密码不符合规范']);
     }
 
-    public function Verify():array|Error
+    public function Verify():array
     {
         $user = $this->request->getUser();
         $userphoto = $this->request->userphoto??null;
@@ -229,8 +228,8 @@ class Index extends Controller implements ControllerInterface
         $usertruename = $this->request->usertruename??null;
         if($userphoto && $userpassport && $usertruename)
         {
-            if($user->userpassport != $userpassport)return error('通行证ID校验失败');
-            if($user->userstatus >= 1)return error(['error' => '您已提交过实名信息，请等待审核']);
+            if($user->userpassport != $userpassport)error('通行证ID校验失败');
+            if($user->userstatus >= 1)error(['error' => '您已提交过实名信息，请等待审核']);
             $user->userphoto = $userphoto;
             $user->usertruename = $usertruename;
             $user->userstatus = 1;
@@ -238,10 +237,10 @@ class Index extends Controller implements ControllerInterface
             if($result)return ['msg' => '提交实名信息成功'];
             else error(['error' => '提交失败']);
         }
-        return error(['error' => '缺少认证信息']);
+        error(['error' => '缺少认证信息']);
     }
 
-    public function Data():array|Error
+    public function Data():array
     {
         $user = $this->request->getUser();
         $userMoney = UserMoney::findByPassport($user->userpassport);
@@ -259,7 +258,7 @@ class Index extends Controller implements ControllerInterface
         ];
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         return [];
     }

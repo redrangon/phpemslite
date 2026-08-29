@@ -6,7 +6,7 @@ use PHPEMS\App\Course\Service\Model\CourseSubject;
 use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Course extends Controller implements ControllerInterface
 {
@@ -40,7 +40,7 @@ class Course extends Controller implements ControllerInterface
     /**
      * 添加操作
      */
-    public function Add():array|Error
+    public function Add():array
     {
         // 获取请求数据
         $user = $this->request->getUser();
@@ -60,7 +60,7 @@ class Course extends Controller implements ControllerInterface
         ];
 
         $model = \PHPEMS\App\Course\Service\Model\Course::fillWithInit($data);
-        if(!$model->save()) return error(['error' => '添加失败']);
+        if(!$model->save()) error(['error' => '添加失败']);
 
         return ['msg' => '添加成功'];
     }
@@ -68,11 +68,11 @@ class Course extends Controller implements ControllerInterface
     /**
      * 修改操作
      */
-    public function modify():array|Error
+    public function modify():array
     {
         $courseId = $this->request->courseid;
         $model = \PHPEMS\App\Course\Service\Model\Course::find($courseId);
-        if(!$model->courseid) return error(['error' => '记录不存在']);
+        if(!$model->courseid) error(['error' => '记录不存在']);
 
         $data = [
             'coursetitle' => $this->request->coursetitle??null,
@@ -92,13 +92,13 @@ class Course extends Controller implements ControllerInterface
             if($model->coursemodule == 'dir')
             {
                 $number = \PHPEMS\App\Course\Service\Model\Course::getQuery()->where('coursedirid', $courseId)->count();
-                if($number > 0)return error(['error' => '修改失败，此文件夹下有课件']);
+                if($number > 0)error(['error' => '修改失败，此文件夹下有课件']);
             }
         }
 
         if($data['coursedirid'])
         {
-            if($data['coursedirid'] == $courseId)return error(['error' => '修改失败，不能移动到自己目录下']);
+            if($data['coursedirid'] == $courseId)error(['error' => '修改失败，不能移动到自己目录下']);
         }
 
         $data = array_filter($data, function($item) {
@@ -109,7 +109,7 @@ class Course extends Controller implements ControllerInterface
             $model->$key = $value;
         }
 
-        if(!$model->save()) return error(['error' => '修改失败']);
+        if(!$model->save()) error(['error' => '修改失败']);
 
         return ['msg' => '修改成功'];
     }
@@ -117,10 +117,10 @@ class Course extends Controller implements ControllerInterface
     /**
      * 删除操作
      */
-    public function delete():array|Error
+    public function delete():array
     {
         $ids = $this->request->ids;
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
 
         \PHPEMS\App\Course\Service\Model\Course::getQuery()->whereIn('courseid', $ids)->delete();
 
@@ -130,12 +130,12 @@ class Course extends Controller implements ControllerInterface
     /**
      * 获取数据列表
      */
-    public function Data(): array|Error
+    public function Data(): array
     {
         $csid = $this->request->csid ?? null;
-        if(!$csid)return error(['error' => '缺少课程ID']);
+        if(!$csid)error(['error' => '缺少课程ID']);
         $model = CourseSubject::find($csid);
-        if(!$model->csid)return error(['error' => '缺少课程']);
+        if(!$model->csid)error(['error' => '缺少课程']);
         $query = \PHPEMS\App\Course\Service\Model\Course::getQuery()
             ->where('coursecsid','=',$csid)
             ->orderBy('coursesequence', 'desc')->orderBy('courseid', 'DESC');
@@ -167,19 +167,19 @@ class Course extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function All():array | Error
+    public function All():array
     {
         $query = \PHPEMS\App\Course\Service\Model\Course::getQuery()
             ->select(['courseid', 'coursetitle', 'coursemodule', 'coursecsid','coursedirid'])
             ->orderBy('coursesequence', 'desc')->orderBy('courseid', 'DESC');
         $csid = $this->request->csid??null;
-        if(!$csid)return error(['error' => '错误的课程ID']);
+        if(!$csid)error(['error' => '错误的课程ID']);
         $model = CourseSubject::find($csid);
-        if(!$model->csid)return error(['error' => '错误的课程ID']);
+        if(!$model->csid)error(['error' => '错误的课程ID']);
         return $query->where('coursecsid', '=', $csid)->get();
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         $courseId = $this->request->courseid ?? null;
         if($courseId) {

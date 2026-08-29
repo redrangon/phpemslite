@@ -5,7 +5,7 @@ namespace PHPEMS\Lib\Core\Flow;
 use PHPEMS\App\Course\Service\Model\CourseSession;
 use PHPEMS\App\Course\Service\Model\CourseSubject;
 use PHPEMS\Lib\Core\Request\RequestInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Course
 {
@@ -17,11 +17,11 @@ class Course
         $user = $this->request->getUser();
         $session = CourseSession::findByPassport($user->userpassport);
         if(!$session->csnid) {
-            return error(['error' => '会话不存在']);
+            error(['error' => '会话不存在']);
         }
         $subject = CourseSubject::find($session->csncsid);
         if(!$subject->csid) {
-            return error(['error' => '课程不存在']);
+            error(['error' => '课程不存在']);
         }
         $this->request->setStore('session', $session);
         $this->request->setStore('subject', $subject);

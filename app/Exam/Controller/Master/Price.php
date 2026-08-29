@@ -5,7 +5,7 @@ namespace PHPEMS\App\Exam\Controller\Master;
 use PHPEMS\App\Exam\Service\Model\ExamPrice;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\App\Exam\Service\Model\Basic;
 class Price extends Controller implements ControllerInterface
 {
@@ -34,7 +34,7 @@ class Price extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Data():array | Error
+    public function Data():array
     {
         $basicId = $this->request->basicId??null;
         if($basicId)
@@ -48,20 +48,20 @@ class Price extends Controller implements ControllerInterface
         return [];
     }
 
-    public function Delete():array | Error
+    public function Delete():array
     {
         $ids = $this->request->ids??[];
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
         ExamPrice::getQuery()->whereIn('epid', $ids)->delete();
         return ['msg' => '删除成功'];
     }
 
-    public function Modify():array | Error
+    public function Modify():array
     {
         $epId = $this->request->epid??null;
-        if(!$epId) return error(['error' => '参数错误']);
+        if(!$epId) error(['error' => '参数错误']);
         $model = ExamPrice::find($epId);
-        if(!$model->epId) return error(['error' => '记录不存在']);
+        if(!$model->epId) error(['error' => '记录不存在']);
         $data = [
             'epbasicid' => $this->request->epbasicid??null,
             'epdays' => $this->request->epdays??null,
@@ -73,11 +73,11 @@ class Price extends Controller implements ControllerInterface
         foreach ($data as $key => $value) {
             $model->$key = $value;
         }
-        if(!$model->save()) return error(['error' => '修改失败']);
+        if(!$model->save()) error(['error' => '修改失败']);
         return ['msg' => '修改成功'];
     }
 
-    public function Add():array | Error
+    public function Add():array
     {
         $data = [
             'epbasicid' => $this->request->epbasicid??null,
@@ -87,10 +87,10 @@ class Price extends Controller implements ControllerInterface
         $model = ExamPrice::fillWithInit($data);
         $result = $model->toValidate();
         if($result !== true)return $result;
-        if(!$model->save()) return error(['error' => '添加失败']);
+        if(!$model->save()) error(['error' => '添加失败']);
         return ['msg' => '添加成功'];
     }
-    public function Index():array | Error
+    public function Index():array
     {
         return [];
     }

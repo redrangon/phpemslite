@@ -5,7 +5,7 @@ namespace PHPEMS\App\Core\Controller\Utils;
 use PHPEMS\App\Core\Service\Model\App;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\Lib\Utils\Captcha;
 use PHPEMS\Lib\Utils\Messenger\MessengerProvider;
 
@@ -30,7 +30,7 @@ class Index extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function SendMessage():array | Error
+    public function SendMessage():array
     {
         $to = $this->request->email??null;
         $message = [

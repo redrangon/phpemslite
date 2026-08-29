@@ -11,7 +11,7 @@ use PHPEMS\App\User\Service\Model\UserExpense;
 use PHPEMS\App\User\Service\Model\UserMoney;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Index extends Controller implements ControllerInterface
 {
@@ -41,7 +41,7 @@ class Index extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Buy(): array | Error
+    public function Buy(): array
     {
         $priceId = $this->request->priceId??null;
         if($priceId)
@@ -89,17 +89,17 @@ class Index extends Controller implements ControllerInterface
                     }
                     catch (\Exception $e)
                     {
-                        return error(['error' => '扣款失败，请稍后尝试！'.$e->getMessage()]);
+                        error(['error' => '扣款失败，请稍后尝试！'.$e->getMessage()]);
                     }
                 }
-                else return error(['error' => '金额不足']);
+                else error(['error' => '金额不足']);
             }
-            return error(['error' => '价格记录不存在']);
+            error(['error' => '价格记录不存在']);
         }
-        return error(['error' => '记录不存在']);
+        error(['error' => '记录不存在']);
     }
 
-    public function Price(): array | Error
+    public function Price(): array
     {
         $basicId = $this->request->basicId??null;
         if($basicId)
@@ -113,7 +113,7 @@ class Index extends Controller implements ControllerInterface
         return [];
     }
 
-    public function Basic(): Error|array
+    public function Basic(): array
     {
         $basicId = $this->request->basicId??null;
         $basic = Basic::find($basicId)->getRaw();
@@ -130,15 +130,15 @@ class Index extends Controller implements ControllerInterface
         return $basic??[];
     }
 
-    public function setSession(): array | Error
+    public function setSession(): array
     {
         $examId = $this->request->examId??null;
-        if(!$examId)return error(['error' => '参数错误']);
+        if(!$examId)error(['error' => '参数错误']);
         $basic = Basic::find($examId);
-        if(!$basic->basicid)return error(['error' => '考场不存在']);
+        if(!$basic->basicid)error(['error' => '考场不存在']);
         $user = $this->request->getUser();
         $basicMember = ExamMember::findByPassportAndSubjectIdWithTime($user->userpassport,$examId);
-        if(!$basicMember->emid)return error(['error' => '您没有开通本考场']);
+        if(!$basicMember->emid)error(['error' => '您没有开通本考场']);
         $session = ExamSession::findByPassport($user->userpassport);
         if(!$session->esid)
         {
@@ -159,7 +159,7 @@ class Index extends Controller implements ControllerInterface
         return ['msg' => '设置成功'];
     }
 
-    public function QuestionType(): array | Error
+    public function QuestionType(): array
     {
         $questionTypes = QuestionType::getAll();
         return array_column($questionTypes,null,'questid');

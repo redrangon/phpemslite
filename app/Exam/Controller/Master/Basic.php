@@ -10,7 +10,7 @@ use PHPEMS\Lib\AI\AIClient;
 
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Basic extends Controller implements ControllerInterface
 {
@@ -44,7 +44,7 @@ class Basic extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function AI():array|Error
+    public function AI():array
     {
         $questionString = json_encode([
             'parent' => $this->request->parent??null,
@@ -70,15 +70,15 @@ prompt;
         return [$result];
     }
 
-    public function Decide():array|Error
+    public function Decide():array
     {
         $ehId = $this->request->ehid??null;
         $examScore = $this->request->examScore??[];
-        if(!$ehId || empty($examScore))return error(['error' => '参数错误！']);
+        if(!$ehId || empty($examScore))error(['error' => '参数错误！']);
         $history = History::find($ehId);
-        if(!$history->ehid)return error(['error' => '记录不存在']);
+        if(!$history->ehid)error(['error' => '记录不存在']);
         $detail = HistoryDetail::findByEhId($ehId);
-        if(!$detail->ehdid)return error(['error' => '记录错误']);
+        if(!$detail->ehdid)error(['error' => '记录错误']);
         $setting = json_decode($detail->ehdsetting,true)??[];
         $scores = json_decode($detail->ehdscores,true)??[];
         foreach($examScore as $questionid => $score)
@@ -107,28 +107,27 @@ prompt;
             return [];
         }catch (\Exception $e)
         {
-            return error(['error' => '保存失败']);
+            error(['error' => '保存失败']);
         }
     }
 
-    public function ForceSave():array|Error
+    public function ForceSave():array
     {
         $sessionId = $this->request->sessionid??null;
-        if(!$sessionId)return error(['error' => '参数错误！']);
+        if(!$sessionId)error(['error' => '参数错误！']);
         $session = ExamPaperSession::findBySessionId($sessionId);
         $session->examSessionUserAnswer = json_decode($session->examSessionUserAnswer,true);
         $session->examSessionSetting = json_decode($session->examSessionSetting,true);
         $session->examSessionQuestion = json_decode($session->examSessionQuestion,true);
         $session->examSessionFaceList = json_decode($session->examSessionFaceList,true);
         $result = ExamService::finishExamSession($session);
-        if($result instanceof Error)return $result;
         return ['ehid' => $result];
     }
 
-    public function Session():array|Error
+    public function Session():array
     {
         $basicId = $this->request->basicId??null;
-        if(!$basicId)return error(['error' => '错误的参数']);
+        if(!$basicId)error(['error' => '错误的参数']);
         $page = $this->request->page??1;
         $limit = $this->request->limit??20;
         $search = $this->request->search??null;
@@ -146,7 +145,7 @@ prompt;
     /**
      * 添加操作
      */
-    public function Add(): Error | array
+    public function Add(): array
     {
         // 获取请求数据
         $data = [
@@ -160,20 +159,20 @@ prompt;
         $model = \PHPEMS\App\Exam\Service\Model\Basic::fillWithInit($data);
         $result = $model->toValidate();
         if($result !== true)return $result;
-        if(!$model->save()) return error(['error' => '添加失败']);
+        if(!$model->save()) error(['error' => '添加失败']);
         return ['msg' => '添加成功'];
     }
 
     /**
      * 修改操作
      */
-    public function modify():array|Error
+    public function modify():array
     {
         // TODO: 实现修改逻辑
         // 示例：
         $basicId = $this->request->basicid;
         $model = \PHPEMS\App\Exam\Service\Model\Basic::find($basicId);
-        if(!$model->basicid) return error(['error' => '记录不存在']);
+        if(!$model->basicid) error(['error' => '记录不存在']);
         $data = [
             'basic' => $this->request->basic??null,
             'basicsubjectid' => $this->request->basicsubjectid??null,
@@ -193,19 +192,19 @@ prompt;
             }
             else $model->$key = $value;
         }
-        if(!$model->save()) return error(['error' => '修改失败']);
+        if(!$model->save()) error(['error' => '修改失败']);
         return ['msg' => '修改成功'];
     }
 
     /**
      * 删除操作
      */
-    public function delete():array|Error
+    public function delete():array
     {
         // TODO: 实现删除逻辑
         // 示例：
         $ids = $this->request->ids;
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
         \PHPEMS\App\Exam\Service\Model\Basic::getQuery()->whereIn('basicid', $ids)->delete();
 
         return ['msg' => '删除成功'];
@@ -231,7 +230,7 @@ prompt;
         return $data;
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         $basicid = $this->request->basicid;
         $basic = \PHPEMS\App\Exam\Service\Model\Basic::find($basicid)->getRaw();

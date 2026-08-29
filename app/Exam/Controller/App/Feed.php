@@ -5,7 +5,7 @@ namespace PHPEMS\App\Exam\Controller\App;
 use PHPEMS\App\Exam\Service\Model\FeedBack;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Feed extends Controller implements ControllerInterface
 {
@@ -32,12 +32,12 @@ class Feed extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Data(): array | Error
+    public function Data(): array
     {
         return [];
     }
 
-    public function Add(): array | Error
+    public function Add(): array
     {
         $user = $this->request->getUser();
         $fbType = $this->request->fbtype??null;
@@ -61,10 +61,10 @@ class Feed extends Controller implements ControllerInterface
             }
             else return $result;
         }
-        else return error(['error' => '错误的参数']);
+        else error(['error' => '错误的参数']);
     }
 
-    public function Index():array | Error
+    public function Index():array
     {
         return [];
     }

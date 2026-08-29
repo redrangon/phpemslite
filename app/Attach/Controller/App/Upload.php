@@ -5,7 +5,7 @@ namespace PHPEMS\App\Attach\Controller\App;
 use Exception;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\Lib\Utils\FileProvider;
 
 class Upload extends Controller implements ControllerInterface
@@ -30,7 +30,7 @@ class Upload extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Index():array | Error
+    public function Index():array
     {
         $service = new FileProvider();
         $file = $this->request->getFile('file');
@@ -42,7 +42,7 @@ class Upload extends Controller implements ControllerInterface
                     'path' => $result['path']
                 ];
             }
-            else return error(['error' => $result['error']]);
+            else error($result['error']);
         }catch (Exception $e){
             return ['error' => $e->getMessage()];
         }

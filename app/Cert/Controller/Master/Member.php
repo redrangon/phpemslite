@@ -7,7 +7,7 @@ use PHPEMS\App\Course\Service\Model\CourseSubject;
 use PHPEMS\App\User\Service\Model\User;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Member extends Controller implements ControllerInterface
 {
@@ -40,16 +40,16 @@ class Member extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Import():array | Error
+    public function Import():array
     {
         $importType = $this->request->importType??null;
         $importData = $this->request->importData??null;
         if($importType && $importData)
         {
             $ceId = $this->request->ceId??null;
-            if(!$ceId) return error(['error' => '参数错误']);
+            if(!$ceId) error(['error' => '参数错误']);
             $cert = \PHPEMS\App\Cert\Service\Model\Cert::find($ceId);
-            if(!$cert->ceId) return error(['error' => '参数错误']);
+            if(!$cert->ceId) error(['error' => '参数错误']);
             $passports = [];
             $importData = explode("\n",$importData);
             foreach($importData as $data)
@@ -65,7 +65,7 @@ class Member extends Controller implements ControllerInterface
                             $data
                         ];
                     }
-                    else return error(['error' => '用户名'.$data.'不存在']);
+                    else error(['error' => '用户名'.$data.'不存在']);
                 }
                 else
                 {
@@ -76,7 +76,7 @@ class Member extends Controller implements ControllerInterface
                             $userModel->userpassport
                         ];
                     }
-                    else return error(['error' => '通行证'.$data.'不存在']);
+                    else error(['error' => '通行证'.$data.'不存在']);
                 }
             }
             $endTime = TIME + $cert->cedays * 24 * 60 * 60;
@@ -94,24 +94,24 @@ class Member extends Controller implements ControllerInterface
                         'cemsn' => date('YmdHis') . rand(100, 999) . ($indexId >= 1000 ?: str_pad($indexId, 4, '0', STR_PAD_LEFT))
                     ]);
                     $result = $model->toValidate();
-                    if ($result !== true) return error(['error' => ($userName?'用户名:'.$userName:'').'通行证ID：' . $passport . '用户添加失败']);
-                    if (!$model->save()) return error(['error' => ($userName?'用户名:'.$userName:'').'通行证ID：' . $passport . '用户添加失败']);
+                    if ($result !== true) error(['error' => ($userName?'用户名:'.$userName:'').'通行证ID：' . $passport . '用户添加失败']);
+                    if (!$model->save()) error(['error' => ($userName?'用户名:'.$userName:'').'通行证ID：' . $passport . '用户添加失败']);
                 } else {
-                    return error(['error' => ($userName?'用户名:'.$userName:'').'通行证ID：' . $passport . '用户有未过期证件']);
+                    error(['error' => ($userName?'用户名:'.$userName:'').'通行证ID：' . $passport . '用户有未过期证件']);
                 }
             }
             return ['msg' => '导入成功'];
         }
-        return error(['error' => '参数错误']);
+        error(['error' => '参数错误']);
     }
 
-    public function RefreshNumber():array | Error
+    public function RefreshNumber():array
     {
         $ceId = $this->request->ceId??null;
         if($ceId)
         {
             $cert = \PHPEMS\App\Cert\Service\Model\Cert::find($ceId);
-            if(!$cert->ceId) return error(['error' => '证书不存在']);
+            if(!$cert->ceId) error(['error' => '证书不存在']);
             $query = CertMember::getQuery()->where('cemceId', $ceId);
             $number = $query->count();
             if($number != $cert->ceNumber)
@@ -123,7 +123,7 @@ class Member extends Controller implements ControllerInterface
         return ['msg' => '刷新成功'];
     }
 
-    public function Data():array | Error
+    public function Data():array
     {
         $ceId = $this->request->ceId??null;
         if($ceId)
@@ -155,48 +155,48 @@ class Member extends Controller implements ControllerInterface
             });
             return $data;
         }
-        return error(['error' => '参数错误']);
+        error(['error' => '参数错误']);
     }
 
-    public function Verify():array | Error
+    public function Verify():array
     {
         $ids = $this->request->ids??[];
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
         CertMember::getQuery()->whereIn('cemid', $ids)->update(['cemstatus' => 1]);
         return ['msg' => '删除成功'];
     }
 
-    public function Delete():array | Error
+    public function Delete():array
     {
         $ids = $this->request->ids??[];
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
         CertMember::getQuery()->whereIn('cemid', $ids)->delete();
         return ['msg' => '删除成功'];
     }
 
-    public function Modify():array | Error
+    public function Modify():array
     {
         $cemId = $this->request->cemId??null;
-        if(!$cemId) return error(['error' => '参数错误']);
+        if(!$cemId) error(['error' => '参数错误']);
         $model = CertMember::find($cemId);
-        if(!$model->cemId) return error(['error' => '记录不存在']);
+        if(!$model->cemId) error(['error' => '记录不存在']);
         $cemexpirytime = $this->request->cemexpirytime??null;
-        if(!$cemexpirytime) return error(['error' => '请输入到期时间']);
+        if(!$cemexpirytime) error(['error' => '请输入到期时间']);
         $cemexpirytime = strtotime($cemexpirytime);
-        if($cemexpirytime < TIME) return error(['error' => '请输入正确的到期时间']);
+        if($cemexpirytime < TIME) error(['error' => '请输入正确的到期时间']);
         $model->cemexpirytime = $cemexpirytime;
-        if(!$model->save()) return error(['error' => '修改失败']);
+        if(!$model->save()) error(['error' => '修改失败']);
         return ['msg' => '修改成功'];
     }
 
-    public function AddByPassport():array | Error
+    public function AddByPassport():array
     {
         $mids = $this->request->mids??[];
-        if(empty($mids)) return error(['error' => '请选择用户']);
+        if(empty($mids)) error(['error' => '请选择用户']);
         $ceId = $this->request->ceId??null;
-        if(!$ceId) return error(['error' => '参数错误']);
+        if(!$ceId) error(['error' => '参数错误']);
         $cert = \PHPEMS\App\Cert\Service\Model\Cert::find($ceId);
-        if(!$cert->ceId) return error(['error' => '参数错误']);
+        if(!$cert->ceId) error(['error' => '参数错误']);
         $endTime = TIME + $cert->cedays * 24 * 60 * 60;
         foreach($mids as $indexId => $passport)
         {
@@ -213,22 +213,22 @@ class Member extends Controller implements ControllerInterface
                 ]);
                 $result = $model->toValidate();
                 if($result !== true)return $result;
-                if(!$model->save()) return error(['error' => '通行证ID：'.$passport.'用户添加失败']);
+                if(!$model->save()) error(['error' => '通行证ID：'.$passport.'用户添加失败']);
             }
             else
             {
-                return error(['error' => '通行证ID：'.$passport.'用户有未过期证件']);
+                error(['error' => '通行证ID：'.$passport.'用户有未过期证件']);
             }
         }
         return ['msg' => '添加成功'];
     }
 
-    public function Add():array | Error
+    public function Add():array
     {
         $ceId = $this->request->ceId??null;
-        if(!$ceId) return error(['error' => '参数错误']);
+        if(!$ceId) error(['error' => '参数错误']);
         $cert = \PHPEMS\App\Cert\Service\Model\Cert::find($ceId);
-        if(!$cert->ceId) return error(['error' => '参数错误']);
+        if(!$cert->ceId) error(['error' => '参数错误']);
         $endTime = TIME + $cert->cedays * 24 * 60 * 60;
         $data = [
             'cemceid' => $ceId,
@@ -243,15 +243,15 @@ class Member extends Controller implements ControllerInterface
             $model = CertMember::fillWithInit($data);
             $result = $model->toValidate();
             if($result !== true)return $result;
-            if(!$model->save()) return error(['error' => '添加失败']);
+            if(!$model->save()) error(['error' => '添加失败']);
         }
         else
         {
-            return error(['error' => '用户有未过期证件']);
+            error(['error' => '用户有未过期证件']);
         }
         return ['msg' => '添加成功'];
     }
-    public function Index():array | Error
+    public function Index():array
     {
         return [];
     }

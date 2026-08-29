@@ -4,7 +4,7 @@ namespace PHPEMS\Lib\Core\Flow;
 
 use PHPEMS\App\User\Service\Model\User;
 use PHPEMS\Lib\Core\Request\RequestInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Auth {
 
@@ -49,7 +49,7 @@ class Auth {
                 }
                 else
                 {
-                    return error(['error' => '请以管理员身份登录','code' => 301]);
+                    error(['error' => '请以管理员身份登录','code' => 301]);
                 }
             }
             return $next();
@@ -60,7 +60,7 @@ class Auth {
     {
         // 2. 检查登录状态
         if (!\PHPEMS\Lib\Auth\Auth::check()) {
-            return error(['error' => '请您先登录','code' => 301]);
+            error(['error' => '请您先登录','code' => 301]);
         }
 
         // 3. 验证 AuthToken（防止 Session ID 单独被盗用）
@@ -68,7 +68,7 @@ class Auth {
         //$token = $_COOKIE['token'];
         if (!$token || !\PHPEMS\Lib\Auth\Auth::validateRequestToken($token)) {
             \PHPEMS\Lib\Auth\Auth::logout(); // 失效会话
-            return error(['error' => '请您再次登录','code' => 301]);
+            error(['error' => '请您再次登录','code' => 301]);
         }
         return true;
     }

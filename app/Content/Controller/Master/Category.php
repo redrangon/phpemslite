@@ -6,7 +6,7 @@ use PHPEMS\App\Content\Service\Model\ContentCategory;
 use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Category extends Controller implements ControllerInterface
 {
@@ -40,7 +40,7 @@ class Category extends Controller implements ControllerInterface
     /**
      * 添加操作
      */
-    public function Add():array|Error
+    public function Add():array
     {
         // 获取请求数据
         $data = [
@@ -56,7 +56,7 @@ class Category extends Controller implements ControllerInterface
         // TODO: 实现添加逻辑
         // 示例：
         $model = ContentCategory::fillWithInit($data);
-        if(!$model->save()) return error(['error' => '添加失败']);
+        if(!$model->save()) error(['error' => '添加失败']);
 
         return ['msg' => '添加成功'];
     }
@@ -64,13 +64,13 @@ class Category extends Controller implements ControllerInterface
     /**
      * 修改操作
      */
-    public function modify():array|Error
+    public function modify():array
     {
         // TODO: 实现修改逻辑
         // 示例：
         $catid = $this->request->catid;
         $model = ContentCategory::find($catid);
-        if(!$model->catid) return error(['error' => '记录不存在']);
+        if(!$model->catid) error(['error' => '记录不存在']);
         $data = [
             'catlite' => $this->request->catlite??null,
             'catname' => $this->request->catname??null,
@@ -86,7 +86,7 @@ class Category extends Controller implements ControllerInterface
         foreach ($data as $key => $value) {
             $model->$key = $value;
         }
-        if(!$model->save()) return error(['error' => '修改失败']);
+        if(!$model->save()) error(['error' => '修改失败']);
 
         return ['msg' => '修改成功'];
     }
@@ -94,12 +94,12 @@ class Category extends Controller implements ControllerInterface
     /**
      * 删除操作
      */
-    public function delete():array|Error
+    public function delete():array
     {
         // TODO: 实现删除逻辑
         // 示例：
         $ids = $this->request->ids;
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
         ContentCategory::getQuery()->whereIn('catid', $ids)->delete();
         return ['msg' => '删除成功'];
     }
@@ -129,7 +129,7 @@ class Category extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         $catId = $this->request->catid;
         return ContentCategory::find($catId)->getRaw();

@@ -2,7 +2,7 @@
 
 namespace PHPEMS\App\Exam\Service\Model;
 
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\Lib\Rules\Model;
 
 class ExamPaper extends Model

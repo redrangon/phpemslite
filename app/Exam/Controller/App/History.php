@@ -10,7 +10,7 @@ use PHPEMS\App\Exam\Service\Model\Point;
 use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class History extends Controller implements ControllerInterface
 {
@@ -48,7 +48,7 @@ class History extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Delete(): array | Error
+    public function Delete(): array
     {
         $ehId = $this->request->ehId;
         $history = \PHPEMS\App\Exam\Service\Model\History::find($ehId);
@@ -59,13 +59,13 @@ class History extends Controller implements ControllerInterface
             $detail->delete();
             return [];
         }
-        return error(['error' => '错误的参数']);
+        error(['error' => '错误的参数']);
     }
 
-    public function Detail(): array | Error
+    public function Detail(): array
     {
         if($this->basic->basicexam['model'] == 2){
-            return error(['error' => '错误的考场模式']);
+            error(['error' => '错误的考场模式']);
         }
         $ehid = $this->request->ehid;
         $user = $this->request->getUser();
@@ -122,7 +122,7 @@ class History extends Controller implements ControllerInterface
         return $history->getRaw();
     }
 
-    public function Data(): array | Error
+    public function Data(): array
     {
         $page = $this->request->page ?? 1;
         $limit = $this->request->limit ?? 20;
@@ -140,7 +140,7 @@ class History extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function index():array | Error
+    public function index():array
     {
         $ehid = $this->request->ehid;
         $history = \PHPEMS\App\Exam\Service\Model\History::find($ehid);

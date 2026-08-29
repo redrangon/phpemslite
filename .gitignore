@@ -3,5 +3,3 @@
 /node_modules
 /public/assets
 /storage
-/secret/pay/alipay/*.crt
-/secret/pay/wechat/*.crt

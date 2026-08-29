@@ -6,7 +6,7 @@ use PHPEMS\App\Cert\Service\CertService;
 use PHPEMS\App\Cert\Service\Model\CertMember;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Cert extends Controller implements ControllerInterface
 {
@@ -37,7 +37,7 @@ class Cert extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Member():array|Error
+    public function Member():array
     {
         $query = CertService::getCertQueryWithMember()->orderBy('cemid', 'DESC');
         $page = $this->request->page ?? 1;
@@ -64,7 +64,7 @@ class Cert extends Controller implements ControllerInterface
     /**
      * 添加证书
      */
-    public function Add():array|Error
+    public function Add():array
     {
         $data = [
             'cetitle' => $this->request->cetitle??'',
@@ -81,18 +81,18 @@ class Cert extends Controller implements ControllerInterface
         $model = \PHPEMS\App\Cert\Service\Model\Cert::fillWithInit($data);
         $result = $model->toValidate();
         if($result !== true)return $result;
-        if(!$model->save()) return error(['error' => '添加失败']);
+        if(!$model->save()) error(['error' => '添加失败']);
         return ['msg' => '添加成功'];
     }
 
     /**
      * 修改证书
      */
-    public function Modify():array|Error
+    public function Modify():array
     {
         $ceid = $this->request->ceid;
         $model = \PHPEMS\App\Cert\Service\Model\Cert::find($ceid);
-        if(!$model->ceid) return error(['error' => '记录不存在']);
+        if(!$model->ceid) error(['error' => '记录不存在']);
         
         $data = [
             'cetitle' => $this->request->cetitle??null,
@@ -114,17 +114,17 @@ class Cert extends Controller implements ControllerInterface
             $model->$key = $value;
         }
         
-        if(!$model->save()) return error(['error' => '修改失败']);
+        if(!$model->save()) error(['error' => '修改失败']);
         return ['msg' => '修改成功'];
     }
 
     /**
      * 删除证书
      */
-    public function delete():array|Error
+    public function delete():array
     {
         $ids = $this->request->ids;
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
         
         // 删除证书
         \PHPEMS\App\Cert\Service\Model\Cert::getQuery()->whereIn('ceid', $ids)->delete();
@@ -169,7 +169,7 @@ class Cert extends Controller implements ControllerInterface
     /**
      * 获取单个证书
      */
-    public function Index(): Error|array
+    public function Index(): array
     {
         $certId = $this->request->certid??null;
         if($certId) {

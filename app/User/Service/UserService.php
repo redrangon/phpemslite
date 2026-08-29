@@ -74,9 +74,9 @@ class UserService
                 'usertruename' => $userTrueName
             ];
             $user = User::fillWithInit($data);
-            if($user->toValidate() === false)throw new \Exception("第".($index+1)."行数据校验失败，请检查");
+            if($user->toValidate() !== true)throw new \Exception("第".($index+1)."行数据校验失败，请检查");
             User::getDB()->transaction(function() use ($user,$index){
-                if($user->save() === false)throw new \Exception("第".($index+1)."行数据校验失败，请检查");
+                if(!$user->save())throw new \Exception("第".($index+1)."行数据校验失败，请检查");
                 $member = Member::findByPassport($user->userpassport);
                 if(!$member->mId)
                 {
@@ -84,7 +84,7 @@ class UserService
                         'mpassport' => $user->userpassport,
                         'mname' => $user->usertruename,
                     ]);
-                    if($member->save())throw new \Exception("第".($index+1)."行数据保存失败，请重试");
+                    if(!$member->save())throw new \Exception("第".($index+1)."行数据保存失败，请重试");
                 }
             });
         }

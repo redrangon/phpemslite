@@ -5,7 +5,7 @@ namespace PHPEMS\App\Cert\Controller\App;
 use PHPEMS\App\Cert\Service\Model\Cert;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Index extends Controller implements ControllerInterface
 {
@@ -44,7 +44,7 @@ class Index extends Controller implements ControllerInterface
         return $query->paginate($page, $limit);
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         return [];
     }

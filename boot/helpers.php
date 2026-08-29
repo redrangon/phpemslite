@@ -1,7 +1,6 @@
 <?php
 
 use PHPEMS\Lib\DI\DI;
-use PHPEMS\Lib\Rules\Error;
 
 if (!function_exists('r')) {
     function r($route)
@@ -38,28 +37,22 @@ if (!function_exists('e')) {
 
 if(!function_exists('error'))
 {
-    function error(mixed $msg): Error
+    /**
+     * @throws Exception
+     */
+    function error(string | array $msg): void
     {
         $payload = match (true) {
-            $msg instanceof PDOException => [
-                'code' => 300,
-                'error' => '数据库执行错误',
-            ],
-            $msg instanceof Throwable => [
-                'code' => 300,
-                'error' => $msg->getMessage(),
-            ],
             is_array($msg) => [
-                'code' => $msg['code'] ?? 300,
-                'error' => $msg['error'] ?? 'Error',
+                'code' => $msg['code']??300,
+                'msg' => $msg['error'] ?? 'Error'
             ],
             default => [
                 'code' => 300,
-                'error' => $msg,
-            ],
+                'msg' => $msg
+            ]
         };
-
-        return Error::create($payload);
+        throw new Exception($payload['msg'],$payload['code']);
     }
 }
 

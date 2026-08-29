@@ -6,7 +6,7 @@ use PHPEMS\App\Content\Service\Model\ContentCategory;
 use PHPEMS\App\Core\Service\Model\App;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Content extends Controller implements ControllerInterface
 {
@@ -63,12 +63,12 @@ class Content extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function index():array | Error
+    public function index():array
     {
         $contentId = $this->request->contentId??null;
-        if(!$contentId)return error(['error'=>'参数错误']);
+        if(!$contentId)error(['error'=>'参数错误']);
         $content = \PHPEMS\App\Content\Service\Model\Content::find($contentId);
-        if(!$content->contentId)return error(['error'=>'新闻不存在']);
+        if(!$content->contentId)error(['error'=>'新闻不存在']);
         $content->contentview ++;
         $content->save();
         $content->contentInputTime = date('Y-m-d H:i:s',$content->contentInputTime);

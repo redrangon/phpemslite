@@ -12,7 +12,7 @@ use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\DataBase\QueryBuilder;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\Lib\Utils\Office\Xlsx\Writer;
 
 class History extends Controller implements ControllerInterface
@@ -70,10 +70,10 @@ class History extends Controller implements ControllerInterface
         return $query;
     }
 
-    public function Log():array|Error
+    public function Log():array
     {
         $ehId = $this->request->ehId;
-        if(!$ehId)return error(['error' => '错误的参数']);
+        if(!$ehId)error(['error' => '错误的参数']);
         $page = $this->request->page??1;
         $limit = $this->request->limit??10;
         $data = HistoryLog::getQuery()->orderBy('ehlid','DESC')
@@ -85,12 +85,12 @@ class History extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Face():array|Error
+    public function Face():array
     {
         $ehId = $this->request->ehId;
-        if(!$ehId)return error(['error' => '错误的参数']);
+        if(!$ehId)error(['error' => '错误的参数']);
         $history = \PHPEMS\App\Exam\Service\Model\History::find($ehId);
-        if(!$history->ehid)return error(['error' => '错误的参数']);
+        if(!$history->ehid)error(['error' => '错误的参数']);
         $face = HistoryDetail::findByEhId($ehId);
         $face = $face->ehdFaceList?json_decode($face->ehdFaceList,true):[];
         $planId = $history->ehPlanId;
@@ -98,7 +98,7 @@ class History extends Controller implements ControllerInterface
         $member = Member::getQuery()->select(['mname','mphoto'])
             ->where('mpassport',$passport)
             ->first();
-        if(!$member)return error(['error' => '未找到相关用户信息']);
+        if(!$member)error(['error' => '未找到相关用户信息']);
         return [
             'pmpassport' => $passport,
             'pmname' => $member['mname'],
@@ -136,7 +136,7 @@ class History extends Controller implements ControllerInterface
         exit();
     }
 
-    public function Delete():array|Error
+    public function Delete():array
     {
         $ehId = $this->request->ehId;
         $reason = $this->request->reason;
@@ -157,14 +157,14 @@ class History extends Controller implements ControllerInterface
                     $log->save();
                 });
             }catch (\Exception $e){
-                return error(['error' => $e->getMessage()]);
+                error(['error' => $e->getMessage()]);
             }
             return ['msg' => '撤销成功'];
         }
-        return error(['error' => '未选择要撤销的记录']);
+        error(['error' => '未选择要撤销的记录']);
     }
 
-    public function Data():array|Error
+    public function Data():array
     {
         $query = \PHPEMS\App\Exam\Service\Model\History::getQuery()->orderBy('ehid', 'DESC');
         $page = $this->request->page ?? 1;
@@ -198,7 +198,7 @@ class History extends Controller implements ControllerInterface
         return $histories;
     }
 
-    public function Detail():array|Error
+    public function Detail():array
     {
         $ehId = $this->request->ehId;
         $history = \PHPEMS\App\Exam\Service\Model\History::find($ehId);
@@ -234,7 +234,7 @@ class History extends Controller implements ControllerInterface
         return $history->getRaw();
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         return $basic??[];
     }

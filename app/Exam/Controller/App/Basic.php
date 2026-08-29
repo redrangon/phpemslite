@@ -17,7 +17,7 @@ use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Basic extends Controller implements ControllerInterface
 {
@@ -62,13 +62,13 @@ class Basic extends Controller implements ControllerInterface
 
 
 
-    public function Subject(): array | Error
+    public function Subject(): array
     {
         $subject = Subject::find($this->basic->basicsubject);
         return $subject->getRaw();
     }
 
-    public function SectionPoint(): array | Error
+    public function SectionPoint(): array
     {
         $sectionIds = array_keys($this->basic->basicpoint);
         $pointIds = array_merge(...$this->basic->basicpoint);
@@ -86,17 +86,17 @@ class Basic extends Controller implements ControllerInterface
     }
 
 
-    public function CurrentBasic(): Error|array
+    public function CurrentBasic(): array
     {
         $basic = $this->basic->getRaw();
         return $basic??[];
     }
 
-    public function Data(): array | Error
+    public function Data(): array
     {
         if($this->basic->basicexam['model'])
         {
-            return error(['error' => '错误的模式']);
+            error(['error' => '错误的模式']);
         }
         $points = array_merge(...$this->basic->basicpoint);
         $query = ExamService::getQuestionQueryWithRelation()->select(['DISTINCT questionid','question','questiontype','questionlevel','questionisparent'])
@@ -125,16 +125,16 @@ class Basic extends Controller implements ControllerInterface
         return $query->paginate($page,$limit);
     }
 
-    public function QuestionDetail(): array | Error
+    public function QuestionDetail(): array
     {
         if($this->basic->basicexam['model'])
         {
-            return error(['error' => '错误的模式']);
+            error(['error' => '错误的模式']);
         }
         $questionId = $this->request->questionid??null;
-        if(!$questionId)return error(['error' => '记录不存在']);
+        if(!$questionId)error(['error' => '记录不存在']);
         $question = Question::find($questionId)->getRaw();
-        if(!$question['questionid'])return error(['error' => '记录不存在']);
+        if(!$question['questionid'])error(['error' => '记录不存在']);
         if($question['questionisparent'])
         {
             $children = Question::getQuery()->orderBy('questionsequence','desc')->groupBy('questionid','ASC')
@@ -150,7 +150,7 @@ class Basic extends Controller implements ControllerInterface
         return $question;
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         return [];
     }

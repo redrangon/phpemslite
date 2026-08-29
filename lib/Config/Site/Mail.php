@@ -11,7 +11,7 @@ class Mail extends Config
             'name' => 'QQ',
             'host' => 'smtp.qq.com',
             'username' => '278768688@qq.com',
-            'password' => 'xslfifseprnkcaci',
+            'password' => 'MAILDEMOTOKEN',
             'port' => 587,
             'encryption' => 'tls',
             'charset' => 'UTF-8',

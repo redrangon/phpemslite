@@ -3,7 +3,7 @@
 namespace PHPEMS\Lib\Utils\Messenger;
 
 use PHPEMS\Lib\Config\Site\Mail;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -36,19 +36,15 @@ class Mailer implements MessengerInterface
         }
     }
 
-    public function send(string $to, array $message):bool | Error
+    public function send(string $to, array $message):bool
     {
-        try{
-            $this->initMailer();
-            $this->mailer->addAddress($to, '张三');
-            $this->mailer->Subject = $message['subject'];
-            $this->mailer->Body = $message['content'];
-            $this->mailer->AltBody = $message['content'];
-            $this->mailer->send();
-            return true;
-        }catch (Exception $e){
-            return error(['error' => $e->getMessage()]);
-        }
+        $this->initMailer();
+		$this->mailer->addAddress($to, '张三');
+		$this->mailer->Subject = $message['subject'];
+		$this->mailer->Body = $message['content'];
+		$this->mailer->AltBody = $message['content'];
+		$this->mailer->send();
+		return true;
     }
 
     static public function getInstance():static

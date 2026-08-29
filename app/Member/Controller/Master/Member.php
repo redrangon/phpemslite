@@ -6,7 +6,7 @@ use PHPEMS\Lib\Config\Site\Site;
 use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\Lib\Utils\ExcelProvider;
 use PHPEMS\Lib\Utils\FileProvider;
 use PHPEMS\Lib\Utils\Formatter;
@@ -41,10 +41,10 @@ class Member extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Import():array|Error
+    public function Import():array
     {
         $file = $this->request->file??null;
-        if(empty($file))return error(['error' => '请选择文件']);
+        if(empty($file))error(['error' => '请选择文件']);
         if($file['member']??false)
         {
             if(file_exists($file['member']))
@@ -120,18 +120,18 @@ class Member extends Controller implements ControllerInterface
                     }
                     return [];
                 } catch (\Exception $e) {
-                    return error(['error' => '数据读取错误']);
+                    error(['error' => '数据读取错误']);
                 }
             }
-            else return error(['error' => '文件不存在']);
+            else error(['error' => '文件不存在']);
         }
-        else return error(['error' => '未选择文件']);
+        else error(['error' => '未选择文件']);
     }
 
     /**
      * 添加操作
      */
-    public function Add():array|Error
+    public function Add():array
     {
         $data = [
             'mname' => $this->request->mname??'',
@@ -156,18 +156,18 @@ class Member extends Controller implements ControllerInterface
         ];
 
         $model = \PHPEMS\App\Member\Service\Model\Member::fillWithInit($data);
-        if(!$model->save()) return error(['error' => '添加失败']);
+        if(!$model->save()) error(['error' => '添加失败']);
         return ['msg' => '添加成功'];
     }
 
     /**
      * 修改操作
      */
-    public function Modify():array|Error
+    public function Modify():array
     {
         $mid = $this->request->mid;
         $model = \PHPEMS\App\Member\Service\Model\Member::find($mid);
-        if(!$model->mid) return error(['error' => '记录不存在']);
+        if(!$model->mid) error(['error' => '记录不存在']);
         $data = [
             'mname' => $this->request->mname??null,
             'mphoto' => $this->request->mphoto??null,
@@ -197,17 +197,17 @@ class Member extends Controller implements ControllerInterface
             $model->$key = $value;
         }
 
-        if(!$model->save()) return error(['error' => '修改失败']);
+        if(!$model->save()) error(['error' => '修改失败']);
         return ['msg' => '修改成功'];
     }
 
     /**
      * 删除操作
      */
-    public function Delete():array|Error
+    public function Delete():array
     {
         $ids = $this->request->ids;
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
         \PHPEMS\App\Member\Service\Model\Member::getQuery()->whereIn('mid', $ids)->delete();
         return ['msg' => '删除成功'];
     }
@@ -266,7 +266,7 @@ class Member extends Controller implements ControllerInterface
     /**
      * 获取单条数据
      */
-    public function Index(): Error|array
+    public function Index(): array
     {
         $mid = $this->request->mid??null;
         $passport = $this->request->passport??null;

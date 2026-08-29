@@ -9,7 +9,7 @@ use PHPEMS\Lib\Config\Site\Site;
 use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\Lib\Tpl\TplProvider;
 use PHPEMS\Lib\Utils\Converter\PanDoc;
 
@@ -269,7 +269,7 @@ class Paper extends Controller implements ControllerInterface
     /**
      * 添加操作
      */
-    public function Add():array | Error
+    public function Add():array
     {
         // 获取请求数据
         $user = $this->request->getUser();
@@ -294,20 +294,20 @@ class Paper extends Controller implements ControllerInterface
         $model->examquestions = is_array($data['examquestions'])?json_encode($data['examquestions'],JSON_UNESCAPED_UNICODE):'';
         $result = $model->toValidate();
         if($result !== true)return $result;
-        if(!$model->save()) return error(['error' => '添加失败']);
+        if(!$model->save()) error(['error' => '添加失败']);
         return ['msg' => '添加成功'];
     }
 
     /**
      * 修改操作
      */
-    public function modify():array|Error
+    public function modify():array
     {
         // TODO: 实现修改逻辑
         // 示例：
         $id = $this->request->examid;
         $model = ExamPaper::find($id);
-        if(!$model->examid) return error(['error' => '记录不存在']);
+        if(!$model->examid) error(['error' => '记录不存在']);
         $data = [
             'exam' => $this->request->exam??null,
             'exampassmark' => $this->request->exampassmark??null,
@@ -328,34 +328,34 @@ class Paper extends Controller implements ControllerInterface
             }
             else $model->$key = $value;
         }
-        if(!$model->save()) return error(['error' => '修改失败']);
+        if(!$model->save()) error(['error' => '修改失败']);
         return ['msg' => '修改成功'];
     }
 
     /**
      * 删除操作
      */
-    public function Delete():array|Error
+    public function Delete():array
     {
         // TODO: 实现删除逻辑
         // 示例：
         $ids = $this->request->ids;
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
         ExamPaper::getQuery()->whereIn('examid', $ids)->delete();
 
         return ['msg' => '删除成功'];
     }
 
-    public function Question():array | Error
+    public function Question():array
     {
         $paperId = $this->request->paperid;
         $paper = ExamPaper::find($paperId);
         if(!$paper->examid || ($paper->examtype !== 2))
         {
-            return error(['error' => '错误的试卷']);
+            error(['error' => '错误的试卷']);
         }
         $examquestions = json_decode($paper->examquestions,true);
-        if(!$examquestions)return error(['error' => '错误的试卷']);
+        if(!$examquestions)error(['error' => '错误的试卷']);
         $examscore = json_decode($paper->examscore,true);
         $examsetting = json_decode($paper->examsetting,true);
         $questions = array();
@@ -395,7 +395,7 @@ class Paper extends Controller implements ControllerInterface
         ];
     }
 
-    public function All():array|Error
+    public function All():array
     {
         $subjectId = $this->request->subjectid;
         $results = ExamPaper::getQuery()->select(['examid', 'exam'])
@@ -439,7 +439,7 @@ class Paper extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         return [];
     }

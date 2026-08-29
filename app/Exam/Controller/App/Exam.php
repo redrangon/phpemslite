@@ -11,7 +11,7 @@ use PHPEMS\App\Exam\Service\Model\Subject;
 use PHPEMS\Lib\Core\Request\RequestInterface;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Exam extends Controller implements ControllerInterface
 {
@@ -50,7 +50,7 @@ class Exam extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function ExamHistory(): array | Error
+    public function ExamHistory(): array
     {
         $page = $this->request->page ?? 1;
         $limit = $this->request->limit ?? 20;
@@ -67,16 +67,16 @@ class Exam extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function FaceVerify(): array | Error
+    public function FaceVerify(): array
     {
         $user = $this->request->getUser();
         $face = $this->request->face??null;
-        if(!$face)return error(['error' => '人脸不存在']);
+        if(!$face)error(['error' => '人脸不存在']);
         $this->session->esfadtime = TIME;
         $this->session->save();
         return ['faceVerify' => 1];
     }
-    public function Data(): array | Error
+    public function Data(): array
     {
         $user = $this->request->getUser();
         $hasExamNumber = true;
@@ -109,16 +109,16 @@ class Exam extends Controller implements ControllerInterface
             });
             return ['papers' => $papers,'session' => $session,'hasnumber' => $hasExamNumber];
         }
-        return error(['error' => '当前考场未配置试卷']);
+        error(['error' => '当前考场未配置试卷']);
     }
 
-    public function Subject(): array | Error
+    public function Subject(): array
     {
         $subject = Subject::find($this->basic->basicsubject);
         return $subject->getRaw();
     }
 
-    public function index():array | Error
+    public function index():array
     {
         return $this->basic->getRaw();
     }

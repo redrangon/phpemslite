@@ -6,7 +6,7 @@ use PHPEMS\App\Content\Service\Model\ContentCategory;
 use PHPEMS\App\Core\Service\Model\App;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Category extends Controller implements ControllerInterface
 {
@@ -31,7 +31,7 @@ class Category extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Data(): array | Error
+    public function Data(): array
     {
         $catId = intval($this->request->catId);
         $query = ContentCategory::getQuery()->where('catparent',$catId)->orderBy('catlite','desc');
@@ -39,7 +39,7 @@ class Category extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function index():array | Error
+    public function index():array
     {
         $catId = intval($this->request->catId);
         if(!$catId)return [];

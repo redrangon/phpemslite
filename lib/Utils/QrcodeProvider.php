@@ -6,7 +6,6 @@ namespace PHPEMS\Lib\Utils;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\Writer\PngWriter;
-use PHPEMS\Lib\Rules\Error;
 
 class QrcodeProvider
 {

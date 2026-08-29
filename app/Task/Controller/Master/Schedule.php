@@ -6,7 +6,7 @@ use PHPEMS\App\Task\Service\Model\TaskSchedules;
 use PHPEMS\App\Task\Service\Model\Task;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Schedule extends Controller implements ControllerInterface
 {
@@ -38,7 +38,7 @@ class Schedule extends Controller implements ControllerInterface
     /**
      * 添加操作
      */
-    public function Add():array | Error
+    public function Add():array
     {
         // 获取请求数据
         $tsexetype = $this->request->tsexetype??null;
@@ -66,7 +66,7 @@ class Schedule extends Controller implements ControllerInterface
             $model = TaskSchedules::fillWithInit($data);
             $result = $model->toValidate();
             if($result !== true) return $result;
-            if(!$model->save()) return error(['error' => '添加失败']);
+            if(!$model->save()) error(['error' => '添加失败']);
             return ['msg' => '添加成功'];
         }
         else
@@ -91,7 +91,7 @@ class Schedule extends Controller implements ControllerInterface
             $model = \PHPEMS\App\Task\Service\Model\Task::fillWithInit($taskData);
             $result = $model->toValidate();
             if($result !== true) return $result;
-            if(!$model->save()) return error(['error' => '添加失败']);
+            if(!$model->save()) error(['error' => '添加失败']);
             return ['msg' => '任务已加入队列'];
         }
     }
@@ -99,13 +99,13 @@ class Schedule extends Controller implements ControllerInterface
     /**
      * 修改操作
      */
-    public function modify():array|Error
+    public function modify():array
     {
         // TODO: 实现修改逻辑
         // 示例：
         $tsid = $this->request->tsid??null;
         $model = TaskSchedules::find($tsid);
-        if(!$model->tsId) return error(['error' => '记录不存在']);
+        if(!$model->tsId) error(['error' => '记录不存在']);
         $data = [
             'tsname' => $this->request->tsname??null,
             'tsdescribe' => $this->request->tsdescribe??'',
@@ -120,19 +120,19 @@ class Schedule extends Controller implements ControllerInterface
         foreach ($data as $key => $value) {
             $model->$key = $value;
         }
-        if(!$model->save()) return error(['error' => '修改失败']);
+        if(!$model->save()) error(['error' => '修改失败']);
         return ['msg' => '修改成功'];
     }
 
     /**
      * 删除操作
      */
-    public function delete():array|Error
+    public function delete():array
     {
         // TODO: 实现删除逻辑
         // 示例：
         $ids = $this->request->ids??[];
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
         TaskSchedules::getQuery()->whereIn('tsid', $ids)->delete();
         return ['msg' => '删除成功'];
     }
@@ -157,7 +157,7 @@ class Schedule extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         return [];
     }

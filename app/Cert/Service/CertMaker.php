@@ -173,13 +173,13 @@ class CertMaker
             $y = isset($setting[2]) ? max(0, min($setting[2], $height)) : 0;
             switch ($setting['type'] ?? 'txt') {
                 case 'txt':
-                    $this->drawText($bgimg, ['content' => $setting[3],'fontSize' => $setting[4]], $x, $y);
+                    $this->drawText($bgimg, ['content' => $setting[3]??'','fontSize' => $setting[4]??16], $x, $y);
                     break;
                 case 'img':
-                    $this->drawImage($bgimg, ['src' => $setting[3],'width' => $setting[4],'height' => $setting[5]], $x, $y);
+                    $this->drawImage($bgimg, ['src' => $setting[3]??'','width' => $setting[4]??200,'height' => $setting[5]??200], $x, $y);
                     break;
                 case 'qrcode':
-                    $this->drawQrCode($bgimg, ['content' => $setting[3],'width' => $setting[4],'height' => $setting[5]], $x, $y);
+                    $this->drawQrCode($bgimg, ['content' => $setting[3]??'','width' => $setting[4]??120,'height' => $setting[5]??120], $x, $y);
                     break;
             }
         }

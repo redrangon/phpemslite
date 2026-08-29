@@ -8,7 +8,7 @@ use PHPEMS\App\Course\Service\Model\CourseSession;
 use PHPEMS\App\Course\Service\Model\CourseSubject;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Index extends Controller implements ControllerInterface
 {
@@ -33,15 +33,15 @@ class Index extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function setSession(): array | Error
+    public function setSession(): array
     {
         $csId = $this->request->csId??null;
-        if(!$csId)return error(['error' => '参数错误']);
+        if(!$csId)error(['error' => '参数错误']);
         $course = CourseSubject::find($csId);
-        if(!$course->csid)return error(['error' => '课程不存在']);
+        if(!$course->csid)error(['error' => '课程不存在']);
         $user = $this->request->getUser();
         $courseMember = CourseMember::findByPassportAndSubjectIdWithTime($user->userpassport,$csId);
-        if(!$courseMember->cmid)return error(['error' => '您没有开通本课程']);
+        if(!$courseMember->cmid)error(['error' => '您没有开通本课程']);
         $session = CourseSession::findByPassport($user->userpassport);
         if(!$session->csnid)
         {

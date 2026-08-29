@@ -8,7 +8,7 @@ use PHPEMS\App\Exam\Service\Model\Point;
 use PHPEMS\App\Exam\Service\Model\Subject;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\Lib\Utils\FileProvider;
 
 class Section extends Controller implements ControllerInterface
@@ -54,12 +54,12 @@ class Section extends Controller implements ControllerInterface
         exit;
     }
 
-    public function Import():array|Error
+    public function Import():array
     {
         $subjectId = $this->request->subjectid??null;
-        if(!$subjectId)return error(['error' => '参数错误']);
+        if(!$subjectId)error(['error' => '参数错误']);
         $subject = Subject::find($subjectId);
-        if(!$subject->subjectId)return error(['error' => '科目不存在']);
+        if(!$subject->subjectId)error(['error' => '科目不存在']);
         $service = new FileProvider();
         $file = $this->request->getFile('file');
         try{
@@ -72,16 +72,16 @@ class Section extends Controller implements ControllerInterface
                 ExamService::importSectionWithPoint($JSON,$subjectId);
                 return ['msg' => '导入成功'];
             }
-            else return error(['error' => $result['error']]);
+            else error(['error' => $result['error']]);
         }catch (Exception $e){
-            return error(['error' => $e->getMessage()]);
+            error(['error' => $e->getMessage()]);
         }
     }
 
-    public function RefreshCache():array|Error
+    public function RefreshCache():array
     {
         $ids = $this->request->ids??null;
-        if(!$ids) return error(['error' => '记录不存在']);
+        if(!$ids) error(['error' => '记录不存在']);
         $points = Point::getQuery()->select(['pointid'])
             ->whereIn('pointsectionid',$ids)
             ->get();
@@ -95,7 +95,7 @@ class Section extends Controller implements ControllerInterface
     /**
      * 添加操作
      */
-    public function Add():array | Error
+    public function Add():array
     {
         // 获取请求数据
         $data = [
@@ -108,20 +108,20 @@ class Section extends Controller implements ControllerInterface
         $model = \PHPEMS\App\Exam\Service\Model\Section::fillWithInit($data);
         $result = $model->toValidate();
         if($result !== true)return $result;
-        if(!$model->save()) return error(['error' => '添加失败']);
+        if(!$model->save()) error(['error' => '添加失败']);
         return ['msg' => '添加成功'];
     }
 
     /**
      * 修改操作
      */
-    public function modify():array|Error
+    public function modify():array
     {
         // TODO: 实现修改逻辑
         // 示例：
         $sectionId = $this->request->sectionid;
         $model = \PHPEMS\App\Exam\Service\Model\Section::find($sectionId);
-        if(!$model->sectionid) return error(['error' => '记录不存在']);
+        if(!$model->sectionid) error(['error' => '记录不存在']);
         $data = [
             'section' => $this->request->section??null,
             'sectiondescribe' => $this->request->sectiondescribe??null,
@@ -133,25 +133,25 @@ class Section extends Controller implements ControllerInterface
         foreach ($data as $key => $value) {
             $model->$key = $value;
         }
-        if(!$model->save()) return error(['error' => '修改失败']);
+        if(!$model->save()) error(['error' => '修改失败']);
         return ['msg' => '修改成功'];
     }
 
     /**
      * 删除操作
      */
-    public function Delete():array|Error
+    public function Delete():array
     {
         $ids = $this->request->ids??[];
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
         \PHPEMS\App\Exam\Service\Model\Section::getQuery()->whereIn('sectionid', $ids)->delete();
         return ['msg' => '删除成功'];
     }
 
-    public function All():array|Error
+    public function All():array
     {
         $subjectId = $this->request->subjectid??null;
-        if(!$subjectId)return error(['error' => '参数错误']);
+        if(!$subjectId)error(['error' => '参数错误']);
         $query = \PHPEMS\App\Exam\Service\Model\Section::getQuery();
         $items = $query->select(['sectionid','section'])->where('sectionsubjectid', $subjectId)->get();
         $sections = [];
@@ -164,7 +164,7 @@ class Section extends Controller implements ControllerInterface
     /**
      * 获取数据列表
      */
-    public function Data(): array|Error
+    public function Data(): array
     {
         // TODO: 实现数据查询逻辑
         // 示例：
@@ -180,12 +180,12 @@ class Section extends Controller implements ControllerInterface
         return $query->paginate($page, $limit);
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         $sectionId = $this->request->sectionid??null;
-        if(!$sectionId)return error(['error' => '记录不存在']);
+        if(!$sectionId)error(['error' => '记录不存在']);
         $section = \PHPEMS\App\Exam\Service\Model\Section::find($sectionId);
-        if(!$section->sectionid)return error(['error' => '记录不存在']);
+        if(!$section->sectionid)error(['error' => '记录不存在']);
         return $section->getRaw();
     }
 }

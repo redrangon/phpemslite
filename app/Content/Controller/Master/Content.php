@@ -6,7 +6,7 @@ use PHPEMS\App\Content\Service\Model\ContentCategory;
 use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Content extends Controller implements ControllerInterface
 {
@@ -39,7 +39,7 @@ class Content extends Controller implements ControllerInterface
     /**
      * 添加操作
      */
-    public function Add():array|Error
+    public function Add():array
     {
         // 获取请求数据
         $user = $this->request->getUser();
@@ -65,18 +65,18 @@ class Content extends Controller implements ControllerInterface
         ];
         
         $model = \PHPEMS\App\Content\Service\Model\Content::fillWithInit($data);
-        if(!$model->save()) return error(['error' => '添加失败']);
+        if(!$model->save()) error(['error' => '添加失败']);
         return ['msg' => '添加成功'];
     }
 
     /**
      * 修改操作
      */
-    public function modify():array|Error
+    public function modify():array
     {
         $contentId = $this->request->contentid;
         $model = \PHPEMS\App\Content\Service\Model\Content::find($contentId);
-        if(!$model->contentid) return error(['error' => '记录不存在']);
+        if(!$model->contentid) error(['error' => '记录不存在']);
         
         $data = [
             'contentcatid' => $this->request->contentcatid??null,
@@ -105,17 +105,17 @@ class Content extends Controller implements ControllerInterface
             $model->$key = $value;
         }
         
-        if(!$model->save()) return error(['error' => '修改失败']);
+        if(!$model->save()) error(['error' => '修改失败']);
         return ['msg' => '修改成功'];
     }
 
     /**
      * 删除操作
      */
-    public function delete():array|Error
+    public function delete():array
     {
         $ids = $this->request->ids;
-        if(empty($ids)) return error(['error' => '未选择要删除的记录']);
+        if(empty($ids)) error(['error' => '未选择要删除的记录']);
         \PHPEMS\App\Content\Service\Model\Content::getQuery()->whereIn('contentid', $ids)->delete();
         return ['msg' => '删除成功'];
     }
@@ -129,7 +129,7 @@ class Content extends Controller implements ControllerInterface
         
         $page = $this->request->page ?? 1;
         $limit = $this->request->limit ?? 20;
-        $search = $this->request->search;
+        $search = $this->request->search??null;
         
         if($search) {
             if($search['keyword']??false) {
@@ -141,7 +141,7 @@ class Content extends Controller implements ControllerInterface
                 $children[] = $search['contentcatid'];
                 $query->whereIn('contentcatid', $children);
             }
-            if($search['contentstatus']??false) {
+            if(!is_null($search['contentstatus']??null)) {
                 $query->where('contentstatus', $search['contentstatus']);
             }
         }
@@ -177,7 +177,7 @@ class Content extends Controller implements ControllerInterface
     /**
      * 获取单条数据
      */
-    public function Index(): Error|array
+    public function Index(): array
     {
         $contentId = $this->request->contentid??null;
         if($contentId) {

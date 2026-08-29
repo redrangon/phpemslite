@@ -10,7 +10,7 @@ use PHPEMS\App\Member\Service\Model\Member;
 use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 
 class Cert extends Controller implements ControllerInterface
 {
@@ -38,12 +38,12 @@ class Cert extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function CertImage():array|Error
+    public function CertImage():array
     {
         $cemId = $this->request->cemId??null;
-        if(!$cemId)return error(['error' => '证书不存在']);
+        if(!$cemId)error(['error' => '证书不存在']);
         $certMember = CertMember::find($cemId);
-        if(!$certMember->cemId || !$certMember->cemstatus)return error(['error' => '证书不存在']);
+        if(!$certMember->cemId || !$certMember->cemstatus)error(['error' => '证书不存在']);
         $certImage = CertMaker::create($certMember->cemId);
         $cert = \PHPEMS\App\Cert\Service\Model\Cert::find($certMember->cemceid);
         if(!$certImage->isCached($cert->cetpl))
@@ -68,11 +68,7 @@ class Cert extends Controller implements ControllerInterface
                 $setting = explode(',',trim($setting));
                 $imgSettings[] = $setting;
             }
-            try{
-                $certImage->render($cert->cetpl,$imgSettings);
-            }catch (Exception $e){
-                return error(['error' => $e->getMessage()]);
-            }
+            $certImage->render($cert->cetpl,$imgSettings);
         }
         return ['image' => $certImage->getCertImage()];
     }
@@ -107,7 +103,7 @@ class Cert extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         $cemId = $this->request->cemId??null;
         if($cemId) {

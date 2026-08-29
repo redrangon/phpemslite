@@ -13,7 +13,7 @@ use PHPEMS\App\User\Service\UserService;
 use PHPEMS\Lib\Core\Request\Json;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
-use PHPEMS\Lib\Rules\Error;
+
 use PHPEMS\Lib\Utils\Env;
 use PHPEMS\Lib\Utils\ExcelProvider;
 use PHPEMS\Lib\Utils\FileProvider;
@@ -34,13 +34,7 @@ class User extends Controller implements ControllerInterface
             'delete' => 'Delete',
             'log' => 'Log',
             'password' => 'modifyPassword',
-            'getconfig' => 'getConfig',
-            'setconfig' => 'setConfig',
-            'groups' => 'getGroups',
-            'group' => 'getGroup',
-            'modifygroup' => 'modifyGroup',
             'verify' => 'Verify',
-            'defaultgroup' => 'setDefaultGroup',
             'import' => 'Import',
             'sync' => 'Sync'
         ];
@@ -58,12 +52,12 @@ class User extends Controller implements ControllerInterface
         return $outFlows[$action]??[];
     }
 
-    public function Sync():array|Error
+    public function Sync():array
     {
         $ids = $this->request->ids??null;
-        if(!$ids)return error(['error' => '用户ID不能为空']);
+        if(!$ids)error(['error' => '用户ID不能为空']);
         $users = \PHPEMS\App\User\Service\Model\User::getQuery()->whereIn('userid', $ids)->get();
-        if(!$users)return error(['error' => '用户不存在']);
+        if(!$users)error(['error' => '用户不存在']);
         foreach ($users as $user)
         {
             $memberModel = Member::findByPassport($user['userpassport']);
@@ -85,13 +79,13 @@ class User extends Controller implements ControllerInterface
         return ['msg' => '导入完成'];
     }
 
-    public function Log():array|Error
+    public function Log():array
     {
         $search = $this->request->search??null;
         $page = $this->request->page??1;
         $limit = $this->request->limit??10;
         $userid = $this->request->userid??null;
-        if(!$userid)return error(['error' => '用户ID不能为空']);
+        if(!$userid)error(['error' => '用户ID不能为空']);
         $query = UserLog::getQuery()->where('uluserid', $userid)->orderBy('ultime', 'desc');
         if($search['range']??false)
         {
@@ -105,73 +99,24 @@ class User extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function setDefaultGroup():array|Error
-    {
-        $groupId = $this->request->groupId??null;
-        if(!$groupId)return error(['error' => '修改失败']);
-        $group = UserGroup::find($groupId);
-        if($group->groupId)
-        {
-            if($group->groupModuleId == 1)return error(['error' => '修改失败,管理员不能被默认注册']);
-            if(!$group->groupDefault)
-            {
-                UserGroup::getQuery()->update(['groupDefault'=>0]);
-                $group->groupDefault = 1;
-                $group->save();
-            }
-            return ['msg' => '操作成功'];
-        }
-        else return error(['error' => '修改失败']);
-    }
 
-    public function getConfig():array
-    {
-        return UserService::getUserAppConfig();
-    }
 
-    public function setConfig():array|Error
-    {
-        $config = [
-            'closeregist' => $this->request->closeregist??0,
-            'loginmodel' => $this->request->loginmodel??0,
-            'userverify' => $this->request->userverify??0,
-            'emailverify' => $this->request->emailverify??0,
-            'emailaccount' => $this->request->emailaccount??'',
-            'emailpassword' => $this->request->emailpassword??''
-        ];
-        $app = App::getAppByCode('user');
-        $app->appsetting = json_encode($config, JSON_UNESCAPED_UNICODE);
-        if(!$app->save())return error(['error' => '修改失败']);
-        return ['msg'=>'设置成功'];
-    }
-
-    public function getGroups():array
-    {
-        return UserGroup::getQuery()->orderBy('groupid', 'desc')->get();
-    }
-
-    public function getGroup()
-    {
-        $groupId = $this->request->groupid;
-        return UserGroup::find($groupId)->getRaw();
-    }
-
-    public function Add():array|Error
+    public function Add():array
     {
         $username = $this->request->username??null;
         $useremail = $this->request->useremail??null;
         $userpassword = $this->request->userpassword??null;
         $usergroupid = $this->request->usergroupid??null;
-        if(!$username)return error(['error' => '用户名不能为空']);
-        if(!$useremail)return error(['error' => '邮箱不能为空']);
-        if(strlen($userpassword) < 6)return error(['error' => '密码不能少于6位']);
-        if(!$usergroupid)return error(['error' => '用户组不能为空']);
+        if(!$username)error(['error' => '用户名不能为空']);
+        if(!$useremail)error(['error' => '邮箱不能为空']);
+        if(strlen($userpassword) < 6)error(['error' => '密码不能少于6位']);
+        if(!$usergroupid)error(['error' => '用户组不能为空']);
         $user = \PHPEMS\App\User\Service\Model\User::findByUserName($username);
-        if($user->userid)return error(['error' => '用户名已存在']);
+        if($user->userid)error(['error' => '用户名已存在']);
         $user = \PHPEMS\App\User\Service\Model\User::findByUserEmail($useremail);
-        if($user->userid)return error(['error' => '邮箱已被注册']);
+        if($user->userid)error(['error' => '邮箱已被注册']);
         $group = UserGroup::find($usergroupid);
-        if(!$group->groupid)return error(['error' => '用户组不存在']);
+        if(!$group->groupid)error(['error' => '用户组不存在']);
         $data = [
             'username' => $username,
             'useremail' => $useremail,
@@ -187,11 +132,11 @@ class User extends Controller implements ControllerInterface
         $user = \PHPEMS\App\User\Service\Model\User::fillWithInit($data);
         $result = $user->toValidate();
         if($result !== true)return $result;
-        if(!$user->save())return error(['error' => '添加用户失败']);
+        if(!$user->save())error(['error' => '添加用户失败']);
         return [];
     }
 
-    public function Modify():array|Error
+    public function Modify():array
     {
         $userid = $this->request->userid;
         $user = \PHPEMS\App\User\Service\Model\User::find($userid);
@@ -207,24 +152,24 @@ class User extends Controller implements ControllerInterface
         {
             $user->$key = $value;
         }
-        if(!$user->save())return error(['error' => '修改资料失败']);
+        if(!$user->save())error(['error' => '修改资料失败']);
         return ['msg'=>'修改成功'];
     }
 
-    public function  Delete():array|Error
+    public function  Delete():array
     {
         $ids = $this->request->ids??[];
-        if(empty($ids))return error(['error' => '未选择要删除的用户']);
+        if(empty($ids))error(['error' => '未选择要删除的用户']);
         \PHPEMS\App\User\Service\Model\User::getQuery()->whereIN('userid', $ids)->delete();
         return ['msg'=>'删除成功'];
     }
 
-    public function modifyPassword():array|Error
+    public function modifyPassword():array
     {
         $password = $this->request->password;
         $userid = $this->request->userid;
         $user = \PHPEMS\App\User\Service\Model\User::find($userid);
-        if(!$user->userid)return error(['error' => '修改密码失败']);
+        if(!$user->userid)error(['error' => '修改密码失败']);
         $data = [
             'userpassword' => password_hash($password, PASSWORD_DEFAULT)
         ];
@@ -273,11 +218,11 @@ class User extends Controller implements ControllerInterface
         return $data;
     }
 
-    public function Verify():array|Error
+    public function Verify():array
     {
         $ids = $this->request->ids??[];
         $status = $this->request->status??0;
-        if(empty($ids))return error(['error' => '参数错误']);
+        if(empty($ids))error(['error' => '参数错误']);
         foreach($ids as $id)
         {
             $user = \PHPEMS\App\User\Service\Model\User::find($id);
@@ -304,7 +249,7 @@ class User extends Controller implements ControllerInterface
         return [];
     }
 
-    public function Import(): array|Error
+    public function Import(): array
     {
         $service = new FileProvider();
         $file = $this->request->getFile('file');
@@ -318,13 +263,13 @@ class User extends Controller implements ControllerInterface
                 UserService::importUser($data, $group->groupId);
                 return ['msg' => '导入成功'];
             }
-            else return error($result['error']);
+            else error($result['error']);
         }catch (Throwable $e){
-            return error($e);
+            error($e);
         }
     }
 
-    public function Index(): Error|array
+    public function Index(): array
     {
         return [];
     }
