@@ -14,7 +14,7 @@ const { transitionName } = usePageTransition()
 
 <style>
 #app{
-    width: 100%;
+    width: 100vw;
     overflow: hidden;
 }
 /* ========== 前进动画：slide-left ========== */

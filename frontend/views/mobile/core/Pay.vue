@@ -83,11 +83,14 @@ export default {
 				    orderSn:this.orderSn,
 				    type:'alipay'
 			    });
-                const div = document.createElement('div');
                 this.showAliPay = true;
-                div.innerHTML = data.data;
-                document.body.appendChild(div);
-                document.forms['alipay_submit'].submit();
+                const formHtml = data.data;
+                const parser = new DOMParser()
+                const doc = parser.parseFromString(formHtml, 'text/html')
+                const form = doc.querySelector('form')
+                // 插入页面并提交
+                document.body.appendChild(form)
+                form.submit()
 		    },null,null);
 	    }
     }

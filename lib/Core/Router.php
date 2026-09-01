@@ -81,12 +81,12 @@ class Router
             }
             catch (Throwable $e)
             {
-                Disclose::export($e);
                 file_put_contents(
                     DI(Site::class)->errorLogPath,
                     date('Y-m-d H:i:s') . " - " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n\n",
                     FILE_APPEND
                 );
+                Disclose::export($e);
             }
         }else{
             echo $class;

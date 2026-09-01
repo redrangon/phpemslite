@@ -100,9 +100,13 @@ export default {
 					type:'alipay'
 				});
 				const formHtml = data.data;
-				const newWindow = window.open('about:blank');
-				newWindow.document.body.innerHTML = formHtml;
-				newWindow.document.body.style.display = 'none';
+                const parser = new DOMParser()
+                const doc = parser.parseFromString(formHtml, 'text/html')
+                const form = doc.querySelector('form')
+
+                // 插入页面并提交
+                document.body.appendChild(form)
+                form.submit()
 			},null,null);
 		}
 	}

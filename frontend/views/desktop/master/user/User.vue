@@ -307,8 +307,10 @@ const delUser = (id) => {
 };
 
 const addUser = async () => {
-	await userApi.addUser(model.value);
-	await getData();
+    await withLayer(async() => {
+        await userApi.addUser(model.value);
+        await getData();
+    },[null,null])
 };
 
 const modifyUser = async () => {

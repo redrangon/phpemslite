@@ -2,8 +2,6 @@
 
 namespace PHPEMS\Lib\Core\Request;
 
-use PHPEMS\Lib\Utils\FileService\FileUploader;
-
 class Request extends BaseRequest implements RequestInterface
 {
     private string $type = 'request';

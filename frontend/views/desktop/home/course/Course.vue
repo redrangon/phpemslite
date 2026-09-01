@@ -15,28 +15,33 @@
 						<template #title>
 							<span class="tabtitle">培训课程</span>
 						</template>
-						<template v-if="course.coursemodule === 'video'">
-							<div v-if="course.coursepath">
-								<myPlayer :settings="settings" :action="{record,finish}" :progress="progress"></myPlayer>
-							</div>
-							<div v-else>
-								<div v-html="course.coursedescribe" class="content"></div>
-							</div>
-						</template>
-						<template v-else-if="course.coursemodule === 'html'">
-							<div v-html="course.coursedescribe" class="content"></div>
-						</template>
-						<template v-else-if="course.coursemodule === 'md'">
-							<div class="content">
-								<MarkDownView :content="course.coursedescribe"></MarkDownView>
-							</div>
-						</template>
-						<template v-else-if="course.coursemodule === 'pdf'">
-							<VueOfficePdf :src="course.coursepath"/>
-						</template>
-						<template v-else>
-							<div class="content">当前课件为空目录，请在左侧选择您要查看的课件</div>
-						</template>
+                        <template v-if="loading">
+                            <lay-loading></lay-loading>
+                        </template>
+                        <template v-else>
+                            <template v-if="course.coursemodule === 'video'">
+                                <div v-if="course.coursepath">
+                                    <myPlayer :settings="settings" :action="{record,finish}" :progress="progress"></myPlayer>
+                                </div>
+                                <div v-else>
+                                    <div v-html="course.coursedescribe" class="content"></div>
+                                </div>
+                            </template>
+                            <template v-else-if="course.coursemodule === 'html'">
+                                <div v-html="course.coursedescribe" class="content"></div>
+                            </template>
+                            <template v-else-if="course.coursemodule === 'md'">
+                                <div class="content">
+                                    <MarkDownView :content="course.coursedescribe"></MarkDownView>
+                                </div>
+                            </template>
+                            <template v-else-if="course.coursemodule === 'pdf'">
+                                <VueOfficePdf :src="course.coursepath"/>
+                            </template>
+                            <template v-else>
+                                <div class="content">当前课件为空目录，请在左侧选择您要查看的课件</div>
+                            </template>
+                        </template>
 					</lay-tab-item>
 				</lay-tab>
 				<lay-tab v-model="videoTab" type="brief" :activeBarTransition="true" v-if="course.coursemodule === 'video'">
@@ -100,7 +105,8 @@ export default {
 			courses:[],
 			logs:[],
 			showFace:false,
-			player:null
+			player:null,
+            loading:true
 		}
 	},
 	async mounted() {
@@ -121,6 +127,7 @@ export default {
 	},
 	methods:{
 		getData:async function(){
+            this.loading = true;
 			if(this.courseid)
 			{
 				this.course = await courseApi.getCourse(this.courseid);
@@ -130,6 +137,7 @@ export default {
 				};
 				if(this.course.coursemodule === 'video')this.settings = {source:this.course?.coursepath??null,width:760,height:480,autoplay:true};
 			}
+            this.loading = false;
 		},
 		getCourseTree: async function() {
 			const data = await courseApi.getAllCourse();

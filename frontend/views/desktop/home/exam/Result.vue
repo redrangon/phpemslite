@@ -29,37 +29,45 @@
                             <h2 style="line-height: 3;font-size: 18px;font-weight: 500;margin-top:20px;">试卷分析</h2>
                             <table class="table">
                                 <thead>
-                                <th>题型</th>
-                                <th>总题数</th>
-                                <th>答对题数</th>
-                                <th>总分</th>
-                                <th>得分</th>
-                                </thead>
-                                <template v-for="(num,nid) in history.ehstats?.questionTypeAnalysis?.totalTypeNumber" :key="nid">
-                                    <tr v-if="num > 0">
-                                        <td>{{ questionTypes[nid]?.questype }}</td>
-                                        <td>{{ num }}</td>
-                                        <td>{{ history.ehstats?.questionTypeAnalysis?.rightTypeNumber[nid] }}</td>
-                                        <td>{{ history.ehstats?.questionTypeAnalysis?.totalTypeScore[nid]}}</td>
-                                        <td>{{ history.ehstats?.questionTypeAnalysis?.rightTypeScore[nid].toFixed(1) }}</td>
+                                    <tr>
+                                        <th>题型</th>
+                                        <th>总题数</th>
+                                        <th>答对题数</th>
+                                        <th>总分</th>
+                                        <th>得分</th>
                                     </tr>
-                                </template>
+                                </thead>
+                                <tbody>
+                                    <template v-for="(num,nid) in history.ehstats?.questionTypeAnalysis?.totalTypeNumber" :key="nid">
+                                        <tr v-if="num > 0">
+                                            <td>{{ questionTypes[nid]?.questype }}</td>
+                                            <td>{{ num }}</td>
+                                            <td>{{ history.ehstats?.questionTypeAnalysis?.rightTypeNumber[nid] }}</td>
+                                            <td>{{ history.ehstats?.questionTypeAnalysis?.totalTypeScore[nid]}}</td>
+                                            <td>{{ history.ehstats?.questionTypeAnalysis?.rightTypeScore[nid].toFixed(1) }}</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
                             </table>
                             <table class="table">
                                 <thead>
-                                <th>知识点</th>
-                                <th>总题数</th>
-                                <th>答对题数</th>
-                                <th>正确率</th>
-                                </thead>
-                                <template v-for="(stat,sid) in history.ehstats?.pointAnalysis?.totalPointNumber" :key="sid">
-                                    <tr v-if="stat > 0">
-                                        <td>{{ history.points[sid] }}</td>
-                                        <td>{{ stat }}</td>
-                                        <td>{{ history.ehstats?.pointAnalysis?.rightPointNumber[sid]??0 }}</td>
-                                        <td>{{ (100 * (history.ehstats?.pointAnalysis?.rightPointNumber[sid]??0) / stat).toFixed(1) }}%</td>
+                                    <tr>
+                                        <th>知识点</th>
+                                        <th>总题数</th>
+                                        <th>答对题数</th>
+                                        <th>正确率</th>
                                     </tr>
-                                </template>
+                                </thead>
+                                <tbody>
+                                    <template v-for="(stat,sid) in history.ehstats?.pointAnalysis?.totalPointNumber" :key="sid">
+                                        <tr v-if="stat > 0">
+                                            <td>{{ history.points[sid] }}</td>
+                                            <td>{{ stat }}</td>
+                                            <td>{{ history.ehstats?.pointAnalysis?.rightPointNumber[sid]??0 }}</td>
+                                            <td>{{ (100 * (history.ehstats?.pointAnalysis?.rightPointNumber[sid]??0) / stat).toFixed(1) }}%</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
                             </table>
                         </lay-container>
                     </template>

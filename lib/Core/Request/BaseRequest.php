@@ -2,6 +2,7 @@
 
 namespace PHPEMS\Lib\Core\Request;
 
+use PHPEMS\App\User\Service\Model\User;
 use PHPEMS\Lib\Utils\FileService\FileUploader;
 
 abstract class BaseRequest
@@ -47,7 +48,7 @@ abstract class BaseRequest
         return $files;
     }
 
-    public function getRoute($key = null)
+    public function getRoute(mixed $key = null):mixed
     {
         if($this->request['route'][$key]??false)return $this->request['route'][$key];
         return match ($key) {
@@ -59,52 +60,57 @@ abstract class BaseRequest
         };
     }
 
-    public function getRaw()
+    public function getRawInput():string
     {
-        return $this->request['data'];
+        return $this->request['raw']??'';
     }
 
-    public function getUser()
+    public function getRaw():array
+    {
+        return $this->request['data']??[];
+    }
+
+    public function getUser():?User
     {
         return $this->request['user'];
     }
 
-    public function setUser($user)
+    public function setUser(User $user):User
     {
         return $this->request['user'] = $user;
     }
 
-    public function get($key = null)
+    public function get(mixed $key = null):mixed
     {
         return $this->request['data'][$key] ?? null;
     }
 
-    public function getFile($key)
+    public function getFile(mixed $key):mixed
     {
         return $this->request['files'][$key] ?? null;
     }
 
-    public function getFiles()
+    public function getFiles():array
     {
-        return $this->request['files'];
+        return $this->request['files']??[];
     }
 
-    public function __get($key)
+    public function __get($key):mixed
     {
         return $this->get($key);
     }
 
-    public function __set($key, $value)
+    public function __set($key, $value):void
     {
         $this->request['data'][$key] = $value;
     }
 
-    public function getStore(string $key)
+    public function getStore(string $key):mixed
     {
         return $this->request['store'][$key]??null;
     }
 
-    public function setStore(string $key, $value = null): void
+    public function setStore(string $key, mixed $value = null): void
     {
         $this->request['store'][$key] = $value;
     }

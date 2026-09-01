@@ -1,9 +1,8 @@
 // utils/device.js
 export const getDeviceType = () => {
-    const width = window.innerWidth
     const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
 
-    if (width <= 720 && isTouch) {
+    if (isTouch) {
         return 'mobile'
     }
     return 'desktop'

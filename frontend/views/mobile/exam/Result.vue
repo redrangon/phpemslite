@@ -58,14 +58,16 @@
 					                <th width="20%">正确率</th>
 				                </tr>
 			                </thead>
-			                <template v-for="(stat,sid) in history.ehstats?.pointAnalysis?.totalPointNumber" :key="sid">
-				                <tr v-if="stat > 0">
-					                <td>{{ history.points[sid] }}</td>
-					                <td>{{ stat }}</td>
-					                <td>{{ history.ehstats?.pointAnalysis?.rightPointNumber[sid]??0 }}</td>
-					                <td>{{ (100 * (history.ehstats?.pointAnalysis?.rightPointNumber[sid]??0) / stat).toFixed(1) }}%</td>
-				                </tr>
-			                </template>
+                            <tbody>
+                                <template v-for="(stat,sid) in history.ehstats?.pointAnalysis?.totalPointNumber" :key="sid">
+                                    <tr v-if="stat > 0">
+                                        <td>{{ history.points[sid] }}</td>
+                                        <td>{{ stat }}</td>
+                                        <td>{{ history.ehstats?.pointAnalysis?.rightPointNumber[sid]??0 }}</td>
+                                        <td>{{ (100 * (history.ehstats?.pointAnalysis?.rightPointNumber[sid]??0) / stat).toFixed(1) }}%</td>
+                                    </tr>
+                                </template>
+                            </tbody>
 		                </table>
 	                </div>
 	                <div style="margin: 16px;text-align: center;padding:10px;">

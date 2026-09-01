@@ -22,11 +22,6 @@
 				<lay-form-item label="组描述" prop="groupdescribe">
 					<lay-input v-model="model.groupdescribe"></lay-input>
 				</lay-form-item>
-				<lay-form-item label="绑定模型" prop="groupmoduleid">
-					<lay-select v-model="model.groupmoduleid" placeholder="请选择">
-						<lay-select-option :value="item.moduleid" :label="item.modulename" v-for="item in modules"></lay-select-option>
-					</lay-select>
-				</lay-form-item>
 			</lay-form>
 		</div>
 	</lay-layer>
@@ -70,10 +65,6 @@ export default {
 				title:'默认注册',
 				width:'100px',
 				type:'radio'
-			},{
-				title:'绑定模型',
-				key:'modulename',
-				width:'160px'
 			},{
 				title:'用户组描述',
 				key:'groupdescribe'

@@ -66,9 +66,11 @@ export default {
         }
     },
     mounted() {
+        console.log('mounted');
         this.init(this.settings);
     },
     beforeUnmount() {
+        console.log('destroy');
         this.destroy();
     },
     methods: {
@@ -79,16 +81,6 @@ export default {
             if (this.player) {
                 this.player.dispose();
                 this.player = null;
-            }
-            // 清理容器中残留的 video 元素
-            if (this.$refs.videoContainer) {
-                const container = this.$refs.videoContainer;
-                const videos = container.querySelectorAll('video');
-                videos.forEach(v => {
-                    if (v !== this.$refs.videoElement) {
-                        v.remove();
-                    }
-                });
             }
         },
 

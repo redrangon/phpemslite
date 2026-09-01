@@ -89,7 +89,9 @@
 		<div style="padding: 20px;">
 			<table class="table">
 				<thead>
-                <tr><th colspan="7">学员登记表</th></tr>
+                    <tr>
+                        <th colspan="7">学员登记表</th>
+                    </tr>
 				</thead>
                 <tbody>
                     <tr>
@@ -132,18 +134,19 @@
 			<lay-tab v-model="searchType" type="brief">
 				<lay-tab-item id="files" title="个人经历">
 					<table class="table">
-						<tr>
-                            <th colspan="7">证件信息</th>
-						</tr>
                         <tbody>
-						<tr>
-							<td colspan="7">
-								<img :src="member.mpassportimg" style="margin:5px;">
-							</td>
-						</tr>
-						<tr>
-						    <th colspan="7">工作经历</th>
-						</tr>
+                            <tr>
+                                <th colspan="7">证件信息</th>
+                            </tr>
+
+                            <tr>
+                                <td colspan="7">
+                                    <img :src="member.mpassportimg" style="margin:5px;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th colspan="7">工作经历</th>
+                            </tr>
                             <tr>
                                 <td class="text-left" colspan="7" v-html="member.mworktext"></td>
                             </tr>

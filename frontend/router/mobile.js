@@ -164,6 +164,13 @@ export default [
                     level: 5
                 },
                 component:() => import('../views/mobile/course/Course.vue')
+            },
+            {
+                path:'play/:courseid',
+                meta:{
+                    level: 6
+                },
+                component:() => import('../views/mobile/course/Play.vue')
             }
         ]
     },

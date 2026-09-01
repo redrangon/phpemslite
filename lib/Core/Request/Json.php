@@ -23,6 +23,7 @@ class Json extends BaseRequest implements RequestInterface
         }
         $this->request['route'] = r($route);
         $this->request['data'] = $jsonData??$_POST;
+        $this->request['raw'] = $jsonString;
         $this->request['files'] = $this->parseFiles($_FILES);
     }
 }
