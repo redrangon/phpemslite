@@ -112,7 +112,14 @@ export default {
             this.execute( async () =>{
                 await examApi.setExamSession(this.basicId);
                 await this.store.setBasic();
-                this.$router.push('/mobile/exam/basic');
+                if(this.store.basic?.basicexam?.model === 2)
+                {
+                    this.$router.push('/mobile/exam/exam');
+                }
+                else
+                {
+                    this.$router.push('/mobile/exam/basic');
+                }
             },null,null);
         },
 	}
