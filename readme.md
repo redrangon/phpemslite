@@ -483,7 +483,7 @@ magnolia/
 - 演示 https://lite.phpems.net
 - 演示站账号密码均为 peadmin
 - 查看文档
-
+- 编译后版本下载地址 https://phpems.net/content-143.html
 ---
 
 **最后更新**: 2026-07-18
