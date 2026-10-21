@@ -306,13 +306,34 @@ class Question extends Controller implements ControllerInterface
             $points[] = $item['qkpointid'];
         }
         $points = array_unique($points);
-        $points = \PHPEMS\App\Exam\Service\Model\Point::getQuery()->select(['pointid','point'])
+        $points = \PHPEMS\App\Exam\Service\Model\Point::getQuery()->select(['pointid','point','pointsectionid'])
             ->whereIn('pointid',$points)
             ->get();
-        $points = array_column($points,'point','pointid');
-        array_walk($data['data'],function(&$item) use ($points){
+        $points = array_column($points,null,'pointid');
+        $sections = [];
+        foreach($points as $point)
+        {
+            $sections[] = $point['pointsectionid'];
+        }
+        $sections = \PHPEMS\App\Exam\Service\Model\Section::getQuery()->select(['sectionid','section','sectionsubjectid'])
+            ->whereIn('sectionid',$sections)
+            ->get();
+        $sections = array_column($sections,null,'sectionid');
+        $subjects = [];
+        foreach($sections as $section)
+        {
+            $subjects[] = $section['sectionsubjectid'];
+        }
+        $subjects = \PHPEMS\App\Exam\Service\Model\Subject::getQuery()->select(['subjectid','subject'])
+            ->whereIn('subjectid',$subjects)
+            ->get();
+        $subjects = array_column($subjects,null,'subjectid');
+        array_walk($data['data'],function(&$item) use ($points,$sections,$subjects){
             $item['questionhtml'] = json_decode($item['questionhtml'],true)??[];
-            $item['point'] = $points[$item['qkpointid']]??'';
+            $point = $points[$item['qkpointid']]['point']??'';
+            $section = $sections[$points[$item['qkpointid']]['pointsectionid']]['section']??'';
+            $subject = $subjects[$sections[$points[$item['qkpointid']]['pointsectionid']]['sectionsubjectid']]['subject']??'';
+            $item['point'] = "{$subject} / {$section} / {$point}";
         });
         return $data;
     }

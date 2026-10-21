@@ -16,8 +16,8 @@ use PHPEMS\App\Exam\Service\Model\QuestionType;
 use PHPEMS\App\Exam\Service\Model\Relation;
 use PHPEMS\App\Exam\Service\Model\Section;
 use PHPEMS\App\Exam\Service\Model\Subject;
-use PHPEMS\App\Plan\Controller\App\Member;
-use PHPEMS\App\Plan\Service\Model\PlanMember;
+use PHPEMS\App\Member\Service\Model\Member;
+use PHPEMS\App\User\Service\Model\User;
 use PHPEMS\Lib\DataBase\QueryBuilder;
 
 use PHPEMS\Lib\Utils\Env;
@@ -30,6 +30,67 @@ class ExamService
         $basicKey = Basic::getPrimaryKey();
         return Basic::getQuery()->join($memberTable, 'embasicid', '=', $basicKey);
     }
+
+    public static function importBasicMember(array $data,int $basicId):void
+    {
+        $formatMember = [];
+        foreach($data as $key => $item)
+        {
+            if($key)
+            {
+                if($item[0])
+                {
+                    $member = Member::findByPassport($item[0]);
+                    if(!$member->mId)throw new \Exception('第'.($key + 1).'行出错，通行证号：'.$item[0].'不存在');
+                }
+                elseif($item[1])
+                {
+                    $user = User::findByUserName($item[1]);
+                    if(!$user->userPassport)throw new \Exception('第'.($key + 1).'行出错，用户名：'.$item[1].'不存在');
+                    $member = Member::findByPassport($user->userPassport);
+                    if(!$member->mId)throw new \Exception('第'.($key + 1).'行出错，用户名：'.$item[1].'没有通行证ID');
+                }
+                else throw new \Exception('第'.($key + 1).'行出错，没有设置通行证或者用户名');
+                $endTime = strtotime($item[2]);
+                if($endTime < TIME)throw new \Exception('第'.($key + 1).'行出错，时间格式错误');
+                $formatMember[] = [
+                    'line' => $key + 1,
+                    'passport' => $member->mPassport,
+                    'endtime' => $endTime
+                ];
+            }
+        }
+        Basic::getDB()->transaction(function() use ($formatMember,$basicId){
+            foreach($formatMember as $member)
+            {
+                $model = ExamMember::findByPassportAndSubjectId($member['passport'],$basicId);
+                if(!$model->emId)
+                {
+                    $model = ExamMember::fillWithInit([
+                        'embasicid' => $basicId,
+                        'emendtime' => $member['endtime'],
+                        'emstarttime' => TIME,
+                        'empassport' => $member['passport'],
+                    ]);
+                    $model->toValidate();
+                    if(!$model->save()){
+                        throw new \Exception('第'.$member['line'].'行出错，该用户无法添加');
+                    }
+                }
+                else
+                {
+                    if($model->emendtime != $member['endtime'])
+                    {
+                        $model->emendtime = $member['endtime'];
+                        if(!$model->save()) {
+                            throw new \Exception('第'.$member['line'].'行出错，该用户无法修改');
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     public static function getExamHistoryQueryWithDetail():QueryBuilder
     {
         $detailTable = HistoryDetail::getTableName();

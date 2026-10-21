@@ -2,7 +2,7 @@
     <lay-header>
         <lay-row class="topheader">
             <lay-col md="8">
-                <div class="logo">新乡市落笔千言网络技术有限公司</div>
+                <div class="logo">PHPEMS Lite</div>
             </lay-col>
             <lay-col md="16" style="text-align:right">
                 <lay-menu>

@@ -2,7 +2,12 @@
 	<lay-layout style="flex-direction:column;" class="cardLayout">
 		<headerMenu></headerMenu>
 		<lay-layout class="frontLayOut">
-			<router-view></router-view>
+            <router-view v-slot="{ Component, route }">
+                <keep-alive v-if="route.meta.keepAlive">
+                    <component :is="Component" :key="route.fullPath"/>
+                </keep-alive>
+                <component :is="Component" v-else/>
+            </router-view>
 		</lay-layout>
 	</lay-layout>
 </template>

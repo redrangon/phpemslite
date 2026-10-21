@@ -9,28 +9,28 @@
                             <span>考场列表</span>
                         </span>
                     </template>
-                    <lay-card :bordered="false" class="grid-card" v-if="page.total > 0">
-                        <lay-row :space="15">
-                            <lay-col v-for="exam in exams" :key="exam.basicid" :xs="24" :sm="12" :md="8" :lg="6">
-                                <lay-card :bordered="false" class="grid-item" @click="viewExamDetail(exam.basicid)">
-                                    <div class="grid-thumb">
-                                        <img :src="exam.basicthumb" :alt="exam.basic" />
-                                    </div>
-                                    <h4 class="grid-title">{{ exam.basic }}</h4>
-                                    <p class="grid-summary">{{ exam.basicdescribe?exam.basicdescribe:'暂无简介' }}</p>
-                                    <div class="grid-meta">
-                                        <lay-icon type="layui-icon-read" style="margin-left: 8px;"></lay-icon>
-                                        <span>{{ exam.basicnumber??0 }}</span>
-                                    </div>
-                                </lay-card>
-                            </lay-col>
-                        </lay-row>
+                    <lay-card :bordered="false" class="news-list" v-if="page.total > 0">
+                        <div v-for="exam in exams" :key="exam.csid" class="news-item" @click="viewExamDetail(exam.basicid)">
+                            <div class="news-image">
+                                <img :src="exam.basicthumb" :alt="exam.basic" />
+                            </div>
+                            <div class="news-content">
+                                <h3 class="news-title">{{ exam.basic }}</h3>
+                                <p class="news-desc" v-html="exam.basicdescribe?exam.basicdescribe:'暂无简介'"></p>
+                                <div class="news-footer">
+                                    <lay-button type="primary" size="md">
+                                        开始学习
+                                    </lay-button>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: center;padding:10px;">
+                            <router-link to="/desktop/home/exam/category/0">
+                                <lay-button>更多考场 &gt;&gt;</lay-button>
+                            </router-link>
+                        </div>
                     </lay-card>
                     <lay-empty v-else description="暂无考场数据"></lay-empty>
-                    <div class="pagination-wrapper" v-if="page.total > 0">
-                        <lay-page v-model="page.current"  :layout="layout" v-model:limit="page.limit" :total="page.total" @change="pageChange" theme="blue" style="float:right">
-                        </lay-page>
-                    </div>
                 </lay-tab-item>
             </lay-tab>
 		</lay-card>
@@ -80,3 +80,78 @@ export default {
 };
 </script>
 <style src="@/assets/css/desktop/category.css"></style>
+<style scoped>
+
+.news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.news-item {
+    display: flex;
+    gap: 20px;
+    padding: 30px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.news-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateX(5px);
+}
+
+.news-image {
+    flex-shrink: 0;
+    width: 280px;
+    height: 180px;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.news-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.news-item:hover .news-image img {
+    transform: scale(1.05);
+}
+
+.news-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.news-content .news-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.news-desc {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+</style>

@@ -1,5 +1,5 @@
 /*
- Navicat Premium Dump SQL
+ Navicat Premium Data Transfer
 
  Source Server         : localhost
  Source Server Type    : MySQL
@@ -11,32 +11,11 @@
  Target Server Version : 80029 (8.0.29)
  File Encoding         : 65001
 
- Date: 16/08/2026 09:02:08
+ Date: 20/10/2026 11:24:04
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
--- Table structure for x2_app
--- ----------------------------
-DROP TABLE IF EXISTS `x2_app`;
-CREATE TABLE `x2_app`  (
-  `appid` int NOT NULL AUTO_INCREMENT,
-  `appcode` varchar(24) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `appname` varchar(48) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `appthumb` varchar(240) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `appstatus` int NOT NULL DEFAULT 0,
-  `appsetting` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  PRIMARY KEY (`appid`) USING BTREE,
-  INDEX `appstatus`(`appstatus` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Records of x2_app
--- ----------------------------
-INSERT INTO `x2_app` VALUES (1, 'user', '用户', '', 1, '{\"closeregist\":0,\"loginmodel\":0,\"userverify\":0,\"emailverify\":0,\"emailaccount\":\"\",\"emailpassword\":\"\"}');
-INSERT INTO `x2_app` VALUES (2, 'exam', '考试', '', 1, '{\"watermark\":0,\"fontsize\":\"18\",\"color\":\"#333333\",\"rotate\":0}');
 
 -- ----------------------------
 -- Table structure for x2_ask
@@ -57,7 +36,7 @@ CREATE TABLE `x2_ask`  (
   INDEX `askstatus`(`askstatus` ASC) USING BTREE,
   INDEX `askisshow`(`askisshow` ASC) USING BTREE,
   INDEX `askorder`(`askorder` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_ask
@@ -78,7 +57,7 @@ CREATE TABLE `x2_ask_answer`  (
   INDEX `asruserid`(`asruserid` ASC) USING BTREE,
   INDEX `asraskid`(`asraskid` ASC) USING BTREE,
   INDEX `asrstatus`(`asrstatus` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_ask_answer
@@ -131,9 +110,6 @@ CREATE TABLE `x2_cert_member`  (
 -- ----------------------------
 -- Records of x2_cert_member
 -- ----------------------------
-INSERT INTO `x2_cert_member` VALUES (1, 1, '0025896gd42safx0001', 1785201397, 1, '202607280916375140000', 1816737397);
-INSERT INTO `x2_cert_member` VALUES (2, 1, '00000d69ad4e72d9e9801269', 1785297132, 0, '202607291152127000000', 1816833132);
-INSERT INTO `x2_cert_member` VALUES (3, 1, '000ba06a730f38defa429b86', 1785297319, 0, '202607291155199400000', 1816833319);
 
 -- ----------------------------
 -- Table structure for x2_content
@@ -172,7 +148,6 @@ CREATE TABLE `x2_content`  (
 -- ----------------------------
 -- Records of x2_content
 -- ----------------------------
-INSERT INTO `x2_content` VALUES (1, 1, 0, 1, 'peadmin', '', 'PHPEMS LITE 发布信息', '', '', 'storage/attach/public/20260721/d8aca05abf7dbf6b11a1f672827ce665.png', '', 1784602331, 1785330230, 0, '', '', 1, '', '<h1 style=\"text-align: left;\">PHPEMS Lite</h1><p style=\"text-align: left;\">基于PHPEMS magnolia 框架的最新在线考试系统</p><h2 style=\"text-align: left;\">项目概述</h2><p style=\"text-align: left;\">Magnolia (PHPEMS v12.0.0) 是一个基于 PHP 的考试管理系统。该项目采用前后端分离架构，后端使用自定义 MVC 框架，前端使用 Vue 3 + Vite 构建现代化用户界面。</p><p style=\"text-align: left;\">关于Magnolia的命名，是继承自Ginkgo后的名称，我大学专业是森林资源保护与游憩，一个很小众的专业，我刚开始学习编程时，正是刚开始学林学类专业的时候，所以第一份框架，也就是PHPEMS1-11版本的框架，是以树木学的第一章银杏（ginkgo）命名的，现在到了第12个版本，原先的框架已经过于古老，所以我用了半年时间，重写了框架和主要功能，然后以第二章木兰（magnolia）命名。</p><h3 style=\"text-align: left;\">主要特性</h3><ul><li style=\"text-align: left;\"><strong>前后端分离架构</strong>: 后端提供 RESTful API，前端使用 Vue 3 + Vite 构建</li><li style=\"text-align: left;\"><strong>响应式设计</strong>: 支持 PC 端（桌面）和移动端两种布局，自动适配设备类型</li><li style=\"text-align: left;\"><strong>模块化设计</strong>: 核心功能分为 Core、Course、Exam、User、Content、Attach、Cert 等模块</li><li style=\"text-align: left;\"><strong>依赖注入系统</strong>: 内置 DI 容器用于管理服务依赖</li><li style=\"text-align: left;\"><strong>路由系统</strong>: 后端基于 URL 路径的动态路由分发，前端使用 Vue Router</li><li style=\"text-align: left;\"><strong>插件系统</strong>: 支持通过 plugins 目录扩展功能</li><li style=\"text-align: left;\"><strong>PSR-4 自动加载</strong>: 使用 Composer 进行类自动加载</li><li style=\"text-align: left;\"><strong>多数据库支持</strong>: MySQL 和 Redis 支持</li><li style=\"text-align: left;\"><strong>状态管理</strong>: 前端使用 Pinia 进行状态管理</li><li style=\"text-align: left;\"><strong>安全加密</strong>: 前后端支持数据加密传输（AES-256-CBC），集成 WASM 加密模块</li><li style=\"text-align: left;\"><strong>WebAssembly 支持</strong>: 集成 WASM 模块用于高性能加密解密操作</li></ul><h3 style=\"text-align: left;\">技术栈</h3><p style=\"text-align: left;\"><strong>后端技术栈：</strong></p><ul><li style=\"text-align: left;\"><strong>语言</strong>: PHP &gt;= 8.2</li><li style=\"text-align: left;\"><strong>架构模式</strong>: 自定义 MVC + 依赖注入 + 流程中间件</li><li style=\"text-align: left;\"><strong>包管理</strong>: Composer</li><li style=\"text-align: left;\"><strong>核心组件</strong>:</li></ul><p style=\"text-align: left;\"><strong>前端技术栈：</strong></p><ul><li style=\"text-align: left;\"><strong>框架</strong>: Vue 3.4+</li><li style=\"text-align: left;\"><strong>构建工具</strong>: Vite 5.0+</li><li style=\"text-align: left;\"><strong>状态管理</strong>: Pinia 3.0+</li><li style=\"text-align: left;\"><strong>路由</strong>: Vue Router 4.6+</li><li style=\"text-align: left;\"><strong>HTTP 客户端</strong>: Axios 1.13+</li><li style=\"text-align: left;\"><strong>UI 组件库</strong>:</li><li style=\"text-align: left;\"><strong>富文本编辑器</strong>:</li><li style=\"text-align: left;\"><strong>视频播放器</strong>: Video.js 8.23+</li><li style=\"text-align: left;\"><strong>加密库</strong>: CryptoJS 4.2+</li><li style=\"text-align: left;\"><strong>轮播组件</strong>: Swiper 12.1+</li><li style=\"text-align: left;\"><strong>拖拽排序</strong>: SortableJS 1.15+</li><li style=\"text-align: left;\"><strong>开发模式</strong>: ES Modules</li></ul>', 1);
 
 -- ----------------------------
 -- Table structure for x2_content_category
@@ -301,7 +276,7 @@ CREATE TABLE `x2_course_member`  (
 -- ----------------------------
 -- Records of x2_course_member
 -- ----------------------------
-INSERT INTO `x2_course_member` VALUES (1, '0025896gd42safx0001', 1, 1784601804, 1787193804);
+INSERT INTO `x2_course_member` VALUES (1, '0025896gd42safx0001', 1, 1784601804, 1793696505);
 
 -- ----------------------------
 -- Table structure for x2_course_price
@@ -334,7 +309,7 @@ CREATE TABLE `x2_course_progress`  (
   INDEX `cppassport`(`cppassport` ASC) USING BTREE,
   INDEX `cpcsid`(`cpcsid` ASC) USING BTREE,
   INDEX `cpstatus`(`cpstatus` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_course_progress
@@ -386,7 +361,7 @@ CREATE TABLE `x2_course_subject`  (
 -- ----------------------------
 -- Records of x2_course_subject
 -- ----------------------------
-INSERT INTO `x2_course_subject` VALUES (1, 'PHPEMS LITE', 1, 1, 1784461088, 'storage/attach/public/20260719/eee63a96d3e50acbb5685a443411456c.png', 0, 0, 1, 0, 'PHPEMS LITE', '<p>PHPEMS LITE</p>');
+INSERT INTO `x2_course_subject` VALUES (1, 'PHPEMS LITE', 1, 1, 1784461088, 'storage/attach/public/20260719/eee63a96d3e50acbb5685a443411456c.png', 0, 1, 1, 0, 'PHPEMS LITE', '<p>PHPEMS LITE</p>');
 
 -- ----------------------------
 -- Table structure for x2_exam_basic
@@ -429,7 +404,7 @@ CREATE TABLE `x2_exam_exercise`  (
   INDEX `exerbasicid`(`exerbasicid` ASC) USING BTREE,
   INDEX `exerknowsid`(`exerpointid` ASC) USING BTREE,
   INDEX `exerplanid`(`exerplanid` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_exam_exercise
@@ -471,7 +446,7 @@ CREATE TABLE `x2_exam_feedback`  (
   PRIMARY KEY (`fbid`) USING BTREE,
   INDEX `fbquestionid`(`fbquestionid` ASC, `fbuserid` ASC) USING BTREE,
   INDEX `fbtype`(`fbtype` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_exam_feedback
@@ -511,11 +486,12 @@ CREATE TABLE `x2_exam_history`  (
   INDEX `ehneedresit`(`ehneedresit` ASC) USING BTREE,
   INDEX `ehispass`(`ehispass` ASC) USING BTREE,
   INDEX `ehplanid`(`ehplanid` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_exam_history
 -- ----------------------------
+INSERT INTO `x2_exam_history` VALUES (10, 0, 1, '植物学', 1, 1, 5, 0.00, '0025896gd42safx0001', 1791010785, 1791010790, 1, 0, 0, 0, '', 0, '{\"setting\":{\"totalScore\":100,\"totalTime\":60,\"passMark\":\"60.00\"},\"pointAnalysis\":{\"totalPointScore\":{\"1\":4,\"9\":2,\"11\":4,\"12\":6,\"15\":2,\"27\":2,\"33\":2,\"37\":2,\"7\":2,\"22\":4,\"19\":4,\"20\":4,\"25\":4,\"31\":2,\"8\":2,\"21\":10,\"26\":2,\"14\":6,\"34\":2,\"5\":2,\"2\":2,\"13\":2,\"23\":4,\"29\":2,\"4\":2,\"38\":2,\"39\":2,\"35\":2,\"36\":2,\"6\":4,\"10\":4},\"rightPointScore\":{\"1\":0,\"9\":0,\"11\":0,\"12\":0,\"15\":0,\"27\":0,\"33\":0,\"37\":0,\"7\":0,\"22\":0,\"19\":0,\"20\":0,\"25\":0,\"31\":0,\"8\":0,\"21\":0,\"26\":0,\"14\":0,\"34\":0,\"5\":0,\"2\":0,\"13\":0,\"23\":0,\"29\":0,\"4\":0,\"38\":0,\"39\":0,\"35\":0,\"36\":0,\"6\":0,\"10\":0},\"totalPointNumber\":{\"1\":2,\"9\":1,\"11\":2,\"12\":3,\"15\":1,\"27\":1,\"33\":1,\"37\":1,\"7\":1,\"22\":2,\"19\":2,\"20\":2,\"25\":2,\"31\":1,\"8\":1,\"21\":5,\"26\":1,\"14\":3,\"34\":1,\"5\":1,\"2\":1,\"13\":1,\"23\":2,\"29\":1,\"4\":1,\"38\":1,\"39\":1,\"35\":1,\"36\":1,\"6\":2,\"10\":2},\"rightPointNumber\":{\"1\":0,\"9\":0,\"11\":0,\"12\":0,\"15\":0,\"27\":0,\"33\":0,\"37\":0,\"7\":0,\"22\":0,\"19\":0,\"20\":0,\"25\":0,\"31\":0,\"8\":0,\"21\":0,\"26\":0,\"14\":0,\"34\":0,\"5\":0,\"2\":0,\"13\":0,\"23\":0,\"29\":0,\"4\":0,\"38\":0,\"39\":0,\"35\":0,\"36\":0,\"6\":0,\"10\":0}},\"questionTypeAnalysis\":{\"totalTypeScore\":{\"1\":80,\"2\":20},\"rightTypeScore\":{\"1\":0,\"2\":0},\"totalTypeNumber\":{\"1\":40,\"2\":10},\"rightTypeNumber\":{\"1\":0,\"2\":0}}}', '127.0.0.1', '127.0.0.1', '电脑:Edge', '电脑:Edge');
 
 -- ----------------------------
 -- Table structure for x2_exam_history_detail
@@ -532,11 +508,12 @@ CREATE TABLE `x2_exam_history_detail`  (
   `ehdtimes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   PRIMARY KEY (`ehdid`) USING BTREE,
   UNIQUE INDEX `ehdehid`(`ehdehid` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_exam_history_detail
 -- ----------------------------
+INSERT INTO `x2_exam_history_detail` VALUES (10, 10, '{\"3\":0,\"26\":0,\"33\":0,\"35\":0,\"45\":0,\"70\":0,\"83\":0,\"92\":0,\"105\":0,\"109\":0,\"132\":0,\"153\":0,\"190\":0,\"202\":0,\"204\":0,\"216\":0,\"224\":0,\"244\":0,\"257\":0,\"262\":0,\"41\":0,\"42\":0,\"85\":0,\"103\":0,\"117\":0,\"122\":0,\"131\":0,\"144\":0,\"152\":0,\"154\":0,\"160\":0,\"174\":0,\"194\":0,\"210\":0,\"212\":0,\"233\":0,\"236\":0,\"254\":0,\"269\":0,\"270\":0}', '{\"totalScore\":100,\"totalTime\":60,\"passMark\":\"60.00\",\"questionTypeSort\":[1,2,3,4],\"scaleModel\":0,\"type\":1,\"questionTypes\":{\"1\":{\"number\":\"40\",\"score\":\"2\",\"describe\":\"\",\"easyNumber\":\"20\",\"middleNumber\":\"20\",\"hardNumber\":0},\"2\":{\"number\":\"10\",\"score\":\"2\",\"describe\":\"\",\"easyNumber\":\"5\",\"middleNumber\":\"5\",\"hardNumber\":0},\"3\":{\"number\":0,\"score\":0,\"describe\":\"\",\"easyNumber\":0,\"middleNumber\":0,\"hardNumber\":0},\"4\":{\"number\":0,\"score\":0,\"describe\":\"\",\"easyNumber\":0,\"middleNumber\":0,\"hardNumber\":0}},\"questionScore\":{\"3\":\"2\",\"26\":\"2\",\"33\":\"2\",\"35\":\"2\",\"45\":\"2\",\"70\":\"2\",\"83\":\"2\",\"92\":\"2\",\"105\":\"2\",\"109\":\"2\",\"132\":\"2\",\"153\":\"2\",\"190\":\"2\",\"202\":\"2\",\"204\":\"2\",\"216\":\"2\",\"224\":\"2\",\"244\":\"2\",\"257\":\"2\",\"262\":\"2\",\"41\":\"2\",\"42\":\"2\",\"85\":\"2\",\"103\":\"2\",\"117\":\"2\",\"122\":\"2\",\"131\":\"2\",\"144\":\"2\",\"152\":\"2\",\"154\":\"2\",\"160\":\"2\",\"174\":\"2\",\"194\":\"2\",\"210\":\"2\",\"212\":\"2\",\"233\":\"2\",\"236\":\"2\",\"254\":\"2\",\"269\":\"2\",\"270\":\"2\"}}', '{\"1\":{\"questions\":[{\"questionid\":3,\"questiontype\":1,\"question\":\"下列哪种质体在植物细胞中负责合成和积累淀粉？\",\"questionhtml\":[\"A. 叶绿体\",\"B. 有色体\",\"C. 白色体（淀粉体）\",\"D. 前质体\"],\"questionisparent\":0,\"questionanswer\":\"C\",\"questionselecttype\":0,\"points\":[1]},{\"questionid\":26,\"questiontype\":1,\"question\":\"植物吸收矿质离子的主要方式为主动运输，该过程需要能量和？\",\"questionhtml\":[\"A. 载体蛋白\",\"B. 通道蛋白\",\"C. 胞饮作用\",\"D. 离子交换\"],\"questionisparent\":0,\"questionanswer\":\"A\",\"questionselecttype\":0,\"points\":[9]},{\"questionid\":33,\"questiontype\":1,\"question\":\"无氧呼吸中，植物细胞将丙酮酸转化为乙醇和CO₂，该过程属于？\",\"questionhtml\":[\"A. 糖酵解\",\"B. 发酵\",\"C. 氧化磷酸化\",\"D. 光呼吸\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[11]},{\"questionid\":35,\"questiontype\":1,\"question\":\"促进果实成熟、促进器官脱落和衰老的植物激素是？\",\"questionhtml\":[\"A. 乙烯\",\"B. 生长素\",\"C. 赤霉素\",\"D. 细胞分裂素\"],\"questionisparent\":0,\"questionanswer\":\"A\",\"questionselecttype\":0,\"points\":[12]},{\"questionid\":45,\"questiontype\":1,\"question\":\"在植物分类等级序列（界、门、纲、目、科、属、种）中，科与属之间的等级是？\",\"questionhtml\":[\"A. 亚科\",\"B. 族\",\"C. 目\",\"D. 亚属\"],\"questionisparent\":0,\"questionanswer\":\"C\",\"questionselecttype\":0,\"points\":[15]},{\"questionid\":70,\"questiontype\":1,\"question\":\"热带雨林的主要特征包括物种丰富度高、层次结构复杂以及？\",\"questionhtml\":[\"A. 有大量藤本和附生植物\",\"B. 植物多具旱生结构\",\"C. 优势种明显\",\"D. 林冠稀疏\"],\"questionisparent\":0,\"questionanswer\":\"A\",\"questionselecttype\":0,\"points\":[27]},{\"questionid\":83,\"questiontype\":1,\"question\":\"物种形成中，地理隔离是最常见的机制。当两个种群被山脉、河流等地理障碍隔开，各自演化后可能形成新物种，这种方式称为？\",\"questionhtml\":[\"A. 异域物种形成\",\"B. 同域物种形成\",\"C. 邻域物种形成\",\"D. 瞬时物种形成\"],\"questionisparent\":0,\"questionanswer\":\"A\",\"questionselecttype\":0,\"points\":[33]},{\"questionid\":92,\"questiontype\":1,\"question\":\"植物转基因技术中，最常用的载体是？\",\"questionhtml\":[\"A. 质粒\",\"B. Ti质粒（农杆菌转化）\",\"C. 病毒载体\",\"D. 脂质体\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[37]},{\"questionid\":105,\"questiontype\":1,\"question\":\"果实由子房和花的其他部分（如花托、花萼）共同发育而成，称为假果。以下属于假果的是？\",\"questionhtml\":[\"A. 桃\",\"B. 葡萄\",\"C. 梨\",\"D. 大豆\"],\"questionisparent\":0,\"questionanswer\":\"C\",\"questionselecttype\":0,\"points\":[7]},{\"questionid\":109,\"questiontype\":1,\"question\":\"呼吸作用中，电子传递链位于线粒体内膜上，最终电子受体是？\",\"questionhtml\":[\"A. NAD⁺\",\"B. 氧气（O₂）\",\"C. 水\",\"D. 二氧化碳\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[11]},{\"questionid\":132,\"questiontype\":1,\"question\":\"植物细胞中，细胞壁分为初生壁和次生壁。次生壁通常在细胞停止生长后形成，其特点包括？\",\"questionhtml\":[\"A. 薄而弹性大\",\"B. 富含纤维素，常有木质素沉积\",\"C. 没有纤维素\",\"D. 仅存在于薄壁组织中\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[1]},{\"questionid\":153,\"questiontype\":1,\"question\":\"种群增长模型中，当种群密度接近环境容纳量（K）时，种群增长率（r）会？\",\"questionhtml\":[\"A. 增大\",\"B. 减小\",\"C. 不变\",\"D. 先减后增\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[22]},{\"questionid\":190,\"questiontype\":1,\"question\":\"植物激素中，细胞分裂素（CTK）主要在根尖合成，通过木质部向上运输。细胞分裂素的生理效应不包括？\",\"questionhtml\":[\"A. 促进细胞分裂\",\"B. 延缓叶片衰老\",\"C. 促进侧芽生长\",\"D. 促进果实成熟\"],\"questionisparent\":0,\"questionanswer\":\"D\",\"questionselecttype\":0,\"points\":[12]},{\"questionid\":202,\"questiontype\":1,\"question\":\"裸子植物中，松科（如马尾松）的花粉具有两个气囊，这有助于风媒传粉。松树的雌球果成熟时，珠鳞张开释放种子。松树的种子具有翅，有利于？\",\"questionhtml\":[\"A. 动物传播\",\"B. 风力传播\",\"C. 水力传播\",\"D. 自体传播\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[19]},{\"questionid\":204,\"questiontype\":1,\"question\":\"APG分类系统中，被子植物的科和属的界定多采用分子数据。APG系统与传统的恩格勒系统（Engler系统）在分类依据上有何不同？\",\"questionhtml\":[\"A. 恩格勒系统基于形态，APG基于分子和形态\",\"B. 两者完全一致\",\"C. APG不承认单子叶植物\",\"D. APG基于地理分布\"],\"questionisparent\":0,\"questionanswer\":\"A\",\"questionselecttype\":0,\"points\":[20]},{\"questionid\":216,\"questiontype\":1,\"question\":\"地衣是藻类和真菌的共生体，真菌提供保护结构和水分，藻类提供光合产物。这种共生关系属于？\",\"questionhtml\":[\"A. 寄生\",\"B. 互利共生\",\"C. 偏利共生\",\"D. 化感作用\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[25]},{\"questionid\":224,\"questiontype\":1,\"question\":\"被子植物中，花的演化趋势之一是从两性花到单性花，从虫媒到风媒。风媒花通常具有哪项特征？\",\"questionhtml\":[\"A. 花色鲜艳\",\"B. 花蜜丰富\",\"C. 花小、无香气\",\"D. 花大而美丽\"],\"questionisparent\":0,\"questionanswer\":\"C\",\"questionselecttype\":0,\"points\":[31]},{\"questionid\":244,\"questiontype\":1,\"question\":\"植物对水分的吸收和运输中，水通道蛋白（aquaporin）在细胞膜上形成选择性通道，促进水分快速跨膜运输。水通道蛋白对水分的运输属于？\",\"questionhtml\":[\"A. 主动运输\",\"B. 协助扩散\",\"C. 自由扩散\",\"D. 胞吞作用\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[8]},{\"questionid\":257,\"questiontype\":1,\"question\":\"豆科的蝶形花亚科的花冠由旗瓣、翼瓣和龙骨瓣组成，龙骨瓣包裹雄蕊和雌蕊。蝶形花的雄蕊常为二体雄蕊（9+1）或单体雄蕊。二体雄蕊的特征是？\",\"questionhtml\":[\"A. 全部雄蕊分离\",\"B. 9枚合生，1枚分离\",\"C. 全部合生成管\",\"D. 雄蕊数目不定\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[21]},{\"questionid\":262,\"questiontype\":1,\"question\":\"泛热带分布类型是指广泛分布于全球热带地区的类群。在中国南部，泛热带分布的科有棕榈科、天南星科等。这些科的植物在温带地区少见，原因是？\",\"questionhtml\":[\"A. 不耐低温\",\"B. 不耐干旱\",\"C. 需弱光\",\"D. 需酸性土壤\"],\"questionisparent\":0,\"questionanswer\":\"A\",\"questionselecttype\":0,\"points\":[26]},{\"questionid\":41,\"questiontype\":1,\"question\":\"植物遭受干旱胁迫时，常通过积累哪种物质来调节渗透势，减少水分损失？\",\"questionhtml\":[\"A. 淀粉\",\"B. 脯氨酸\",\"C. 纤维素\",\"D. 木质素\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[14]},{\"questionid\":42,\"questiontype\":1,\"question\":\"盐碱胁迫对植物的伤害主要包括离子毒害和渗透胁迫。植物通过将Na⁺区隔化在液泡中，依靠的转运蛋白主要是？\",\"questionhtml\":[\"A. H⁺-ATP酶\",\"B. Na⁺\\/H⁺反向转运体\",\"C. 水通道蛋白\",\"D. 钾离子通道\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[14]},{\"questionid\":85,\"questiontype\":1,\"question\":\"植物基因组中，重复序列所占比例较高，其中转座子（转座元件）属于？\",\"questionhtml\":[\"A. 单拷贝序列\",\"B. 中度重复序列\",\"C. 高度重复序列\",\"D. 编码序列\"],\"questionisparent\":0,\"questionanswer\":\"C\",\"questionselecttype\":0,\"points\":[34]},{\"questionid\":103,\"questiontype\":1,\"question\":\"叶片中，气孔的开闭受保卫细胞膨压调节。保卫细胞具有哪种特殊结构，有助于气孔的快速开闭？\",\"questionhtml\":[\"A. 角质层厚\",\"B. 细胞壁不均匀加厚\",\"C. 含大量叶绿体\",\"D. 没有液泡\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[5]},{\"questionid\":117,\"questiontype\":1,\"question\":\"APG分类系统中，被子植物分为基部类群、核心双子叶植物和单子叶植物等主要支系。其中，核心双子叶植物包括蔷薇类、菊类等。蔷薇类中有一个大科，其果实为核果、梨果或聚合果，该科是？\",\"questionhtml\":[\"A. 蔷薇科\",\"B. 豆科\",\"C. 菊科\",\"D. 禾本科\"],\"questionisparent\":0,\"questionanswer\":\"A\",\"questionselecttype\":0,\"points\":[20]},{\"questionid\":122,\"questiontype\":1,\"question\":\"植物与微生物之间的共生关系包括菌根共生。菌根中，丛枝菌根（AM）对植物磷营养吸收有重要促进作用。AM菌根真菌属于？\",\"questionhtml\":[\"A. 子囊菌\",\"B. 担子菌\",\"C. 球囊菌门\",\"D. 半知菌\"],\"questionisparent\":0,\"questionanswer\":\"C\",\"questionselecttype\":0,\"points\":[25]},{\"questionid\":131,\"questiontype\":1,\"question\":\"植物组织培养中，通过调整激素比例可以诱导器官发生或体细胞胚胎发生。高浓度细胞分裂素与低浓度生长素通常有利于诱导？\",\"questionhtml\":[\"A. 根形成\",\"B. 芽形成\",\"C. 愈伤组织生长\",\"D. 体细胞胚成熟\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[2]},{\"questionid\":144,\"questiontype\":1,\"question\":\"光周期现象中，有些植物的开花由夜间长度（暗期）决定，而非日长。对于短日照植物，夜长中断（用红光处理）会？\",\"questionhtml\":[\"A. 促进开花\",\"B. 抑制开花\",\"C. 无影响\",\"D. 改变花型\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[13]},{\"questionid\":152,\"questiontype\":1,\"question\":\"蔷薇科分为四个亚科：绣线菊亚科、蔷薇亚科、李亚科（桃亚科）和苹果亚科。其中，子房上位、花托凹陷形成杯状花筒、果实为核果的亚科是？\",\"questionhtml\":[\"A. 绣线菊亚科\",\"B. 蔷薇亚科\",\"C. 李亚科\",\"D. 苹果亚科\"],\"questionisparent\":0,\"questionanswer\":\"C\",\"questionselecttype\":0,\"points\":[21]},{\"questionid\":154,\"questiontype\":1,\"question\":\"群落生态学中，生态位（niche）是指物种在群落中的地位和资源利用方式。两个物种的生态位重叠可能导致？\",\"questionhtml\":[\"A. 协同进化\",\"B. 竞争排斥\",\"C. 互利共生\",\"D. 寄生\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[23]},{\"questionid\":160,\"questiontype\":1,\"question\":\"从水生到陆生的演化过程中，植物逐步形成了角质层和气孔。角质层的作用是减少水分蒸发，但同时也妨碍气体交换，因此气孔的出现是重要适应。最早出现角质层和气孔的植物类群可能是？\",\"questionhtml\":[\"A. 绿藻\",\"B. 苔藓植物\",\"C. 蕨类植物\",\"D. 种子植物\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[29]},{\"questionid\":174,\"questiontype\":1,\"question\":\"茎的初生结构中，维管束包括初生木质部和初生韧皮部。在双子叶植物中，初生木质部的分化方向是？\",\"questionhtml\":[\"A. 从外向内（外始式）\",\"B. 从内向外（内始式）\",\"C. 从中心向四周\",\"D. 没有方向\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[4]},{\"questionid\":194,\"questiontype\":1,\"question\":\"植物对高温的适应机制包括合成热激蛋白（HSP）、改变膜脂成分等。HSP的作用是帮助变性蛋白质重新折叠，这一过程需要？\",\"questionhtml\":[\"A. 水解ATP\",\"B. 合成ATP\",\"C. 氧化还原\",\"D. 光能\"],\"questionisparent\":0,\"questionanswer\":\"A\",\"questionselecttype\":0,\"points\":[14]},{\"questionid\":210,\"questiontype\":1,\"question\":\"在生态学中，阿尔利效应（Allee effect）是指种群密度过低时，个体适合度下降的现象，这可能导致种群灭绝。Allee效应的可能原因是？\",\"questionhtml\":[\"A. 捕食压力减小\",\"B. 交配困难或合作行为减少\",\"C. 资源更充足\",\"D. 竞争减弱\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[22]},{\"questionid\":212,\"questiontype\":1,\"question\":\"群落演替的顶极概念中，单元顶极理论认为一个气候区内只有一个顶级群落（气候顶极），而多元顶极理论认为存在多个顶极。单元顶极理论的主要支持者是？\",\"questionhtml\":[\"A. 达尔文\",\"B. 林德曼\",\"C. 克莱门茨\",\"D. 坦斯利\"],\"questionisparent\":0,\"questionanswer\":\"C\",\"questionselecttype\":0,\"points\":[23]},{\"questionid\":233,\"questiontype\":1,\"question\":\"杂交育种中，杂种优势（heterosis）是指杂交后代在生长势、产量等方面优于亲本的现象。杂种优势的遗传机制包括显性假说和超显性假说。显性假说认为杂种优势来自？\",\"questionhtml\":[\"A. 杂合位点产生的超亲效应\",\"B. 有利显性基因的掩盖\",\"C. 基因互作\",\"D. 染色体加倍\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[38]},{\"questionid\":236,\"questiontype\":1,\"question\":\"种质资源在育种中利用时，常通过核心种质（core collection）的概念提高效率。核心种质是？\",\"questionhtml\":[\"A. 所有种质材料\",\"B. 具有代表性的遗传多样性亚集\",\"C. 仅地方品种\",\"D. 仅野生近缘种\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[39]},{\"questionid\":254,\"questiontype\":1,\"question\":\"松柏类是裸子植物中最大和分布最广的类群。松柏类植物多为常绿乔木，叶针形或鳞片形，适应寒冷或干旱环境。松柏类的输导组织仅具管胞，无导管，这属于？\",\"questionhtml\":[\"A. 原始特征\",\"B. 适应特征\",\"C. 进化优势\",\"D. 退化特征\"],\"questionisparent\":0,\"questionanswer\":\"A\",\"questionselecttype\":0,\"points\":[19]},{\"questionid\":269,\"questiontype\":1,\"question\":\"细胞质雄性不育（CMS）在杂交种子生产中具有重要应用。CMS的育性恢复通常由核基因控制，称为恢复基因（Rf）。Rf基因通过什么机制恢复育性？\",\"questionhtml\":[\"A. 敲除不育基因\",\"B. 编辑线粒体转录本\",\"C. 增加花粉数量\",\"D. 促进叶绿体发育\"],\"questionisparent\":0,\"questionanswer\":\"B\",\"questionselecttype\":0,\"points\":[35]},{\"questionid\":270,\"questiontype\":1,\"question\":\"数量性状的遗传分析中，遗传力（heritability）是衡量遗传因素对表型变异的贡献程度。广义遗传力包括所有遗传效应，狭义遗传力仅考虑加性遗传效应。狭义遗传力较高的性状在育种中较易选择，因为？\",\"questionhtml\":[\"A. 加性效应可稳定遗传\",\"B. 显性效应占主导\",\"C. 环境变异小\",\"D. 非加性效应可传递\"],\"questionisparent\":0,\"questionanswer\":\"A\",\"questionselecttype\":0,\"points\":[36]}],\"rowsQuestions\":[]},\"2\":{\"questions\":[],\"rowsQuestions\":[{\"questionid\":4,\"questiontype\":2,\"question\":\"植物组织根据发育阶段和功能可分为多种类型。请阅读以下关于组织类型的描述，回答后续小题。\",\"questionhtml\":\"[]\",\"questionisparent\":1,\"questionanswer\":\"\",\"questionselecttype\":0,\"points\":[],\"children\":[{\"questionid\":5,\"questiontype\":1,\"question\":\"具有持续分裂能力，位于根尖和茎尖的组织是？\",\"questionhtml\":[\"A. 薄壁组织\",\"B. 分生组织\",\"C. 保护组织\",\"D. 机械组织\"],\"questionlevel\":1,\"questionparent\":4,\"questionanswer\":\"B\",\"questionselecttype\":0},{\"questionid\":6,\"questiontype\":1,\"question\":\"下列哪项不属于输导组织的功能？\",\"questionhtml\":[\"A. 运输水分\",\"B. 运输无机盐\",\"C. 运输有机物\",\"D. 支撑植物体\"],\"questionlevel\":1,\"questionparent\":4,\"questionanswer\":\"D\",\"questionselecttype\":0}]},{\"questionid\":16,\"questiontype\":2,\"question\":\"花是被子植物特有的生殖器官，其形态和结构多样性丰富。请回答以下关于花结构的问题。\",\"questionhtml\":\"[]\",\"questionisparent\":1,\"questionanswer\":\"\",\"questionselecttype\":0,\"points\":[6],\"children\":[{\"questionid\":17,\"questiontype\":1,\"question\":\"花萼和花冠合称为？\",\"questionhtml\":[\"A. 花被\",\"B. 花盘\",\"C. 花梗\",\"D. 花托\"],\"questionlevel\":1,\"questionparent\":16,\"questionanswer\":\"A\",\"questionselecttype\":0},{\"questionid\":18,\"questiontype\":1,\"question\":\"下列哪种演化趋势在花的演化中较为常见？\",\"questionhtml\":[\"A. 花部数由少变多\",\"B. 花由单性花演化为两性花\",\"C. 花由虫媒花演化为风媒花\",\"D. 花托由凸起变为凹陷\"],\"questionlevel\":2,\"questionparent\":16,\"questionanswer\":\"D\",\"questionselecttype\":0}]},{\"questionid\":36,\"questiontype\":2,\"question\":\"植物激素在生长发育中相互调控。请回答以下关于激素的问题。\",\"questionhtml\":\"[]\",\"questionisparent\":1,\"questionanswer\":\"\",\"questionselecttype\":0,\"points\":[12],\"children\":[{\"questionid\":37,\"questiontype\":1,\"question\":\"在种子休眠解除过程中，起拮抗作用的两种激素通常为？\",\"questionhtml\":[\"A. 生长素和乙烯\",\"B. 赤霉素和脱落酸\",\"C. 细胞分裂素和赤霉素\",\"D. 生长素和脱落酸\"],\"questionlevel\":2,\"questionparent\":36,\"questionanswer\":\"B\",\"questionselecttype\":0}]},{\"questionid\":28,\"questiontype\":2,\"question\":\"光合作用碳反应（暗反应）存在多种途径。请根据以下描述回答问题。\",\"questionhtml\":\"[]\",\"questionisparent\":1,\"questionanswer\":\"\",\"questionselecttype\":0,\"points\":[10],\"children\":[{\"questionid\":29,\"questiontype\":1,\"question\":\"C3途径中，CO₂被固定的第一个稳定产物是？\",\"questionhtml\":[\"A. 草酰乙酸（OAA）\",\"B. 3-磷酸甘油酸（PGA）\",\"C. 苹果酸\",\"D. 磷酸烯醇式丙酮酸（PEP）\"],\"questionlevel\":1,\"questionparent\":28,\"questionanswer\":\"B\",\"questionselecttype\":0},{\"questionid\":30,\"questiontype\":1,\"question\":\"CAM途径与C4途径的主要区别在于？\",\"questionhtml\":[\"A. 固定CO₂的酶不同\",\"B. 是否具有维管束鞘细胞\",\"C. CO₂固定和同化在时间上分离\",\"D. 最终产物不同\"],\"questionlevel\":2,\"questionparent\":28,\"questionanswer\":\"C\",\"questionselecttype\":0}]},{\"questionid\":56,\"questiontype\":2,\"question\":\"识别重要植物科的特征是分类学的基本技能。请回答以下问题。\",\"questionhtml\":\"[]\",\"questionisparent\":1,\"questionanswer\":\"\",\"questionselecttype\":0,\"points\":[21],\"children\":[{\"questionid\":57,\"questiontype\":1,\"question\":\"豆科（Leguminosae）的典型果实类型是？\",\"questionhtml\":[\"A. 角果\",\"B. 荚果\",\"C. 颖果\",\"D. 蒴果\"],\"questionlevel\":1,\"questionparent\":56,\"questionanswer\":\"B\",\"questionselecttype\":0},{\"questionid\":58,\"questiontype\":1,\"question\":\"菊科（Asteraceae）的头状花序中，边缘花通常为舌状花，中央花为管状花。菊科植物的果实类型为？\",\"questionhtml\":[\"A. 瘦果\",\"B. 坚果\",\"C. 核果\",\"D. 浆果\"],\"questionlevel\":1,\"questionparent\":56,\"questionanswer\":\"A\",\"questionselecttype\":0},{\"questionid\":59,\"questiontype\":1,\"question\":\"禾本科（Poaceae）植物的茎通常中空，具有明显的节和节间，这种茎称为？\",\"questionhtml\":[\"A. 草质茎\",\"B. 木质茎\",\"C. 秆\",\"D. 藤\"],\"questionlevel\":1,\"questionparent\":56,\"questionanswer\":\"C\",\"questionselecttype\":0}]}]}}', '{\"70\":\"B\"}', '[]', '[]');
 
 -- ----------------------------
 -- Table structure for x2_exam_history_log
@@ -552,7 +529,7 @@ CREATE TABLE `x2_exam_history_log`  (
   PRIMARY KEY (`ehlid`) USING BTREE,
   INDEX `ehlusername`(`ehlusername` ASC) USING BTREE,
   INDEX `ehltype`(`ehltype` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_exam_history_log
@@ -627,7 +604,7 @@ CREATE TABLE `x2_exam_paper_session`  (
   `examsessionsign` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
   `examsessionbasicid` int NOT NULL DEFAULT 0,
   `examsessiontype` int NOT NULL,
-  `examsessionpaperid` int(11) UNSIGNED ZEROFILL NOT NULL,
+  `examsessionpaperid` int UNSIGNED NOT NULL,
   `examsessionquestion` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
   `examsessionuseranswer` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
   `examsessionstarttime` int NOT NULL DEFAULT 0,
@@ -647,7 +624,7 @@ CREATE TABLE `x2_exam_paper_session`  (
   INDEX `examsessionpassport`(`examsessionpassport` ASC) USING BTREE,
   INDEX `examsessiontoken`(`examsessiontoken` ASC) USING BTREE,
   INDEX `examsessionplanid`(`examsessionplanid` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_exam_paper_session
@@ -1432,7 +1409,7 @@ CREATE TABLE `x2_member`  (
   PRIMARY KEY (`mid`) USING BTREE,
   UNIQUE INDEX `mpassport`(`mpassport` ASC) USING BTREE,
   INDEX `mname`(`mname` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_member
@@ -1440,16 +1417,40 @@ CREATE TABLE `x2_member`  (
 INSERT INTO `x2_member` VALUES (1, '火眼', 'storage/attach/public/20260719/ba315c85cf2d9116a1ebe2ad25a84c87.png', '18738317214', 'noaddress', '0025896gd42safx0001', 'storage/attach/public/20260719/d9d9dae671a6e68b3e8b71f61bf4d035.png', '男', '1990-05-07', '团员', '本科', 'noname', 'noname', '2007', '经理', '工程师', '技术部', '', '', 1784461334);
 INSERT INTO `x2_member` VALUES (2, '火眼', '', '', '', '00000d69ad4e72d9e9801269', '', '男', '', '', '', '', '', '', '', '', '', '', '', 0);
 INSERT INTO `x2_member` VALUES (3, '无名', '', '', '', '000ba06a730f38defa429b86', '', '男', '', '', '', '', '', '', '', '', '', '', '', 0);
+INSERT INTO `x2_member` VALUES (7, '张三22222', '', '', '', '0045c699d234336630dd18e4', '', '', '', '', '', '', '', '', '', '', '', '', '', 0);
 
 -- ----------------------------
--- Table structure for x2_session
+-- Table structure for x2_system_app
 -- ----------------------------
-DROP TABLE IF EXISTS `x2_session`;
-CREATE TABLE `x2_session`  (
+DROP TABLE IF EXISTS `x2_system_app`;
+CREATE TABLE `x2_system_app`  (
+  `appid` int NOT NULL AUTO_INCREMENT,
+  `appcode` varchar(24) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
+  `appname` varchar(48) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
+  `appthumb` varchar(240) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
+  `appstatus` int NOT NULL DEFAULT 0,
+  `appsetting` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
+  PRIMARY KEY (`appid`) USING BTREE,
+  INDEX `appstatus`(`appstatus` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of x2_system_app
+-- ----------------------------
+INSERT INTO `x2_system_app` VALUES (1, 'user', '用户', '', 1, '{\"closeregist\":true,\"loginmodel\":0,\"userverify\":0,\"emailverify\":0,\"emailaccount\":\"\",\"emailpassword\":\"\"}');
+INSERT INTO `x2_system_app` VALUES (2, 'exam', '考试', '', 1, '{\"watermark\":0,\"fontsize\":\"18\",\"color\":\"#333333\",\"rotate\":0}');
+
+-- ----------------------------
+-- Table structure for x2_system_session
+-- ----------------------------
+DROP TABLE IF EXISTS `x2_system_session`;
+CREATE TABLE `x2_system_session`  (
   `serialid` int NOT NULL AUTO_INCREMENT,
   `sessionid` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NULL DEFAULT NULL,
   `sessionuserid` int NOT NULL DEFAULT 0,
   `sessionauthtoken` varchar(72) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
+  `sessiongracetoken` varchar(72) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NULL DEFAULT NULL,
+  `sessiongraceexpire` int NULL DEFAULT NULL,
   `sessionsalt` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NULL DEFAULT NULL,
   `sessionip` varchar(24) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
   `sessioncurrent` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NULL DEFAULT '',
@@ -1459,12 +1460,11 @@ CREATE TABLE `x2_session`  (
   UNIQUE INDEX `sessionuserid`(`sessionuserid` ASC) USING BTREE,
   UNIQUE INDEX `sessionid`(`sessionid` ASC) USING BTREE,
   INDEX `sessionauthtoken`(`sessionauthtoken` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
--- Records of x2_session
+-- Records of x2_system_session
 -- ----------------------------
-INSERT INTO `x2_session` VALUES (11, '521i9ehph7kjt39jgad5533qol', 1, '03b3bbe252ab36cb20a2cd2ab45d336faf2b77322f47abd5fa2e70980ab255a2', '1fcf6b66da843b99bdffd3be4394efdf15e246b0ebd20b8bc3aee30853ba3372', '127.0.0.1', '', 1785494197, 1785494197);
 
 -- ----------------------------
 -- Table structure for x2_task
@@ -1497,7 +1497,7 @@ CREATE TABLE `x2_task`  (
   INDEX `idx_tasklocktime`(`tasklocktime` ASC) USING BTREE,
   INDEX `idx_taskresult`(`taskresult` ASC) USING BTREE,
   INDEX `taskpriority`(`taskpriority` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '任务队列表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '任务队列表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_task
@@ -1532,7 +1532,7 @@ CREATE TABLE `x2_task_schedules`  (
   INDEX `idx_userid`(`tsuserid` ASC) USING BTREE,
   INDEX `idx_tslastrun`(`tslastrun` ASC) USING BTREE,
   INDEX `idx_tstime`(`tstime` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci COMMENT = '循环任务配置表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci COMMENT = '循环任务配置表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_task_schedules
@@ -1565,11 +1565,12 @@ CREATE TABLE `x2_trade_order`  (
   INDEX `ordercreatetime`(`ordercreatetime` ASC) USING BTREE,
   INDEX `orderpaytime`(`orderpaytime` ASC) USING BTREE,
   INDEX `orderpassport`(`orderpassport` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_trade_order
 -- ----------------------------
+INSERT INTO `x2_trade_order` VALUES (1, '20260827213728399', '充值积分10', '0025896gd42safx0001', '{\"itemtype\":\"recharge\",\"items\":{\"rate\":10}}', 1.00, 1, 1.00, 1787837848, 0, '', 0, '', '');
 
 -- ----------------------------
 -- Table structure for x2_user
@@ -1607,14 +1608,15 @@ CREATE TABLE `x2_user`  (
   INDEX `userphone`(`userphone` ASC) USING BTREE,
   INDEX `userunionid`(`userunionid` ASC) USING BTREE,
   INDEX `userpassport`(`userpassport` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_user
 -- ----------------------------
-INSERT INTO `x2_user` VALUES (1, '', NULL, 'peadmin', '0025896gd42safx0001', NULL, '958074@163.com', '$2y$10$tLoHXbCHFAdbFGojkPeghuWQLz9ZvDhBATMS3WA3vT3/A2qaydApW', 'storage/attach/public/20260630/ce9ce3121a4a8fcbead542e4704b65da.jpg', 259, '127.0.0.1', 1471795200, 0, 1784602372, 1, 'a:7:{i:0;s:4:\"user\";i:1;s:7:\"content\";i:2;s:4:\"exam\";i:3;s:8:\"document\";i:4;s:6:\"course\";i:5;s:4:\"bank\";i:6;s:8:\"autoform\";}', '火眼', '', '', '男', '', '信息部', 3);
+INSERT INTO `x2_user` VALUES (1, '', NULL, 'peadmin', '0025896gd42safx0001', NULL, '958074@163.com', '$2y$10$dVUDS6CC1UOx.Jp8f4YYz.xi3EGwoUiGOjt/cb6Tc5IIuKgH4VqNe', 'storage/attach/public/20260630/ce9ce3121a4a8fcbead542e4704b65da.jpg', 259, '127.0.0.1', 1471795200, 0, 1784602372, 1, 'a:7:{i:0;s:4:\"user\";i:1;s:7:\"content\";i:2;s:4:\"exam\";i:3;s:8:\"document\";i:4;s:6:\"course\";i:5;s:4:\"bank\";i:6;s:8:\"autoform\";}', '火眼', '', '', '男', '', '信息部', 3);
 INSERT INTO `x2_user` VALUES (2, '', '', 'redrangon', '00000d69ad4e72d9e9801269', NULL, 'redrangon@163.com', '$2y$10$d1ha4mcOmPIgfePVXIfXFeXoj4xRtKuMtkXc2GapU2E6eU0cbN4j2', 'storage/attach/public/20260618/f17ce7f87ee05c1fe25f4cfd08300c5f.jpg', 0, '127.0.0.1', 1781780670, 0, 1784461378, 8, '', '火眼', '', '', '男', '', '', 0);
 INSERT INTO `x2_user` VALUES (3, '', '', 'bipowang', '000ba06a730f38defa429b86', NULL, '278768688@qq.com', '$2y$10$4x3n5QGvE5dyZeP8h.XTuuspcn4KOcI.bVNTlAdrdRsvIEnoifWn.', '', 0, '127.0.0.1', 1784907061, 0, 0, 8, '', '无名', '', '', '男', '', '', 0);
+INSERT INTO `x2_user` VALUES (7, '', '', 'ltester', '0045c699d234336630dd18e4', NULL, 'ltester@163.com', '$2y$10$ddC4nsrrp9HTlkY2Misfg.q8k5p07AFDMym.v76ou05rTR8fBTXQe', '', 0, '127.0.0.1', 1787836894, 0, 0, 8, '', '张三22222', '', '', '', '', '', 0);
 
 -- ----------------------------
 -- Table structure for x2_user_expense
@@ -1630,7 +1632,7 @@ CREATE TABLE `x2_user_expense`  (
   PRIMARY KEY (`ueid`) USING BTREE,
   INDEX `uepassport`(`uepassport` ASC) USING BTREE,
   INDEX `ueuserid`(`ueuserid` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_user_expense
@@ -1638,6 +1640,8 @@ CREATE TABLE `x2_user_expense`  (
 INSERT INTO `x2_user_expense` VALUES (1, '0025896gd42safx0001', 1, -1000, 1784461368, '管理员peadmin积分充值');
 INSERT INTO `x2_user_expense` VALUES (2, '0025896gd42safx0001', NULL, 30, 1784558436, '购买考场植物学');
 INSERT INTO `x2_user_expense` VALUES (3, '0025896gd42safx0001', NULL, 0, 1784601804, '购买课程PHPEMS LITE');
+INSERT INTO `x2_user_expense` VALUES (4, '0025896gd42safx0001', NULL, 0, 1787841258, '购买课程PHPEMS LITE');
+INSERT INTO `x2_user_expense` VALUES (5, '0025896gd42safx0001', NULL, 0, 1791104505, '购买课程PHPEMS LITE');
 
 -- ----------------------------
 -- Table structure for x2_user_group
@@ -1675,11 +1679,16 @@ CREATE TABLE `x2_user_log`  (
   `ulclient` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NULL DEFAULT NULL,
   `ultime` int NULL DEFAULT NULL,
   PRIMARY KEY (`ulid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 47 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 52 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of x2_user_log
 -- ----------------------------
+INSERT INTO `x2_user_log` VALUES (47, 1, '127.0.0.1', '电脑:Edge', 1787315361);
+INSERT INTO `x2_user_log` VALUES (48, 1, '127.0.0.1', '电脑:Edge', 1787836410);
+INSERT INTO `x2_user_log` VALUES (49, 1, '127.0.0.1', '电脑:Edge', 1787839152);
+INSERT INTO `x2_user_log` VALUES (50, 1, '127.0.0.1', '电脑:Edge', 1791010779);
+INSERT INTO `x2_user_log` VALUES (51, 1, '127.0.0.1', '电脑:Edge', 1791104399);
 
 -- ----------------------------
 -- Table structure for x2_user_money
@@ -1689,7 +1698,7 @@ CREATE TABLE `x2_user_money`  (
   `umid` int NOT NULL AUTO_INCREMENT,
   `umpassport` varchar(24) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NULL DEFAULT NULL,
   `umamount` int UNSIGNED NULL DEFAULT NULL,
-  PRIMARY KEY (`umid` DESC) USING BTREE,
+  PRIMARY KEY (`umid`) USING BTREE,
   UNIQUE INDEX `umpassport`(`umpassport` ASC) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = DYNAMIC;
 

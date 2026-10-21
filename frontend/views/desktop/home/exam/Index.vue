@@ -1,8 +1,8 @@
 <template>
 	<lay-layout style="flex-direction:column;" class="cardLayout">
 		<headerMenu></headerMenu>
-		<lay-layout class="frontLayOut">
-            <leftMenu v-if="!$route.meta.hideMenu"></leftMenu>
+		<lay-layout class="frontLayOut" v-if="!$route.meta.hideMenu">
+            <leftMenu></leftMenu>
 			<lay-body class="frontLayBody">
                 <router-view v-slot="{ Component, route }">
                     <keep-alive v-if="route.meta.keepAlive">
@@ -12,6 +12,14 @@
                 </router-view>
 			</lay-body>
 		</lay-layout>
+        <lay-layout class="frontLayOut" v-else>
+            <router-view v-slot="{ Component, route }">
+                <keep-alive v-if="route.meta.keepAlive">
+                    <component :is="Component" :key="route.fullPath"/>
+                </keep-alive>
+                <component :is="Component" v-else/>
+            </router-view>
+        </lay-layout>
 	</lay-layout>
 </template>
 <script setup>

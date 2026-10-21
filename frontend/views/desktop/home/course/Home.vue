@@ -1,38 +1,13 @@
 <template>
-	<div class="pagecontent">
-		<!-- 热门资讯 -->
-		<lay-card :bordered="false" class="hot-news-card">
+    <div class="pagecontent">
+        <!-- 新闻列表 -->
+        <lay-card :bordered="false" class="news-list-card">
             <lay-tab v-model="tabCurrent1" type="brief">
                 <lay-tab-item id="tc1_1">
                     <template #title>
                         <span class="tabtitle">
-                            <span>分类列表</span>
-                        </span>
-                    </template>
-                    <lay-row :space="15">
-                        <lay-col v-for="category in categories" :key="category.catid" :xs="24" :sm="12" :md="8" :lg="6">
-                            <lay-card :bordered="false" class="hot-news-item" @click="viewCategroyDetail(category)">
-                                <div class="news-thumb">
-                                    <img :src="category.catthumb" :alt="category.catname" />
-                                </div>
-                                <h4 class="news-title">{{ category.catname }}</h4>
-                                <div class="news-meta">
-                                    <span>{{ category.catdes }}</span>
-                                </div>
-                            </lay-card>
-                        </lay-col>
-                    </lay-row>
-                </lay-tab-item>
-            </lay-tab>
-		</lay-card>
-
-		<!-- 新闻列表 -->
-		<lay-card :bordered="false" class="news-list-card">
-            <lay-tab v-model="tabCurrent1" type="brief">
-                <lay-tab-item id="tc1_1">
-                    <template #title>
-                        <span class="tabtitle">
-                            <span>最新课程</span>
+                            <span v-if="currentCategory.catid > 0">{{currentCategory.catname}}</span>
+                            <span v-else>最新课程</span>
                         </span>
                     </template>
                     <div v-if="page.total > 0" class="news-list">
@@ -50,16 +25,17 @@
                                 </div>
                             </div>
                         </div>
+                        <div style="text-align: center;padding:10px;">
+                            <router-link to="/desktop/home/course/category/0">
+                                <lay-button>更多课程 &gt;&gt;</lay-button>
+                            </router-link>
+                        </div>
                     </div>
                     <lay-empty v-else description="暂无课程数据"></lay-empty>
-                    <div class="pagination-wrapper" v-if="page.total > 0">
-                        <lay-page v-model="page.current"  :layout="layout" v-model:limit="page.limit" :total="page.total" @change="pageChange" theme="blue" style="float:right">
-                        </lay-page>
-                    </div>
                 </lay-tab-item>
             </lay-tab>
-		</lay-card>
-	</div>
+        </lay-card>
+    </div>
 </template>
 
 <script>
@@ -70,6 +46,31 @@ export default {
 	mixins: [baseMixin],
 	data() {
 		return {
+            activeCarousel:0,
+            banners: [
+                {
+                    id: 1,
+                    title: '2026年度考试计划正式发布',
+                    description: '全年共安排各类考试50余场，涵盖职业资格、技能等级等多个类别',
+                    url: '/desktop/home/exam'
+                },
+                {
+                    id: 2,
+                    title: '在线学习平台全新升级',
+                    description: '优化用户体验，新增视频课程、文本课程等功能',
+                    url: '/desktop/home/course'
+                },
+                {
+                    id: 3,
+                    title: '证书查询系统上线',
+                    description: '持证人可在线查询和下载电子证书，便捷高效',
+                    url: '/desktop/home/core/cert'
+                }
+            ],
+            currentCategory:{
+                catid:0,
+                catname:'全部分类'
+            },
             tabCurrent1:"tc1_1",
             layout:['count', 'prev', 'page', 'next'],
             page:{
@@ -82,6 +83,10 @@ export default {
 		};
 	},
     async mounted() {
+        //
+    },
+    async activated() {
+        await this.getCategory();
         await this.getData();
 	},
 	methods: {
@@ -89,13 +94,23 @@ export default {
             await this.execute(async () => {
                 const data = await courseApi.getSubjectList({
                     page:this.page.current,
-                    limit:this.page.limit
+                    limit:this.page.limit,
+                    catId:this.selectedKey??0
                 });
-                this.categories = await courseApi.getCategoryList(0);
                 this.page.current = data.page;
                 this.page.limit = data.limit;
                 this.page.total = data.total;
                 this.courses = data.data;
+            },null,null);
+        },
+        async getCategory(){
+            await this.execute(async () => {
+                this.categories = await courseApi.getCategoryList(this.selectedKey??0);
+                if(this.selectedKey <= 0)this.currentCategory = {
+                    catid:0,
+                    catname:'全部分类'
+                };
+                else this.currentCategory = await courseApi.getCategory(this.selectedKey);
             },null,null);
         },
         pageChange:async function({current,limit}){
@@ -103,8 +118,10 @@ export default {
             this.page.limit = limit
             await this.getData()
         },
-        viewCategroyDetail:function(category){
-            this.$router.push(`/desktop/home/course/category/${category.catid}`)
+        changeSelectedKey:async function(catId){
+            this.selectedKey = catId;
+            await this.getCategory();
+            await this.getData();
         },
         viewCourseDetail:function(course){
             this.$router.push({
@@ -113,7 +130,11 @@ export default {
                     csId:course.csid
                 }
             })
-        }
+        },
+        // 查看轮播图详情
+        viewDetail(banner) {
+            this.$router.push(banner.url);
+        },
 	}
 };
 </script>

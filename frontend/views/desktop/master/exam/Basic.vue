@@ -13,6 +13,10 @@
 					<lay-select-option v-for="(subject,sid) in subjects" :key="sid" :value="sid" :label="subject"></lay-select-option>
 				</lay-select>
 			</lay-space>
+            <lay-space>
+                <span style='width:70px'> 分类：</span>
+                <lay-tree-select v-model="search.basiccatid" :data="laycats" placeholder="选择分类" allow-clear></lay-tree-select>
+            </lay-space>
 			<lay-space>
 				<lay-button type="primary" @click="getData">搜索</lay-button>
 			</lay-space>
@@ -146,6 +150,9 @@
 				<lay-form-item label="考场缩略图" prop="basicthumb">
 					<myThumb v-model:src="model.basicthumb" style="width:160px;height:120px;"></myThumb>
 				</lay-form-item>
+                <lay-form-item label="考场分类" prop="basiccatid" required>
+                    <lay-tree-select v-model="model.basiccatid" :data="laycats" placeholder="选择分类"></lay-tree-select>
+                </lay-form-item>
 				<lay-form-item label="考试科目" prop="basicsubjectid" required>
 					<lay-select v-model="model.basicsubjectid" placeholder="请选择考试科目">
 						<lay-select-option v-for="(subject,sid) in subjects" :key="Number(sid)" :value="Number(sid)" :label="subject"></lay-select-option>
@@ -178,6 +185,9 @@
 				<lay-form-item label="考场缩略图" prop="basicthumb">
 					<myThumb v-model:src="modify.basicthumb" style="width:160px;height:120px;"></myThumb>
 				</lay-form-item>
+                <lay-form-item label="考场分类" prop="basiccatid" required>
+                    <lay-tree-select v-model="modify.basiccatid" :data="laycats" placeholder="选择分类"></lay-tree-select>
+                </lay-form-item>
 				<lay-form-item label="考试科目" prop="basicsubjectid" required>
 					<lay-select v-model="modify.basicsubjectid" placeholder="请选择考试科目">
 						<lay-select-option v-for="(subject,sid) in subjects" :key="Number(sid)" :value="Number(sid)" :label="subject"></lay-select-option>
@@ -209,6 +219,7 @@ import {layer} from '@layui/layui-vue';
 import myThumb from '@/views/components/desktop/Thumb.vue';
 import {withConfirm, withLayer} from "@/framework/utils/decorators.js";
 import MyEditor from "@/views/components/master/Editor.vue";
+import courseApi from "@/framework/api/admin/course.js";
 
 export default {
 	name:'examBasic',
@@ -233,6 +244,10 @@ export default {
 				title: '考场名称',
 				key: 'basic'
 			}, {
+                title: '考场分类',
+                key: 'catname',
+                width: '120px'
+            }, {
 				title: '考试科目',
 				key: 'subject',
 				customSlot: 'subject',
@@ -262,6 +277,7 @@ export default {
 			sections:{},
 			points:{},
 			papers:[],
+            laycats:[],
 			showAddPageBtn:[
 				{
 					text: "确认",
@@ -323,6 +339,7 @@ export default {
 		}
 	},
 	async mounted() {
+        this.laycats = await examApi.getCategroyTree();
 		this.subjects = await examApi.getAllSubjects();
 	},
 	async activated(){

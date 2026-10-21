@@ -126,6 +126,7 @@ export default {
 	mixins: [baseMixin],
 	data() {
 		return {
+            currentCategory:{},
 			course: {},
 			lessons: [],
 			isPurchased: false,

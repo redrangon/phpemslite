@@ -69,6 +69,9 @@
 					<template #title>
 						<lay-icon type="layui-icon-read"></lay-icon> 考试设计
 					</template>
+                    <router-link to="/desktop/master/exam/category">
+                        <lay-menu-item id="23">分类管理</lay-menu-item>
+                    </router-link>
 					<router-link to="/desktop/master/exam/basic">
 						<lay-menu-item id="21">考场管理</lay-menu-item>
 					</router-link>

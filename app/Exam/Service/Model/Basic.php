@@ -16,6 +16,7 @@ class Basic extends Model
 
     protected static $defaultValues = [
         'basic' => null,
+        'basiccatid' => null,
         'basicsubjectid' => null,
         'basicnumber' => 0,
         'basicpoint' => "",
@@ -27,6 +28,7 @@ class Basic extends Model
 
     protected static $rules = [
         'basic' => 'required|string',
+        'basiccatid' => 'required|integer',
         'basicsubjectid' => 'required|integer',
         'basicnumber' => 'integer',
         'basicpoint' => 'string',

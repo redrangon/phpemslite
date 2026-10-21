@@ -3,9 +3,11 @@
 namespace PHPEMS\App\Exam\Controller\Master;
 
 use PHPEMS\App\Exam\Service\ExamService;
+use PHPEMS\App\Exam\Service\Model\ExamCategory;
 use PHPEMS\App\Exam\Service\Model\ExamPaperSession;
 use PHPEMS\App\Exam\Service\Model\History;
 use PHPEMS\App\Exam\Service\Model\HistoryDetail;
+use PHPEMS\App\Exam\Service\Model\Section;
 use PHPEMS\Lib\AI\AIClient;
 
 use PHPEMS\Lib\Rules\Controller;
@@ -151,6 +153,7 @@ prompt;
         $data = [
             'basic' => $this->request->basic??null,
             'basicthumb' => $this->request->basicthumb??"",
+            'basiccatid' => $this->request->basiccatid??null,
             'basicsubjectid' => $this->request->basicsubjectid??null,
             'basicfacetime' => $this->request->basicfacetime??0,
             'basicdescribe' => $this->request->basicdescribe??"",
@@ -158,7 +161,6 @@ prompt;
         ];
         $model = \PHPEMS\App\Exam\Service\Model\Basic::fillWithInit($data);
         $result = $model->toValidate();
-        if($result !== true)return $result;
         if(!$model->save()) error(['error' => '添加失败']);
         return ['msg' => '添加成功'];
     }
@@ -170,11 +172,12 @@ prompt;
     {
         // TODO: 实现修改逻辑
         // 示例：
-        $basicId = $this->request->basicid;
+        $basicId = $this->request->basicid??false;
         $model = \PHPEMS\App\Exam\Service\Model\Basic::find($basicId);
         if(!$model->basicid) error(['error' => '记录不存在']);
         $data = [
             'basic' => $this->request->basic??null,
+            'basiccatid' => $this->request->basiccatid??null,
             'basicsubjectid' => $this->request->basicsubjectid??null,
             'basicfacetime' => $this->request->basicfacetime??null,
             'basicthumb' => $this->request->basicthumb??null,
@@ -183,6 +186,21 @@ prompt;
             'basicexam' => $this->request->basicexam??null,
             'basictext' => $this->request->basictext??null,
         ];
+        if($data['basicpoint'])
+        {
+            $sectionIds = Section::getQuery()->select(['sectionid'])
+                ->where('sectionsubjectid',$model->basicSubjectId)->get();
+            $sectionIds = array_column($sectionIds,'sectionid');
+            $tmpData = [];
+            foreach($sectionIds as $sectionId)
+            {
+                if(isset($data['basicpoint'][$sectionId]))
+                {
+                    $tmpData[$sectionId] = $data['basicpoint'][$sectionId];
+                }
+            }
+            $data['basicpoint'] = $tmpData;
+        }
         $data = array_filter($data,function($item){
             return $item !== null;
         });
@@ -192,7 +210,7 @@ prompt;
             }
             else $model->$key = $value;
         }
-        if(!$model->save()) error(['error' => '修改失败']);
+        if(!$model->save()) error('修改失败');
         return ['msg' => '修改成功'];
     }
 
@@ -203,8 +221,8 @@ prompt;
     {
         // TODO: 实现删除逻辑
         // 示例：
-        $ids = $this->request->ids;
-        if(empty($ids)) error(['error' => '未选择要删除的记录']);
+        $ids = $this->request->ids??[];
+        if(empty($ids)) error('未选择要删除的记录');
         \PHPEMS\App\Exam\Service\Model\Basic::getQuery()->whereIn('basicid', $ids)->delete();
 
         return ['msg' => '删除成功'];
@@ -217,22 +235,43 @@ prompt;
     {
         // TODO: 实现数据查询逻辑
         // 示例：
-        $query = \PHPEMS\App\Exam\Service\Model\Basic::getQuery()->select(['basicid','basic','basicfacetime','basicnumber','basicsubjectid','basicthumb','basicdescribe','basictext'])->orderBy('basicid', 'DESC');
+        $query = \PHPEMS\App\Exam\Service\Model\Basic::getQuery()->select(['basicid','basic','basicfacetime','basicnumber','basiccatid','basicsubjectid','basicthumb','basicdescribe','basictext'])->orderBy('basicid', 'DESC');
         $page = $this->request->page ?? 1;
         $limit = $this->request->limit ?? 20;
-        $search = $this->request->search;
+        $search = $this->request->search??null;
         if($search) {
             if($search['basicid']??false)$query->where('basicid', $search['basicid']);
+            if($search['basiccatid']??false)
+            {
+                $query->where('basiccatid', $search['basiccatid']);
+            }
             if($search['keyword']??false)$query->where('basic', 'like', '%'.$search['keyword'].'%');
             if($search['basicsubjectid']??false)$query->where('basicsubjectid', $search['basicsubjectid']);
         }
         $data = $query->paginate($page, $limit);
+        if($data['total'] > 0)
+        {
+            $cats = [];
+            foreach ($data['data'] as $item) {
+                $cats[] = $item['basiccatid'];
+            }
+            $cats = array_unique($cats);
+            $categories = ExamCategory::getQuery()->whereIn('catid', $cats)->get();
+            $cats = [];
+            foreach ($categories as $category) {
+                $cats[$category['catid']] = $category['catname'];
+            }
+            array_walk($data['data'], function (&$item) use ($cats) {
+                $item['catname'] = $cats[$item['basiccatid']]??'';
+            });
+        }
         return $data;
     }
 
     public function Index(): array
     {
-        $basicid = $this->request->basicid;
+        $basicid = $this->request->basicid??null;
+        if(!$basicid)return [];
         $basic = \PHPEMS\App\Exam\Service\Model\Basic::find($basicid)->getRaw();
         if($basic??false){
             $basic['basicpoint'] = json_decode($basic['basicpoint'])??(object)[];

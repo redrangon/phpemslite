@@ -11,7 +11,7 @@ use PHPEMS\Lib\Rules\Model;
 class App extends Model
 {
     protected static $dbName = 'mysql.default';
-    protected static $dbTable = 'app';
+    protected static $dbTable = 'system_app';
     protected static $primaryKeys = ["appid"];
     protected static $defaultValues = [
         "appcode" => null,

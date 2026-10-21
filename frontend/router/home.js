@@ -133,6 +133,9 @@ export default [
             {
                 path: '',
                 component:() => import('../views/desktop/home/course/Home.vue'),
+                meta:{
+                    keepAlive:true,
+                }
             },
             {
                 path: 'category/:categoryId',
@@ -161,6 +164,13 @@ export default [
                     hideMenu:true
                 },
                 component:() => import('../views/desktop/home/exam/Home.vue')
+            },
+            {
+                path: 'category/:categoryId',
+                meta:{
+                    hideMenu:true
+                },
+                component:() => import('../views/desktop/home/exam/Category.vue'),
             },
             {
                 path: 'basic',

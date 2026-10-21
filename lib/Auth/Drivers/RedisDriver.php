@@ -52,4 +52,14 @@ class RedisDriver extends Driver implements DriverInterface
     {
         return $this->db->get("session:{$sessionId}:auth_salt");
     }
+
+    protected function saveGraceToken(string $sessionId, string $oldToken): void
+    {
+        $this->db->setex("session:{$sessionId}:auth_token:grace", self::GRACE_PERIOD, $oldToken);
+    }
+
+    protected function fetchGraceToken(string $sessionId): string
+    {
+        return $this->db->get("session:{$sessionId}:auth_token:grace") ?? '';
+    }
 }

@@ -54,16 +54,27 @@ class Auth
     }
 
     /**
-     * 验证请求中的 AuthToken 是否合法
+     * 验证请求中的 AuthToken 是否合法（含宽限期回退）
      */
     public static function validateRequestToken(string $providedToken): bool
     {
         if (!self::check()) return false;
 
         $sessionId = session_id();
-        $expectedToken = DataProvider::Create()->getAuthToken($sessionId);
 
-        return hash_equals($expectedToken ?: '', $providedToken);
+        // 第一层：精确匹配当前 token
+        $expectedToken = DataProvider::Create()->getAuthToken($sessionId);
+        if (hash_equals($expectedToken ?: '', $providedToken)) {
+            return true;
+        }
+
+        // 第二层：宽限期内旧 token 仍有效（GRACE_PERIOD 秒）
+        $graceToken = DataProvider::Create()->getGraceAuthToken($sessionId);
+        if (hash_equals($graceToken ?: '', $providedToken)) {
+            return true;
+        }
+
+        return false;
     }
 
     public static function enforceRotation()

@@ -7,9 +7,14 @@
 	</lay-side>
 	<lay-body class="frontLayBody">
 		<lay-card class="pagecontent">
-
+            <lay-quote style="position: relative">
+                <lay-breadcrumb>
+                    <lay-breadcrumb-item title="课程" @click="$router.push('/desktop/home/course')"></lay-breadcrumb-item>
+                    <lay-breadcrumb-item :title="currentCategory?.catname" v-if="currentCategory?.catid"></lay-breadcrumb-item>
+                </lay-breadcrumb>
+                <lay-page-header :content="currentCategory?.catname??'全部分类'" @back="$router.go(-1)" class="planbread"></lay-page-header>
+            </lay-quote>
 			<lay-card style="position: relative;" v-if="courseid > 0">
-				<lay-page-header :content="subject.cstitle" @back="$router.go(-1)" class="planbread"></lay-page-header>
 				<lay-tab v-model="tabCurrent" type="brief">
 					<lay-tab-item id="1">
 						<template #title>
@@ -56,7 +61,6 @@
 				</lay-tab>
 			</lay-card>
 			<lay-card style="position: relative;" v-else>
-				<lay-page-header :content="subject.cstitle" @back="$router.go(-1)" class="planbread"></lay-page-header>
 				<lay-tab v-model="tabCurrent" type="brief">
 					<lay-tab-item id="1">
 						<template #title>
@@ -89,6 +93,7 @@ export default {
 	mixins: [baseMixin],
 	data() {
 		return {
+            currentCategory:{},
 			settings:{
 				source:false
 			},
@@ -113,6 +118,7 @@ export default {
 		try{
 			this.subject = await courseApi.getCourseSubject();
 			await this.getCourseTree();
+            this.currentCategory = await courseApi.getCategory(this.subject?.cscatid??0);
 		}catch(e){
 			this.router.push('/desktop/home/core/myplan');
 		}

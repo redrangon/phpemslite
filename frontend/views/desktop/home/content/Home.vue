@@ -75,8 +75,8 @@ export default {
 			banners: [
 				{
 					id: 1,
-					title: '2026年度考试计划正式发布',
-					description: '全年共安排各类考试50余场，涵盖职业资格、技能等级等多个类别',
+					title: '年度考试计划正式发布',
+					description: '全年安排各类考试，涵盖职业资格、技能等级等多个类别',
 					url: '/desktop/home/exam'
 				},
 				{

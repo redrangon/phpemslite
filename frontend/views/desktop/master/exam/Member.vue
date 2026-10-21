@@ -14,16 +14,24 @@
 		</lay-space>
 	</lay-card>
 	<lay-card>
-		<lay-table id="pmid" ref="tableRef" v-model:selected-keys="selectedKeys" :columns="columns" :data-source="dataSource" :default-toolbar="false">
+        <lay-quote>批量文件中，到期时间请设置为文本格式，按照 年/月/日 格式录入。</lay-quote>
+		<lay-table id="emid" ref="tableRef" v-model:selected-keys="selectedKeys" :columns="columns" :data-source="dataSource" :default-toolbar="false">
 			<template #toolbar>
 				<lay-button size="sm" type="primary" @click="userAddPage">添加人员</lay-button>
 				<span style="float:right;">
-					<lay-button size="sm" type="primary" @click="showImportPage = true">导入人员信息</lay-button>
-					<lay-button size="sm" type="danger" @click="refreshNumber()">更新人员数量</lay-button>
+                    <lay-space>
+                        <lay-button size="sm" type="primary" @click="importMember()">导入人员</lay-button>
+                        <a href="public/attach/basic.xlsx">
+                            <lay-button size="sm" type="normal">
+                                下载模板
+                            </lay-button>
+                        </a>
+                        <lay-button size="sm" type="danger" @click="refreshNumber()">更新数量</lay-button>
+                    </lay-space>
 				</span>
 			</template>
 			<template #footer>
-                <lay-button :disabled="selectedKeys.length < 1" size="sm" type="primary" @click="verifyMember()">移除成员</lay-button>
+                <lay-button :disabled="selectedKeys.length < 1" size="sm" type="primary" @click="delExamMember()">移除成员</lay-button>
 				<lay-page v-model="page.current"  v-model:limit="page.limit" :layout="layout" :total="page.total"  style="float:right;" @change="changePage"></lay-page>
 			</template>
 			<template v-slot:operator="{ row }">
@@ -32,12 +40,12 @@
 			</template>
 		</lay-table>
 	</lay-card>
-	<lay-layer v-model="showAddPage" :area="['840px','80%']" title="添加人员">
+	<lay-layer v-model="showAddPage" :area="['960px','80%']" title="添加人员">
 		<lay-card>
 			<lay-space size="lg" style="margin:10px auto">
 				<lay-space></lay-space>
 				<lay-space>
-					<span style='width:70px'> 身份证</span><lay-input v-model="memberSearch.mpassport" allow-clear size="sm" style="width: 140px;"></lay-input>
+					<span style='width:70px'> 通行证ID</span><lay-input v-model="memberSearch.mpassport" allow-clear size="sm" style="width: 140px;"></lay-input>
 				</lay-space>
 				<lay-space>
 					<span style='width:70px'> 姓名</span><lay-input v-model="memberSearch.mname" allow-clear size="sm" style="width: 140px;"></lay-input>
@@ -146,6 +154,8 @@ import {layer} from '@layui/layui-vue';
 import myUploadFile from '@/views/components/desktop/UploadFile.vue';
 import myThumb from '@/views/components/desktop/Thumb.vue';
 import baseMixin from "@/framework/mixins/baseMixin.js";
+import {withLayer} from "@/framework/utils/decorator-adapter.js";
+import userApi from "@/framework/api/admin/user.js";
 export default {
 	mixins: [baseMixin],
 	data() {
@@ -334,7 +344,7 @@ export default {
 		},
 		delExamMember:function(emid){
             this.confirmDelete(async () => {
-                await examApi.deleteMember([emid]);
+                await examApi.deleteMember(emid?[emid]:this.selectedKeys);
             },this.getData);
 		},
 		showPageData:async function(row){
@@ -346,6 +356,20 @@ export default {
                 await examApi.refreshNumber(this.basicId);
             });
 		},
+        importMember:function(){
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', '.xlsx');
+            input.click();
+            input.onchange = async () => {
+                await this.base(async() => {
+                    const formData = new FormData();
+                    formData.append('basicId',this.basicId);
+                    formData.append('file', input.files[0], input.files[0].name );
+                    await examApi.importMember(formData);
+                });
+            };
+        }
 	}
 }
 </script>

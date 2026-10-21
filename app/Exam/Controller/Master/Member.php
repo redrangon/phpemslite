@@ -2,11 +2,16 @@
 
 namespace PHPEMS\App\Exam\Controller\Master;
 
+use Exception;
+use PHPEMS\App\Exam\Service\ExamService;
 use PHPEMS\App\Exam\Service\Model\Basic;
 use PHPEMS\App\Exam\Service\Model\ExamMember;
 use PHPEMS\App\User\Service\Model\User;
 use PHPEMS\Lib\Rules\Controller;
 use PHPEMS\Lib\Rules\ControllerInterface;
+use PHPEMS\Lib\Utils\ExcelProvider;
+use PHPEMS\Lib\Utils\FileProvider;
+use Throwable;
 
 
 class Member extends Controller implements ControllerInterface
@@ -23,7 +28,8 @@ class Member extends Controller implements ControllerInterface
             'delete' => 'Delete',
             'data' => 'Data',
             'addbypassport' => 'AddByPassport',
-            'refresh' => 'RefreshNumber'
+            'refresh' => 'RefreshNumber',
+            'import' => 'Import'
         ];
     }
 
@@ -71,6 +77,7 @@ class Member extends Controller implements ControllerInterface
                 $user = User::findByUserName($search['username']);
                 $query->where('empassport', $user->userpassport);
             }
+            if($search['passport']??false)$query->where('empassport', $search['passport']);
             $data = $query->paginate($page, $limit);
             $passports = [];
             foreach($data['data'] as $item)
@@ -89,6 +96,26 @@ class Member extends Controller implements ControllerInterface
             return $data;
         }
         error(['error' => '参数错误']);
+    }
+
+    public function Import():array
+    {
+        $file = $this->request->getFile('file');
+        $basicId = $this->request->basicId??null;
+        try{
+            $service = new FileProvider();
+            $result = $service->upload($file);
+            if($result['success'])
+            {
+                $data = ExcelProvider::importExcel($result['path'])??[];
+                if(empty($data))throw new Exception('导入文件数据为空');
+                ExamService::importBasicMember($data,$basicId);
+                return ['msg' => '导入成功'];
+            }
+            else error($result['error']);
+        }catch (Throwable $e){
+            error($e->getMessage());
+        }
     }
 
     public function Delete():array
@@ -134,8 +161,7 @@ class Member extends Controller implements ControllerInterface
                     'emstarttime' => TIME,
                     'empassport' => $passport,
                 ]);
-                $result = $model->toValidate();
-                if($result !== true)return $result;
+                $model->toValidate();
                 if(!$model->save()) error(['error' => '通行证ID：'.$passport.'用户添加失败']);
             }
             else

@@ -8,7 +8,7 @@ use PHPEMS\Lib\Utils\Env;
 class MySQLDriver extends Driver implements DriverInterface
 {
     protected $dbName = 'mysql.default';
-    protected $dbTable = 'session';
+    protected $dbTable = 'system_session';
     private static $instance;
 
     private function __construct(?string $dbName = null)
@@ -75,5 +75,22 @@ class MySQLDriver extends Driver implements DriverInterface
     {
         $result = $this->getQuery()->where('sessionid', $sessionId)->first();
         return $result['sessionsalt'] ?? '';
+    }
+
+    protected function saveGraceToken(string $sessionId, string $oldToken): void
+    {
+        $this->getQuery()->where('sessionid', $sessionId)->update([
+            'sessiongracetoken' => $oldToken,
+            'sessiongraceexpire' => time() + self::GRACE_PERIOD,
+        ]);
+    }
+
+    protected function fetchGraceToken(string $sessionId): string
+    {
+        $row = $this->getQuery()->where('sessionid', $sessionId)->first();
+        if (($row['sessiongracetoken'] ?? '') && ($row['sessiongraceexpire'] ?? 0) > time()) {
+            return $row['sessiongracetoken'];
+        }
+        return '';
     }
 }

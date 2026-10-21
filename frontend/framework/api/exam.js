@@ -1,5 +1,7 @@
 import http from '@/framework/http'
 const examApi = {
+    getCategoryList: (catId) => http.post('/exam/app/category/data',{catId}),
+    getCategory: (catId) => http.post('/exam/app/category',{catId}),
     setExamSession: (examId) => http.post('/exam/app/index/session',{examId}),
     getBasic: (basicId) => http.post('/exam/app/index/basic',{basicId}),
     getBasicList: (params) => http.post('/exam/app/index/data',params),

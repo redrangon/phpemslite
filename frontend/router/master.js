@@ -465,7 +465,20 @@ export default [
                     breadcrumb: (route) => [
                         { title: '首页', path: '/desktop/master' },
                         { title: '考试', path: '/desktop/master/exam' },
-                        { title: '考场管理', path: '/desktop/master/content/content' }
+                        { title: '考场管理', path: '/desktop/master/exam/basic' }
+                    ]
+                },
+            },
+            {
+                path: 'category',
+                component: () => import('@/views/desktop/master/exam/Category.vue'),
+                meta:{
+                    menu:"23",
+                    openMenu:"2",
+                    breadcrumb: (route) => [
+                        { title: '首页', path: '/desktop/master' },
+                        { title: '考试', path: '/desktop/master/exam' },
+                        { title: '分类管理', path: '/desktop/master/exam/category' }
                     ]
                 },
             },

@@ -84,6 +84,13 @@ const examApi = {
     addMemberByPassport: (params) => http.post('/exam/master/member/addbypassport',params),
     modifyMember: (params) => http.post('/exam/master/member/modify',params),
     deleteMember: (ids) => http.post('/exam/master/member/delete',{ids}),
+    importMember:(params) => http.post('/exam/master/member/import', params),
     refreshNumber: (basicId) => http.post('/exam/master/member/refresh',{basicId}),
+    getCategoryList: (params) => http.post('/exam/master/category/data',params),
+    getCategory: (catid) => http.post('/exam/master/category',{catid}),
+    getCategroyTree: () => http.post('/exam/master/category/tree'),
+    delCategory: (ids) => http.post('/exam/master/category/delete', {ids}),
+    modifyCategory: (category) => http.post('/exam/master/category/modify', category),
+    addCategory: (category) => http.post('/exam/master/category/add', category),
 };
 export default examApi;

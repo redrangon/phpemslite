@@ -34,8 +34,23 @@ class Category extends Controller implements ControllerInterface
     public function Data(): array
     {
         $catId = intval($this->request->catId);
+        if($catId)
+        {
+            $cat = CourseCategory::find($catId)->getRaw();
+        }
+        else $cat = ['catid' => 0, 'catname' => '全部分类','isRoot' => true];
         $query = CourseCategory::getQuery()->where('catparent',$catId)->orderBy('catlite','desc');
         $data = $query->get();
+        if(!empty($data))$cat['isRoot'] = true;
+        $data = [$cat,...$data];
+        if($catId)
+        {
+            $data[] = [
+                'catid' => $cat['catparent']??0,
+                'catname' => '上级目录',
+                'isTop' => true
+            ];
+        }
         return $data;
     }
 

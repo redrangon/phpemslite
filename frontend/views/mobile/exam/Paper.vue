@@ -121,10 +121,10 @@ export default {
 	        this.getData(),
 	        this.getLeftTime()
         ]);
-        if(this.storage.question)
-        {
-	        this.userAnswer = this.storage.question??{};
-        }
+		if(this.storage.question && Object.keys(this.storage.question).length > 0)
+		{
+			this.useranswer = this.storage.question??{};
+		}
         else
         {
 	        this.storage.syncData(this.userAnswer);

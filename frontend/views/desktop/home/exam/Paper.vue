@@ -167,7 +167,7 @@ export default {
 			this.getQuestionTypes(),
 			this.getLeftTime()
 		]);
-		if(this.storage.question)
+		if(this.storage.question && Object.keys(this.storage.question).length > 0)
 		{
 			this.useranswer = this.storage.question??{};
 		}
@@ -231,13 +231,11 @@ export default {
 			}
 		},
 		faceVerify:async function(face){
-			await this.execute( async () => {
-				await examApi.verifyExamFace({
-					sessionid:this.sessionid,
-					face
-				});
-				this.showFace = false;
-			},null,null);
+            await examApi.verifyExamFace({
+                sessionid:this.sessionid,
+                face
+            });
+            this.showFace = false;
 		},
 		submitPaperLayer:function(){
 			layer.confirm("您确定要交卷吗？", {

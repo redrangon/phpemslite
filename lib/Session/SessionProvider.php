@@ -21,7 +21,7 @@ class SessionProvider
         $this->driver->start();
     }
 
-    public static function getInstance(string $driver = 'redis', array $config = []): self
+    public static function getInstance(string $driver = 'native', array $config = []): self
     {
         if (self::$instance === null) {
             self::$instance = new self($driver, $config);
