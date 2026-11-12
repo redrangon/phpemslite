@@ -245,7 +245,7 @@ class Session extends Controller implements ControllerInterface
         $data = ExamPaperSession::getQuery()->orderBy('esid','DESC')
             ->select(['esid','examsessionid','examsession','examsessionstarttime','examsessiontoken','examsessionsetting'])
             ->where('examsessiontype',$this->basic->basicexam['model'] === 2?:1)
-            ->where('examsessionplanid',$this->plan->planid)
+            ->where('examsessionplanid',0)
             ->where('examsessionpassport',$user->userpassport)
             ->where('examsessionbasicid',$this->basic->basicid)
             ->first();
@@ -274,6 +274,7 @@ class Session extends Controller implements ControllerInterface
                 $historyNumber = \PHPEMS\App\Exam\Service\Model\History::getQuery()->where('ehtype',2)
                     ->where('ehpassport',$user->userpassport)
                     ->where('ehbasicid',$this->basic->basicid)
+                    ->where('ehplanid',0)
                     ->count();
                 if($historyNumber >= $this->basic->basicexam['examnumber'])
                 {
@@ -290,16 +291,12 @@ class Session extends Controller implements ControllerInterface
                 if(!FaceProvider::FaceComparison($face,$source))error(['error' => '人脸识别校验失败']);
                 else
                 {
-                    try{
-                        $face = explode('base64,',$face,2);
-                        $face = $face[1];
-                        $imagePath = FaceProvider::PreventCheatingAndSave($face,[]);
-                        $examSessionFaceList[] = $imagePath;
-                        $this->session->esfadtime = TIME;
-                        $this->session->save();
-                    }catch (Exception $e){
-                        error(['error' => '人脸识别校验失败']);
-                    }
+                    $face = explode('base64,',$face,2);
+                    $face = $face[1];
+                    $imagePath = FaceProvider::PreventCheatingAndSave($face,[]);
+                    $examSessionFaceList[] = $imagePath;
+                    $this->session->esfadtime = TIME;
+                    $this->session->save();
                 }
             }
         }

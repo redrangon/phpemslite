@@ -3,6 +3,7 @@
 namespace PHPEMS\App\Trade\Controller\App;
 
 use PHPEMS\App\Trade\Service\Model\TradeOrder;
+use PHPEMS\Lib\Config\Pay\Pay;
 use PHPEMS\Lib\Config\Pay\Wechat;
 use PHPEMS\Lib\Config\Pay\Alipay;
 use PHPEMS\Lib\Rules\Controller;
@@ -53,15 +54,11 @@ class Order extends Controller implements ControllerInterface
                 $ua = Env::getPaymentEnv();
                 if($ua == 'pc')
                 {
-                    return $pay->web($order);
-                }
-                elseif($ua == 'wechat')
-                {
-                    return $pay->app($order);
+                    return ['data' => $pay->web($order)];
                 }
                 elseif($ua == 'mobile')
                 {
-                    return $pay->mobile($order);
+                    return ['data' => $pay->mobile($order)];
                 }
                 else error(['error' => '错误的支付环境']);
             }
@@ -164,8 +161,8 @@ class Order extends Controller implements ControllerInterface
                     return [
                         'order' => $order->getRaw(),
                         'info' => [
-                            'wechatPay' => (new Wechat())->enable,
-                            'aliPay' => (new Alipay())->enable
+                            'wechatPay' => DI(Pay::class,'wechat')->enable,
+                            'aliPay' => DI(Pay::class)->enable
                         ]
                     ];
                 }

@@ -10,6 +10,7 @@ use PHPEMS\Lib\Utils\FileProvider;
 
 class Upload extends Controller implements ControllerInterface
 {
+    static protected array $publicFlows = ['Auth','Json'];
     static public function getRoutes():array
     {
         return [
@@ -19,14 +20,13 @@ class Upload extends Controller implements ControllerInterface
 
     static public function withFlows($action = 'index'):array
     {
-        return ['Auth','Json'];
+        $flows = [];
+        return $flows[$action]??static::$publicFlows;
     }
 
     static public function withOutFlows($action = 'index'):array
     {
-        $outFlows = [
-            'index' => ['Auth']
-        ];
+        $outFlows = [];
         return $outFlows[$action]??[];
     }
 

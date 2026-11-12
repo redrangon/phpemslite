@@ -34,12 +34,18 @@ class Alipay extends Controller implements ControllerInterface
         return [];
     }
 
-    public function Notify()
+    public function Notify():void
     {
         $pay = new PayProvider('alipay');
-        $data = $pay->notifyCallback(function ($data,$payType) {
-            TradeService::finishOrder($payType);
-        });
+        try{
+            $pay->notifyCallback(function ($data,$payType) {
+                TradeService::finishOrder($payType);
+            });
+            exit('success');
+        }catch (\Exception $e){
+            exit('fail');
+        }
+
     }
 
     /**

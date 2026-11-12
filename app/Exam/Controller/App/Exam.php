@@ -88,7 +88,7 @@ class Exam extends Controller implements ControllerInterface
                 $historyNumber = History::getQuery()->where('ehtype', 2)
                     ->where('ehpassport', $user->userpassport)
                     ->where('ehbasicid', $this->basic->basicid)
-                    ->where('ehplanid', $this->plan->planid)
+                    ->where('ehplanid', 0)
                     ->count();
                 if($historyNumber >= $this->basic->basicexam['examnumber'])$hasExamNumber = false;
             }

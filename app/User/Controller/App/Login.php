@@ -142,7 +142,7 @@ class Login extends Controller implements ControllerInterface
             $randCode->save();
             return ['msg' => '短信发送成功'];
         }
-        else return $result;
+        else error('短信发送失败');
     }
 
     public function Register():array
@@ -179,7 +179,7 @@ class Login extends Controller implements ControllerInterface
             }
             else error(['error' => '注册失败，请稍后尝试']);
         }
-        else error(['error' => '验证码对比失败'.$randCode->urcString.'|'.$codeString]);
+        else error(['error' => '验证码对比失败']);
     }
 
     public function Logout(): array

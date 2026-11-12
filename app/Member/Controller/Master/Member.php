@@ -15,7 +15,7 @@ use PHPEMS\Lib\Utils\Office\Xlsx\Reader;
 class Member extends Controller implements ControllerInterface
 {
     
-    static protected array $publicFlows = ['Auth','Json'];
+    static protected array $publicFlows = ['Auth@admin','Json'];
 
     static public function getRoutes():array
     {

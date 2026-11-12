@@ -10,7 +10,7 @@ use PHPEMS\Lib\Rules\ControllerInterface;
 
 class Schedule extends Controller implements ControllerInterface
 {
-    static protected array $publicFlows = ['Auth','Json'];
+    static protected array $publicFlows = ['Auth@admin','Json'];
 
     static public function getRoutes():array
     {

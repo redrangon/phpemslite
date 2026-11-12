@@ -138,7 +138,7 @@ class User extends Controller implements ControllerInterface
 
     public function Modify():array
     {
-        $userid = $this->request->userid;
+        $userid = $this->request->userId??null;
         $user = \PHPEMS\App\User\Service\Model\User::find($userid);
         $data = [
             'usergender' => $this->request->usergender,
